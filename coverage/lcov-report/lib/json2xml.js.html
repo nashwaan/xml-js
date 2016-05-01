@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for lib\json2xml.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">lib/</a> json2xml.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">13.24% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>9/68</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/28</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/9</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">13.24% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>9/68</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">var sanitizer = require('./sanitize.js')
+&nbsp;
+module.exports = <span class="fstat-no" title="function not covered" >function (json, options) {</span>
+<span class="cstat-no" title="statement not covered" >    if (json instanceof Buffer) {</span>
+<span class="cstat-no" title="statement not covered" >        json = json.toString();</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    var obj = null;</span>
+<span class="cstat-no" title="statement not covered" >    if (typeof(json) == 'string') {</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            obj = JSON.parse(json);</span>
+        } catch(e) {
+<span class="cstat-no" title="statement not covered" >            throw new Error("The JSON structure is invalid");</span>
+        }
+    } else {
+<span class="cstat-no" title="statement not covered" >        obj = json;</span>
+    }
+<span class="cstat-no" title="statement not covered" >    var toXml = new ToXml(options);</span>
+<span class="cstat-no" title="statement not covered" >    toXml.parse(obj);</span>
+<span class="cstat-no" title="statement not covered" >    return toXml.xml;</span>
+}
+&nbsp;
+ToXml.prototype.parse = <span class="fstat-no" title="function not covered" >function(obj) {</span>
+<span class="cstat-no" title="statement not covered" >    var self = this;</span>
+<span class="cstat-no" title="statement not covered" >    var keys = Object.keys(obj);</span>
+<span class="cstat-no" title="statement not covered" >    var len = keys.length;</span>
+&nbsp;
+    // First pass, extract strings only
+<span class="cstat-no" title="statement not covered" >    for (var i = 0; i &lt; len; i++) {</span>
+<span class="cstat-no" title="statement not covered" >        var key = keys[i], value = obj[key], isArray = Array.isArray(value);</span>
+<span class="cstat-no" title="statement not covered" >        var type = typeof(value);</span>
+<span class="cstat-no" title="statement not covered" >        if (type == 'string' || type == 'number' || type == 'boolean' || isArray) {</span>
+<span class="cstat-no" title="statement not covered" >            var it = isArray ? value : [value];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            it.forEach(<span class="fstat-no" title="function not covered" >function(subVal) {</span></span>
+<span class="cstat-no" title="statement not covered" >                if (typeof(subVal) != 'object') {</span>
+<span class="cstat-no" title="statement not covered" >                    if (key == '$t') {</span>
+<span class="cstat-no" title="statement not covered" >                        self.addTextContent(subVal);</span>
+                    } else {
+<span class="cstat-no" title="statement not covered" >                        self.addAttr(key, subVal);</span>
+                    }
+                }
+            });
+        }
+    }
+&nbsp;
+    // Second path, now handle sub-objects and arrays
+<span class="cstat-no" title="statement not covered" >    for (var i = 0; i &lt; len; i++) {</span>
+<span class="cstat-no" title="statement not covered" >        var key = keys[i];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (Array.isArray(obj[key])) {</span>
+<span class="cstat-no" title="statement not covered" >            var elems = obj[key];</span>
+<span class="cstat-no" title="statement not covered" >            var l = elems.length;</span>
+<span class="cstat-no" title="statement not covered" >            for (var j = 0; j &lt; l; j++) {</span>
+<span class="cstat-no" title="statement not covered" >                var elem = elems[j];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                if (typeof(elem) == 'object') {</span>
+<span class="cstat-no" title="statement not covered" >                    self.openTag(key);</span>
+<span class="cstat-no" title="statement not covered" >                    self.parse(elem);</span>
+<span class="cstat-no" title="statement not covered" >                    self.closeTag(key);</span>
+                }
+            }
+        } else <span class="cstat-no" title="statement not covered" >if (typeof(obj[key]) == 'object') {</span>
+<span class="cstat-no" title="statement not covered" >            self.openTag(key);</span>
+<span class="cstat-no" title="statement not covered" >            self.parse(obj[key]);</span>
+<span class="cstat-no" title="statement not covered" >            self.closeTag(key);</span>
+        }
+    }
+&nbsp;
+};
+&nbsp;
+ToXml.prototype.openTag = <span class="fstat-no" title="function not covered" >function(key) {</span>
+<span class="cstat-no" title="statement not covered" >    this.completeTag();</span>
+<span class="cstat-no" title="statement not covered" >    this.xml += '&lt;' + key;</span>
+<span class="cstat-no" title="statement not covered" >    this.tagIncomplete = true;</span>
+}
+ToXml.prototype.addAttr = <span class="fstat-no" title="function not covered" >function(key, val) {</span>
+<span class="cstat-no" title="statement not covered" >    if (this.options.sanitize) {</span>
+<span class="cstat-no" title="statement not covered" >        val = sanitizer.sanitize(val)</span>
+    }
+<span class="cstat-no" title="statement not covered" >    this.xml += ' ' + key + '="' + val + '"';</span>
+}
+ToXml.prototype.addTextContent = <span class="fstat-no" title="function not covered" >function(text) {</span>
+<span class="cstat-no" title="statement not covered" >    this.completeTag();</span>
+<span class="cstat-no" title="statement not covered" >    this.xml += text;</span>
+}
+ToXml.prototype.closeTag = <span class="fstat-no" title="function not covered" >function(key) {</span>
+<span class="cstat-no" title="statement not covered" >    this.completeTag();</span>
+<span class="cstat-no" title="statement not covered" >    this.xml += '&lt;/' + key + '&gt;';</span>
+}
+ToXml.prototype.completeTag = <span class="fstat-no" title="function not covered" >function() {</span>
+<span class="cstat-no" title="statement not covered" >    if (this.tagIncomplete) {</span>
+<span class="cstat-no" title="statement not covered" >        this.xml += '&gt;';</span>
+<span class="cstat-no" title="statement not covered" >        this.tagIncomplete = false;</span>
+    }
+}
+<span class="fstat-no" title="function not covered" >function ToXml(options) {</span>
+<span class="cstat-no" title="statement not covered" >    var defaultOpts = {</span>
+        sanitize: false
+    };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (options) {</span>
+<span class="cstat-no" title="statement not covered" >        for (var opt in options) {</span>
+<span class="cstat-no" title="statement not covered" >            defaultOpts[opt] = options[opt];</span>
+        }
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    this.options = defaultOpts;</span>
+<span class="cstat-no" title="statement not covered" >    this.xml = '';</span>
+<span class="cstat-no" title="statement not covered" >    this.tagIncomplete = false;</span>
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 01 2016 12:31:44 GMT+0400 (Arabian Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

@@ -31,12 +31,16 @@
     "sax": "^1.2.1"
   },
   "devDependencies": {
+    "coveralls": "^2.11.9",
     "gulp": "^3.9.1",
-    "jasmine": "^2.4.1"
+    "istanbul": "^0.4.3",
+    "jasmine": "^2.4.1",
+    "jasmine-node-debug": "^0.1.1"
   },
   "scripts": {
     "prestart": "",
-    "test": "jasmine JASMINE_CONFIG_PATH=jasmine.json",
+    "istanbul": "istanbul cover test/index.js",
+    "test": "node test/index.js",
     "jasmine": "jasmine JASMINE_CONFIG_PATH=jasmine.json",
     "jasmine-debug": "jasmine-node-debug JASMINE_CONFIG_PATH=jasmine.json",
     "jasmine-node": "jasmine-node test --autotest --watch"
