@@ -36,15 +36,15 @@
     "gulp-coveralls": "^0.1.4",
     "istanbul": "^0.4.3",
     "istanbul-coveralls": "^1.0.3",
-    "jasmine": "^2.4.1"
+    "jasmine": "^2.4.1",
+    "shelljs": "^0.7.0"
   },
   "scripts": {
     "prestart": "",
-    "istanbul": "istanbul cover test/index.js && type coverage/lcov.info | coveralls",
-    "testssss": "istanbul cover test/index.js",
+    "istanbulcovrealls": "istanbul cover test/index.js && type cat coverage/lcov.info | coveralls",
+    "istanbul": "istanbul cover test/index.js",
     "test": "istanbul cover test/index.js && istanbul-coveralls",
     "testnode": "node test/index.js ",
-    "repo_token": "WdSOeyvPl6URrHDAgWmLEruBOC2z4rL65",
     "jasmine": "jasmine JASMINE_CONFIG_PATH=jasmine.json",
     "jasmine-debug": "jasmine-node-debug JASMINE_CONFIG_PATH=jasmine.json",
     "jasmine-node": "jasmine-node test --autotest --watch"
