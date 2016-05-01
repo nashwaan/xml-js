@@ -1,0 +1,9 @@
+{
+    "helpers": [
+        "lib/*.js"
+    ],
+    "spec_dir": "",
+    "spec_files": [
+        "test/**/*_test.js"
+    ]
+}
