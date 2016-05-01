@@ -32,8 +32,7 @@
   },
   "devDependencies": {
     "gulp": "^3.9.1",
-    "jasmine": "^2.4.1",
-    "jasmine-node-debug": "^0.1.1"
+    "jasmine": "^2.4.1"
   },
   "scripts": {
     "prestart": "",
