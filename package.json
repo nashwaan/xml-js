@@ -1,0 +1,45 @@
+{
+  "name": "xml-js-json",
+  "version": "0.1.0",
+  "description": "A convertor between XML text and Javascript object / JSON text.",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nashwaan/xml-js-json.git"
+  },
+  "keywords": [
+    "XML",
+    "js",
+    "JSON",
+    "Javascript",
+    "transformation",
+    "transforming",
+    "transformer",
+    "convertion",
+    "converting",
+    "convertor",
+    "parsing",
+    "parser"
+  ],
+  "author": "Yousuf Almarzooqi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nashwaan/xml-js-json/issues"
+  },
+  "homepage": "https://github.com/nashwaan/xml-js-json#readme",
+  "dependencies": {
+    "node-expat": "^2.3.13",
+    "sax": "^1.2.1"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "jasmine": "^2.4.1"
+  },
+  "scripts": {
+    "prestart": "",
+    "test": "jasmine JASMINE_CONFIG_PATH=jasmine.json",
+    "jasmine": "jasmine JASMINE_CONFIG_PATH=jasmine.json",
+    "jasmine-debug": "jasmine-node-debug JASMINE_CONFIG_PATH=jasmine.json",
+    "jasmine-node": "jasmine-node test --autotest --watch"
+  }
+}

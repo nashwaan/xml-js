@@ -1,0 +1,33 @@
+<itemRecord>
+  <value>
+    <longValue>12345</longValue>
+  </value>
+  <value>
+    <stringValue number='false'>this is a string value
+    </stringValue>
+  </value>
+  <value>
+    <moneyValue number='true' currencyId="USD" text="123.45">104.95
+    </moneyValue>
+  </value>
+  <value>
+    <moneyValue currencyId="USD">104.95
+    </moneyValue>
+  </value>
+  <value>
+    <longValue>0</longValue>
+    <bool id='0'>true</bool>
+  </value>
+  <value>
+    <longValue>0</longValue>
+  </value>
+  <value>
+    <dateValue>2012-02-16T17:03:33.000-07:00</dateValue>
+  </value>
+  <value>
+    <stringValue>SmDZ8RlMIjDvlEW3KUibzj2Q</stringValue>
+  </value>
+  <value>
+    <text>42.42</text>
+  </value>
+</itemRecord>

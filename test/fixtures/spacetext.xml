@@ -1,0 +1,14 @@
+<doc>
+  <Column>
+    <Name>shit</Name>
+    <Value type="STRING">  abc
+asdf
+a </Value>
+
+  </Column>
+  <Column><Name>foo</Name><Value type="STRING"></Value></Column>
+  <Column><Name>foo2</Name><Value type="STRING" /></Column>
+  <Column><Name>bar</Name><Value type="STRING"> </Value></Column>
+  <Column PK="true"><Name>uid</Name><Value type="STRING">god</Value></Column>
+</doc>
+
