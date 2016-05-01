@@ -43,7 +43,8 @@
     "istanbul": "istanbul cover test/index.js && type coverage/lcov.info | coveralls",
     "testssss": "istanbul cover test/index.js",
     "test": "istanbul cover test/index.js && istanbul-coveralls",
-    "testnode": "node test/index.js",
+    "testnode": "node test/index.js ",
+    "repo_token": "WdSOeyvPl6URrHDAgWmLEruBOC2z4rL65",
     "jasmine": "jasmine JASMINE_CONFIG_PATH=jasmine.json",
     "jasmine-debug": "jasmine-node-debug JASMINE_CONFIG_PATH=jasmine.json",
     "jasmine-node": "jasmine-node test --autotest --watch"
