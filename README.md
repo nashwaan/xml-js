@@ -1,7 +1,7 @@
 ![Alt text](/logo.png?raw=true "Logo")
 
-[![Build Status](https://img.shields.io/travis/nashwaan/xml-js-json.svg?branch=master)](https://travis-ci.org/nashwaan/xml-js-json)
-[![Coverage Status](https://img.shields.io/travis/nashwaan/xml-js-json.svg?branch=master)](https://coveralls.io/github/nashwaan/xml-js-json?branch=master)
+[![Build Status](https://travis-ci.org/nashwaan/xml-js-json.svg?branch=master)](https://travis-ci.org/nashwaan/xml-js-json)
+[![Coverage Status](https://coveralls.io/repos/github/nashwaan/xml-js-json/badge.svg?branch=master)](https://coveralls.io/github/nashwaan/xml-js-json?branch=master)
 
 Convert XML text to Javascript object (and vice versa) or to JSON text (and vice versa):
 
