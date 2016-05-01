@@ -33,13 +33,16 @@
   "devDependencies": {
     "coveralls": "^2.11.9",
     "gulp": "^3.9.1",
+    "gulp-coveralls": "^0.1.4",
     "istanbul": "^0.4.3",
+    "istanbul-coveralls": "^1.0.3",
     "jasmine": "^2.4.1"
   },
   "scripts": {
     "prestart": "",
-    "istanbul": "istanbul cover test/index.js",
-    "test": "node test/index.js",
+    "istanbul": "istanbul cover test/index.js && type coverage\\lcov.info | coveralls",
+    "test": "istanbul cover test/index.js && istanbul-coveralls",
+    "testnode": "node test/index.js",
     "jasmine": "jasmine JASMINE_CONFIG_PATH=jasmine.json",
     "jasmine-debug": "jasmine-node-debug JASMINE_CONFIG_PATH=jasmine.json",
     "jasmine-node": "jasmine-node test --autotest --watch"

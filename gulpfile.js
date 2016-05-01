@@ -2,6 +2,12 @@
 'use strict';
 
 var gulp = require('gulp');
+var coveralls = require('gulp-coveralls');
+ 
+gulp.task('coveralls', function () {
+    gulp.src('coverage/lcov.info')
+        .pipe(coveralls());
+});
 
 gulp.task('test', function () {
     /*gulp.watch('lib/*.js').on('change', function (event) {
