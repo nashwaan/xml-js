@@ -28,7 +28,6 @@
   },
   "homepage": "https://github.com/nashwaan/xml-js-json#readme",
   "dependencies": {
-    "node-expat": "^2.3.13",
     "sax": "^1.2.1"
   },
   "devDependencies": {
