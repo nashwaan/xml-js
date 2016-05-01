@@ -40,7 +40,8 @@
   "scripts": {
     "prestart": "",
     "istanbul": "istanbul cover test/index.js",
-    "test": "node test/index.js",
+    "testss": "node test/index.js",
+    "test": "jasmine JASMINE_CONFIG_PATH=jasmine.json",
     "jasmine": "jasmine JASMINE_CONFIG_PATH=jasmine.json",
     "jasmine-debug": "jasmine-node-debug JASMINE_CONFIG_PATH=jasmine.json",
     "jasmine-node": "jasmine-node test --autotest --watch"
