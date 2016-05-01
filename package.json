@@ -31,7 +31,9 @@
     "sax": "^1.2.1"
   },
   "devDependencies": {
+    "coveralls": "^2.11.9",
     "gulp": "^3.9.1",
+    "istanbul": "^0.4.3",
     "jasmine": "^2.4.1"
   },
   "scripts": {
