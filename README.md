@@ -1,7 +1,7 @@
 ![Alt text](/logo.png?raw=true "Logo")
 
-[![Build Status](https://travis-ci.org/nashwaan/xml-js-json.svg?branch=master)](https://travis-ci.org/nashwaan/xml-js-json)
-[![Coverage Status](https://coveralls.io/repos/github/nashwaan/xml-js-json/badge.svg?branch=master)](https://coveralls.io/github/nashwaan/xml-js-json?branch=master)
+[![Build Status](https://travis-ci.org/nashwaan/xml-js.svg?branch=master)](https://travis-ci.org/nashwaan/xml-js)
+[![Coverage Status](https://coveralls.io/repos/github/nashwaan/xml-js/badge.svg?branch=master)](https://coveralls.io/github/nashwaan/xml-js?branch=master)
 
 Convert XML text to Javascript object (and vice versa) or to JSON text (and vice versa):
 
@@ -32,7 +32,7 @@ There are many XML to JavaScript/JSON converters out there, but could not satisf
 ## Installation
 
 ```
-npm install --save xml-js-json
+npm install --save xml-js
 ```
 
 ## API Reference
@@ -44,7 +44,7 @@ Depending on the size of the project, if it is small and simple enough the refer
 To perform tests on this project:
 
 ```
-cd node_modules/xml-js-json/test
+cd node_modules/xml-js/test
 npm test
 ```
 
@@ -52,7 +52,7 @@ npm test
 
 ### Reporting
 
-Use [this link](https://github.com/nashwaan/xml-js-json/issues) to report an issue or bug. Please include a sample code or Jasmine test spec where the code is failing.
+Use [this link](https://github.com/nashwaan/xml-js/issues) to report an issue or bug. Please include a sample code or Jasmine test spec where the code is failing.
 
 ### Contributing
 
@@ -60,4 +60,4 @@ If you want to add a feature or fix a bug, please fork the repository and make t
 
 ## License
 
-[MIT](https://github.com/nashwaan/xml-js-json/blob/master/LICENSE)
+[MIT](https://github.com/nashwaan/xml-js/blob/master/LICENSE)
