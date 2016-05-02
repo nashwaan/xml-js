@@ -45,8 +45,8 @@
     "istanbul": "istanbul cover test/index.js",
     "test": "istanbul cover test/index.js && istanbul-coveralls",
     "testnode": "node test/index.js ",
-    "jasmine": "jasmine JASMINE_CONFIG_PATH=jasmine.json",
-    "jasmine-debug": "jasmine-node-debug JASMINE_CONFIG_PATH=jasmine.json",
+    "jasmine": "jasmine JASMINE_CONFIG_PATH=./jasmine.json",
+    "jasmine-debug": "jasmine-node-debug JASMINE_CONFIG_PATH=./jasmine.json",
     "jasmine-node": "jasmine-node test --autotest --watch"
   }
 }
