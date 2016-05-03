@@ -10,12 +10,12 @@ describe('Testing js2xml.js:', function () {
     //var books = require('fs').readFileSync('test/fixtures/books.xml');
     
     var options = {};
-
+    
     tests.pop();
     //tests = [tests[5]];
-
+    
     beforeEach(function () {
-
+        
     });
     
     //console.log(js2xml({"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"element","name":"b","attributes":{}}]}]}, options));
@@ -30,5 +30,5 @@ describe('Testing js2xml.js:', function () {
         });
         
     });
-        
+    
 });

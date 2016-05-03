@@ -31,6 +31,7 @@
     "sax": "^1.2.1"
   },
   "devDependencies": {
+    "browserify": "^13.0.0",
     "coveralls": "^2.11.9",
     "gulp": "^3.9.1",
     "gulp-coveralls": "^0.1.4",
