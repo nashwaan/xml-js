@@ -1,8 +1,8 @@
 /*jslint node:true */
 /*global describe,it,expect,beforeEach*/
 
-var js2xml = require('../lib/js2xml');
-var tests = require('./test-items');
+var convert = require('../lib');
+var testItems = require('./test-items');
 
 describe('Testing js2xml.js:', function () {
     'use strict';
@@ -11,7 +11,7 @@ describe('Testing js2xml.js:', function () {
     
     var options = {};
     
-    tests.pop();
+    testItems.pop();
     //tests = [tests[5]];
     
     beforeEach(function () {
@@ -23,9 +23,9 @@ describe('Testing js2xml.js:', function () {
     
     describe('Using default options (result with 4 spaces indentation):', function () {
         
-        tests.forEach(function (test) {
+        testItems.forEach(function (test) {
             it(test.desc, function () {
-                expect(js2xml(test.js, options)).toEqual(test.xml);
+                expect(convert.js2xml(test.js, options)).toEqual(test.xml);
             });
         });
         
