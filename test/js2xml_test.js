@@ -12,6 +12,9 @@ describe('Testing js2xml.js:', function () {
     var options = {};
     
     testItems.pop();
+    testItems.pop();
+    testItems.pop();
+    testItems.pop();
     //tests = [tests[5]];
     
     beforeEach(function () {

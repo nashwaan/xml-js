@@ -7,6 +7,12 @@
     "type": "git",
     "url": "git+https://github.com/nashwaan/xml-js-json.git"
   },
+  "author": "Yousuf Almarzooqi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nashwaan/xml-js-json/issues"
+  },
+  "homepage": "https://github.com/nashwaan/xml-js-json#readme",
   "keywords": [
     "XML",
     "js",
@@ -21,33 +27,34 @@
     "parsing",
     "parser"
   ],
-  "author": "Yousuf Almarzooqi",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/nashwaan/xml-js-json/issues"
-  },
-  "homepage": "https://github.com/nashwaan/xml-js-json#readme",
   "dependencies": {
     "sax": "^1.2.1"
   },
   "devDependencies": {
-    "browserify": "^13.0.0",
-    "coveralls": "^2.11.9",
-    "gulp": "^3.9.1",
-    "gulp-coveralls": "^0.1.4",
+    "browser-sync": "latest",
     "istanbul": "^0.4.3",
-    "istanbul-coveralls": "^1.0.3",
-    "jasmine": "^2.4.1",
-    "shelljs": "^0.7.0"
+    "istanbul-coveralls": "latest",
+    "jasmine": "latest",
+    "npm-run-all": "latest",
+    "rimraf": "latest",
+    "watch": "latest",
+    "watchify": "latest"
   },
   "scripts": {
-    "prestart": "",
-    "istanbulcovrealls": "istanbul cover test/index.js && type cat coverage/lcov.info | coveralls",
-    "istanbul": "istanbul cover test/index.js",
-    "test": "istanbul cover test/index.js && istanbul-coveralls",
-    "testnode": "node test/index.js ",
+    "jasmine-manual": "node test/index.js",
     "jasmine": "jasmine JASMINE_CONFIG_PATH=./jasmine.json",
-    "jasmine-debug": "jasmine-node-debug JASMINE_CONFIG_PATH=./jasmine.json",
-    "jasmine-node": "jasmine-node test --autotest --watch"
+    "watch:jasmine": "watch \"npm run jasmine\" lib/ test/",
+    "bundle:jasmine": "watchify test/js2xml_test.js test/xml2js_test.js --verbose --list --outfile jasmine/bundle.js",
+    "live:jasmine": "browser-sync start --port 9991 --server jasmine/ --files jasmine/ --browser \"google chrome\" --no-ui --no-online",
+    "istanbul": "istanbul cover test/index.js",
+    "istanbul:coveralls": "npm run istanbul && istanbul-coveralls",
+    "watch:istanbul": "watch \"npm run istanbul\" lib/ test/",
+    "live:istanbul": "browser-sync start --port 9992 --server coverage/lcov-report/ --files coverage/lcov-report/ --browser \"google chrome\" --no-ui --no-online",
+    "live": "npm-run-all --parallel live:*",
+    "start": "npm-run-all --parallel bundle:jasmine watch:istanbul live:*",
+    "git:commit": "git commit -a -m 'auto commit'",
+    "git:push": "git push",
+    "deploy": "npm-run-all --serial git:push istanbul:coveralls",
+    "test": "npm run jasmine"
   }
 }

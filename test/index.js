@@ -5,8 +5,8 @@ var jasmine = new Jasmine();
 
 jasmine.loadConfigFile('./jasmine.json');
 
-jasmine.onComplete(function(passed) {
-    if(passed) {
+jasmine.onComplete(function (passed) {
+    if (passed) {
         console.log('All specs have passed');
     }
     else {
