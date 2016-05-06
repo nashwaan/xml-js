@@ -52,9 +52,9 @@
     "live:istanbul": "browser-sync start --port 9992 --server coverage/lcov-report/ --files coverage/lcov-report/ --browser \"google chrome\" --no-ui --no-online",
     "live": "npm-run-all --parallel live:*",
     "start": "npm-run-all --parallel bundle:jasmine watch:istanbul live:*",
-    "git:commit": "git commit -a -m \"auto commit\"",
+    "git:commit": "git commit -a -m \"Committed by npm script.\"",
     "git:push": "git push",
-    "deploy": "npm-run-all --serial git:push istanbul:coveralls",
+    "deploy": "npm-run-all --serial git:* istanbul:coveralls",
     "test": "npm run jasmine"
   }
 }
