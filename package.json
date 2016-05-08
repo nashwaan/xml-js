@@ -1,18 +1,18 @@
 {
-  "name": "xml-js-json",
+  "name": "xml-js",
   "version": "0.1.0",
   "description": "A convertor between XML text and Javascript object / JSON text.",
   "main": "main.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nashwaan/xml-js-json.git"
+    "url": "git+https://github.com/nashwaan/xml-js.git"
   },
   "author": "Yousuf Almarzooqi",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nashwaan/xml-js-json/issues"
+    "url": "https://github.com/nashwaan/xml-js/issues"
   },
-  "homepage": "https://github.com/nashwaan/xml-js-json#readme",
+  "homepage": "https://github.com/nashwaan/xml-js#readme",
   "keywords": [
     "XML",
     "js",
@@ -52,8 +52,8 @@
     "live:istanbul": "browser-sync start --port 9992 --server coverage/lcov-report/ --files coverage/lcov-report/ --browser \"google chrome\" --no-ui --no-online",
     "live": "npm-run-all --parallel live:*",
     "start": "npm-run-all --parallel bundle:jasmine watch:istanbul live:*",
-    "git:commit": "git commit -a -m \"Committed by npm script.\"",
-    "git:push": "git push",
+    "git:commit": "git add . && git commit -a -m \"Committed by npm script.\"",
+    "git:push": "git push origin master",
     "deploy": "npm-run-all --serial git:* istanbul:coveralls",
     "test": "npm run jasmine"
   }
