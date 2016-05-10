@@ -9,12 +9,9 @@ describe('Testing js2xml.js:', function () {
     
     //var books = require('fs').readFileSync('test/fixtures/books.xml');
     
-    var options = {};
+    var options;
     
-    testItems.pop();
-    testItems.pop();
-    testItems.pop();
-    testItems.pop();
+    //testItems.pop();
     //tests = [tests[5]];
     
     beforeEach(function () {
@@ -22,11 +19,23 @@ describe('Testing js2xml.js:', function () {
     });
     
     //console.log(js2xml({"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"element","name":"b","attributes":{}}]}]}, options));
-    //expect(js2xml(test.js, options)).toEqual(test.xml);
+    //expect(js2xml(test.js2, options)).toEqual(test.xml);
     
     describe('Using default options (result with 4 spaces indentation):', function () {
         
-        testItems.forEach(function (test) {
+        options = {};
+        testItems({singleLine: true}).forEach(function (test) {
+            it(test.desc, function () {
+                expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+            });
+        });
+        
+    });
+    
+    describe('Using 4 spaces indentation:', function () {
+        
+        options = {spaces: 2};
+        testItems({singleLine: true}).forEach(function (test) {
             it(test.desc, function () {
                 expect(convert.js2xml(test.js, options)).toEqual(test.xml);
             });
