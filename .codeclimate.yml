@@ -15,5 +15,8 @@ ratings:
   - "**.css"
   - "**.js"
 exclude_paths:
-  - test/
+  - _playground/
   - node_modules/
+  - coverage/
+  - jasmine/
+  - test/

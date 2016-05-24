@@ -34,6 +34,8 @@
     "biased-opener": "latest",
     "browser-sync": "latest",
     "codacy-coverage": "latest",
+    "codeclimate-test-reporter": "latest",
+    "cross-env": "latest",
     "globify": "latest",
     "istanbul": "^0.4.3",
     "istanbul-coveralls": "latest",
@@ -67,7 +69,8 @@
     "git:commit": "git add . && git commit -a -m \"Committed by npm script.\" && git push origin master",
     "git:push": "git push origin master",
     "deploy": "npm-run-all --serial istanbul:coveralls git:commit",
-    "codacy": "type coverage\\lcov.info | codacy-coverage ",
+    "codacy": "type coverage\\lcov.info | codacy-coverage",
+    "codeclimate": "cross-env CODECLIMATE_REPO_TOKEN=60848a077f9070acf358b0c7145f0a2698a460ddeca7d8250815e75aa4333f7d codeclimate-test-reporter < coverage\\lcov.info",
     "test": "npm run jasmine"
   }
 }
