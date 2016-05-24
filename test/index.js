@@ -1,7 +1,6 @@
 /*jslint node:true */
 
-var Jasmine = require('jasmine');
-var jasmine = new Jasmine();
+var jasmine = new (require('jasmine'))();
 
 jasmine.loadConfigFile('./jasmine.json');
 

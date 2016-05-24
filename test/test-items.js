@@ -26,18 +26,18 @@ var cases = [
     }, {
         desc: 'should convert 2 comments',
         xml: '<!-- \t Hello \t --><!-- \t World \t -->',
-        js1: {"_comment":" \t Hello \t \n \t World \t "},
+        js1: {"_comment":[" \t Hello \t "," \t World \t "]},
         js2: {"elements":[{"type":"comment","comment":" \t Hello \t "},{"type":"comment","comment":" \t World \t "}]},
     }, {
         desc: 'should convert cdata',
-        xml: '<![CDATA[ \t <foo>x</bar> \t ]]>',
-        js1: {"_cdata":" \t <foo>x</bar> \t "},
-        js2: {"elements":[{"type":"cdata","cdata":" \t <foo>x</bar> \t "}]},
+        xml: '<![CDATA[ \t <foo></bar> \t ]]>',
+        js1: {"_cdata":" \t <foo></bar> \t "},
+        js2: {"elements":[{"type":"cdata","cdata":" \t <foo></bar> \t "}]},
     }, {
         desc: 'should convert 2 cdata',
-        xml: '<![CDATA[ \t <foo>x</bar> \t ]]><![CDATA[ \t > < " and & \t ]]>',
-        js1: {"_cdata":" \t <foo>x</bar> \t \n \t > < \" and & \t "},
-        js2: {"elements":[{"type":"cdata","cdata":" \t <foo>x</bar> \t "},{"type":"cdata","cdata":" \t > < \" and & \t "}]},
+        xml: '<![CDATA[ \t data]]><![CDATA[< > " and & \t ]]>',
+        js1: {"_cdata":[" \t data\n< > \" and & \t "]},
+        js2: {"elements":[{"type":"cdata","cdata":" \t data"},{"type":"cdata","cdata":"< > \" and & \t "}]},
     }, {
         desc: 'should convert element',
         xml: '<a/>',
@@ -65,9 +65,9 @@ var cases = [
         js2: {"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":" \t Hi \t "}]}]},
     }, {
         desc: 'should convert multi-line text',
-        xml: '<a> \t Hi There \t </a>',
-        js1: {"a":{"_text":" \t Hi There \t "}},
-        js2: {"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":" \t Hi There \t "}]}]},
+        xml: '<a>  Hi \n There \t </a>',
+        js1: {"a":{"_text":"  Hi \n There \t "}},
+        js2: {"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":"  Hi \n There \t "}]}]},
     }, {
         desc: 'should convert nested elements',
         xml: '<a>\n\t<b/>\n</a>',
@@ -75,25 +75,45 @@ var cases = [
         js2: {"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"element","name":"b","attributes":{}}]}]},
     }, {
         desc: 'should convert 3 nested elements',
-        xml: '<a>\n\t<b>\n\t<c/>\n\t</b>\n</a>',
+        xml: '<a>\n\t<b>\n\t\t<c/>\n\t</b>\n</a>',
         js1: {"a":{"b":{"c":{}}}},
         js2: {"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"element","name":"b","attributes":{},"elements":[{"type":"element","name":"c","attributes":{}}]}]}]},
     }
 ];
     
 module.exports = function (options) {
-    var i, key, tests = [];
+    var i, tests = [];
     options = options || {};
     function applyOptions (obj) {
+        var key;
         if (obj instanceof Array) {
             obj.forEach(function (el) {
                 el = transform(el);
             });
         } else if (typeof obj === 'object') {
             for (key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                    obj[key] = transform(obj[key]);
+                if (key.indexOf('_') === 0 && obj[key] instanceof Array) {
+                    obj[key] = obj[key].reduce(function (res, el) {
+                        return (res === '' ? '' : res + '\n') + transform(el);
+                    }, '');
+                } else {
+                    if (key !== 'parent' && key !== '_parent') {
+                        obj[key] = transform(obj[key]);
+                    }
                 }
+                if (typeof obj[key] === 'object' && !(obj[key] instanceof Array)) {
+                    if (options.compact && options.addParent && key !== '_attributes') {
+                        if (options.compact) {obj[key]._parent = obj;} else {obj[key].parent = obj;}
+                    }
+                }
+            }
+            if (!options.compact && options.addParent && obj.elements) {
+                obj.elements.forEach(function (el) {
+                    el.parent = obj;
+                });
+            }
+            if (!options.compact && options.emptyChildren && obj.type === 'element' && !obj.elements) {
+                obj.elements = [];
             }
         }
         return obj;
@@ -111,9 +131,13 @@ module.exports = function (options) {
     }
     for (i = 0; i < cases.length; ++i) {
         tests.push({desc: cases[i].desc, xml: null, js: null});
-        if (options.singleLine) {
-            tests[i].xml = cases[i].xml.replace(/\r\n|\r|\n|^\s+/gm, '');
-        }
+        //tests[i].xml = options.singleLine ? cases[i].xml.replace(/\r\n|\r|\n|^\s+/gm, '') : cases[i].xml;
+        tests[i].xml = cases[i].xml;
+        if (!('spaces' in options) || options.spaces === 0) { tests[i].xml = tests[i].xml.replace(/>\n\t*/gm, '>'); }
+        if (options.ignoreText) { tests[i].xml = tests[i].xml.replace(/>([\s\S]*?)</gm, '><'); }
+        if (options.ignoreComment) { tests[i].xml = tests[i].xml.replace(/<!--.*?-->/gm, ''); }
+        if (options.ignoreCdata) { tests[i].xml = tests[i].xml.replace(/<!\[CDATA\[.*?\]\]>/gm, ''); }
+        if (options.fullTagEmptyElement) { tests[i].xml = tests[i].xml.replace('<a/>', '<a></a>').replace('<b/>', '<b></b>').replace('<c/>', '<c></c>').replace('/>', '></a>'); }
         if (options.compact) {
             tests[i].js = applyOptions(JSON.parse(JSON.stringify(cases[i].js1)));
         } else {

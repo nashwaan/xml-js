@@ -33,6 +33,7 @@
   "devDependencies": {
     "biased-opener": "latest",
     "browser-sync": "latest",
+    "codacy-coverage": "latest",
     "globify": "latest",
     "istanbul": "^0.4.3",
     "istanbul-coveralls": "latest",
@@ -66,6 +67,7 @@
     "git:commit": "git add . && git commit -a -m \"Committed by npm script.\" && git push origin master",
     "git:push": "git push origin master",
     "deploy": "npm-run-all --serial istanbul:coveralls git:commit",
+    "codacy": "type coverage\\lcov.info | codacy-coverage ",
     "test": "npm run jasmine"
   }
 }

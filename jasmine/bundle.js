@@ -120,7 +120,7 @@ module.exports = function (json, options) {
         json = json.toString();
     }
     var js = null;
-    if (typeof (json) == 'string') {
+    if (typeof (json) === 'string') {
         try {
             js = JSON.parse(json);
         } catch (e) {
@@ -251,13 +251,16 @@ function onDeclaration(declaration) {
     while (declaration.body) {
         var attribute = declaration.body.match(/([\w:-]+)\s*=\s*"([^"]*)"|'([^']*)'|(\w+)\s*/);
         if (!attribute) {
-            return;
+            break;
         }
         if (!currentElement[options.declarationKey][options.attributesKey]) {
             currentElement[options.declarationKey][options.attributesKey] = {};
         }
         currentElement[options.declarationKey][options.attributesKey][attribute[1]] = attribute[2];
         declaration.body = declaration.body.slice(attribute[0].length); // advance the string
+    }
+    if (options.addParent && options.compact) {
+        currentElement[options.declarationKey][options.parentKey] = currentElement;
     }
     //console.error('result[options.declarationKey]', result[options.declarationKey]);
 }
@@ -309,6 +312,9 @@ function onStartElement(name, attributes) {
 
 function onText(text) {
     //console.log('currentElement:', currentElement);
+    if (!text.trim()) {
+        return;
+    }
     if (options.trim) {
         text = text.trim();
     }
@@ -394,7 +400,7 @@ function onError(error) {
 }
 
 function sanitize(text) {
-    text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
 function coerce(value) {
@@ -420,11 +426,9 @@ var xml2js = require('./xml2js');
 module.exports = function(xml, options) {
     'use strict';
     var js = xml2js(xml, options), json, parentKey;
-    parentKey = options.nestedObjects ? '_parent' : 'parent';
-    if (options.addParent) {
-        json = JSON.stringify(js, function (k, v) {
-            return k === parentKey? '_' : v;
-        });
+    parentKey = 'compact' in options && options.compact ? '_parent' : 'parent';
+    if ('addParent' in options && options.addParent) {
+        json = JSON.stringify(js, function (k, v) { return k === parentKey? '_' : v; });
     } else {
         json = JSON.stringify(js);
     }
@@ -6662,10 +6666,10 @@ describe('Testing js2xml.js:', function () {
     //console.log(js2xml({"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"element","name":"b","attributes":{}}]}]}, options));
     //expect(js2xml(test.js2, options)).toEqual(test.xml);
     
-    describe('Using default options (result with 4 spaces indentation):', function () {
+    describe('No options supplied (fallback to defaults):', function () {
         
-        options = {};
-        testItems({singleLine: true}).forEach(function (test) {
+        var options = {};
+        testItems(options).forEach(function (test) {
             it(test.desc, function () {
                 expect(convert.js2xml(test.js, options)).toEqual(test.xml);
             });
@@ -6673,12 +6677,82 @@ describe('Testing js2xml.js:', function () {
         
     });
     
-    describe('Using 4 spaces indentation:', function () {
+    describe('options = {spaces: 0}', function () {
         
-        options = {spaces: 2};
-        testItems({singleLine: true}).forEach(function (test) {
+        describe('Options set to default values explicitly:', function () {
+            
+            var options = {spaces: 0, ignoreText: false, ignoreComment: false, ignoreCdata: false, fullTagEmptyElement: false};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+            
+        });
+        
+        describe('options = {spaces: 0}', function () {
+            
+            var options = {spaces: 0};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+            
+        });
+        
+        describe('options = {spaces: 0, ignoreText: true}', function () {
+            
+            var options = {spaces: 0, ignoreText: true};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+            
+        });
+        
+        describe('options = {spaces: 0, ignoreComment: true}', function () {
+            
+            var options = {spaces: 0, ignoreComment: true};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+            
+        });
+        
+        describe('options = {spaces: 0, ignoreCdata: true}', function () {
+            
+            var options = {spaces: 0, ignoreCdata: true};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+            
+        });
+        
+        describe('options = {spaces: 0, fullTagEmptyElement: true}', function () {
+            
+            var options = {spaces: 0, fullTagEmptyElement: true};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+            
+        });
+        
+    });
+    
+    describe('json2xml:', function () {
+        
+        var options = {};
+        testItems(options).forEach(function (test) {
             it(test.desc, function () {
-                expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                expect(convert.json2xml(JSON.stringify(test.js), options)).toEqual(test.xml);
             });
         });
         
@@ -6714,18 +6788,18 @@ var cases = [
     }, {
         desc: 'should convert 2 comments',
         xml: '<!-- \t Hello \t --><!-- \t World \t -->',
-        js1: {"_comment":" \t Hello \t \n \t World \t "},
+        js1: {"_comment":[" \t Hello \t "," \t World \t "]},
         js2: {"elements":[{"type":"comment","comment":" \t Hello \t "},{"type":"comment","comment":" \t World \t "}]},
     }, {
         desc: 'should convert cdata',
-        xml: '<![CDATA[ \t <foo>x</bar> \t ]]>',
-        js1: {"_cdata":" \t <foo>x</bar> \t "},
-        js2: {"elements":[{"type":"cdata","cdata":" \t <foo>x</bar> \t "}]},
+        xml: '<![CDATA[ \t <foo></bar> \t ]]>',
+        js1: {"_cdata":" \t <foo></bar> \t "},
+        js2: {"elements":[{"type":"cdata","cdata":" \t <foo></bar> \t "}]},
     }, {
         desc: 'should convert 2 cdata',
-        xml: '<![CDATA[ \t <foo>x</bar> \t ]]><![CDATA[ \t > < " and & \t ]]>',
-        js1: {"_cdata":" \t <foo>x</bar> \t \n \t > < \" and & \t "},
-        js2: {"elements":[{"type":"cdata","cdata":" \t <foo>x</bar> \t "},{"type":"cdata","cdata":" \t > < \" and & \t "}]},
+        xml: '<![CDATA[ \t data]]><![CDATA[< > " and & \t ]]>',
+        js1: {"_cdata":[" \t data\n< > \" and & \t "]},
+        js2: {"elements":[{"type":"cdata","cdata":" \t data"},{"type":"cdata","cdata":"< > \" and & \t "}]},
     }, {
         desc: 'should convert element',
         xml: '<a/>',
@@ -6753,9 +6827,9 @@ var cases = [
         js2: {"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":" \t Hi \t "}]}]},
     }, {
         desc: 'should convert multi-line text',
-        xml: '<a> \t Hi There \t </a>',
-        js1: {"a":{"_text":" \t Hi There \t "}},
-        js2: {"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":" \t Hi There \t "}]}]},
+        xml: '<a>  Hi \n There \t </a>',
+        js1: {"a":{"_text":"  Hi \n There \t "}},
+        js2: {"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":"  Hi \n There \t "}]}]},
     }, {
         desc: 'should convert nested elements',
         xml: '<a>\n\t<b/>\n</a>',
@@ -6763,25 +6837,45 @@ var cases = [
         js2: {"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"element","name":"b","attributes":{}}]}]},
     }, {
         desc: 'should convert 3 nested elements',
-        xml: '<a>\n\t<b>\n\t<c/>\n\t</b>\n</a>',
+        xml: '<a>\n\t<b>\n\t\t<c/>\n\t</b>\n</a>',
         js1: {"a":{"b":{"c":{}}}},
         js2: {"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"element","name":"b","attributes":{},"elements":[{"type":"element","name":"c","attributes":{}}]}]}]},
     }
 ];
     
 module.exports = function (options) {
-    var i, key, tests = [];
+    var i, tests = [];
     options = options || {};
     function applyOptions (obj) {
+        var key;
         if (obj instanceof Array) {
             obj.forEach(function (el) {
                 el = transform(el);
             });
         } else if (typeof obj === 'object') {
             for (key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                    obj[key] = transform(obj[key]);
+                if (key.indexOf('_') === 0 && obj[key] instanceof Array) {
+                    obj[key] = obj[key].reduce(function (res, el) {
+                        return (res === '' ? '' : res + '\n') + transform(el);
+                    }, '');
+                } else {
+                    if (key !== 'parent' && key !== '_parent') {
+                        obj[key] = transform(obj[key]);
+                    }
                 }
+                if (typeof obj[key] === 'object' && !(obj[key] instanceof Array)) {
+                    if (options.compact && options.addParent && key !== '_attributes') {
+                        if (options.compact) {obj[key]._parent = obj;} else {obj[key].parent = obj;}
+                    }
+                }
+            }
+            if (!options.compact && options.addParent && obj.elements) {
+                obj.elements.forEach(function (el) {
+                    el.parent = obj;
+                });
+            }
+            if (!options.compact && options.emptyChildren && obj.type === 'element' && !obj.elements) {
+                obj.elements = [];
             }
         }
         return obj;
@@ -6799,9 +6893,13 @@ module.exports = function (options) {
     }
     for (i = 0; i < cases.length; ++i) {
         tests.push({desc: cases[i].desc, xml: null, js: null});
-        if (options.singleLine) {
-            tests[i].xml = cases[i].xml.replace(/\r\n|\r|\n|^\s+/gm, '');
-        }
+        //tests[i].xml = options.singleLine ? cases[i].xml.replace(/\r\n|\r|\n|^\s+/gm, '') : cases[i].xml;
+        tests[i].xml = cases[i].xml;
+        if (!('spaces' in options) || options.spaces === 0) { tests[i].xml = tests[i].xml.replace(/>\n\t*/gm, '>'); }
+        if (options.ignoreText) { tests[i].xml = tests[i].xml.replace(/>([\s\S]*?)</gm, '><'); }
+        if (options.ignoreComment) { tests[i].xml = tests[i].xml.replace(/<!--.*?-->/gm, ''); }
+        if (options.ignoreCdata) { tests[i].xml = tests[i].xml.replace(/<!\[CDATA\[.*?\]\]>/gm, ''); }
+        if (options.fullTagEmptyElement) { tests[i].xml = tests[i].xml.replace('<a/>', '<a></a>').replace('<b/>', '<b></b>').replace('<c/>', '<c></c>').replace('/>', '></a>'); }
         if (options.compact) {
             tests[i].js = applyOptions(JSON.parse(JSON.stringify(cases[i].js1)));
         } else {
@@ -6827,34 +6925,182 @@ describe('Testing xml2js.js:', function () {
     
     describe('No options supplied (fallback to defaults):', function () {
         
-        var options;
-        testItems({singleLine: true}).forEach(function (test) {
+        var options = {};
+        testItems(options).forEach(function (test) {
             it(test.desc, function () {
-                console.log(options);
                 expect(convert.xml2js(test.xml, options)).toEqual(test.js);
             });
         });
         
     });
     
-    describe('Options set to default values explicitly:', function () {
+    describe('options = {compact: false}', function () {
         
-        var options = {compact: false, emptyChildren: false, addParent: false, trim: false, sanitize: false};
-        testItems({singleLine: true}).forEach(function (test) {
-            it(test.desc, function () {
-                console.log(options);
-                expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+        describe('Options set to default values explicitly:', function () {
+            
+            var options = {singleLine: false, compact: false, trim: false, sanitize: false, nativeType: false, emptyChildren: false, addParent: false};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
             });
+            
+        });
+        
+        describe('options = {compact: false}', function () {
+            
+            var options = {compact: false};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+            
+        });
+        
+        describe('options = {compact: false, trim: true}', function () {
+            
+            var options = {compact: false, trim: true};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+            
+        });
+        
+        describe('options = {compact: false, sanitize: true}', function () {
+            
+            var options = {compact: false, sanitize: true};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+            
+        });
+        
+        describe('options = {compact: false, nativeType: true}', function () {
+            
+            var options = {compact: false, nativeType: true};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+            
+        });
+        
+        describe('options = {compact: false, emptyChildren: true}', function () {
+            
+            var options = {compact: false, emptyChildren: true};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+            
+        });
+        
+        describe('options = {compact: false, addParent: true}', function () {
+            
+            var options = {compact: false, addParent: true};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+            
         });
         
     });
     
-    describe('Options set to compact js object:', function () {
+    describe('options = {compact: true}', function () {
         
-        var options = {compact: true};
-        testItems({singleLine: true, compact: true}).forEach(function (test) {
+        describe('Options set to default values explicitly:', function () {
+            
+            var options = {compact: true, trim: false, sanitize: false, nativeType: false, emptyChildren: false, addParent: false};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+            
+        });
+        
+        describe('options = {compact: true}', function () {
+            
+            var options = {compact: true};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+            
+        });
+        
+        describe('options = {compact: true, trim: true}', function () {
+            
+            var options = {compact: true, trim: true};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+            
+        });
+        
+        describe('options = {compact: true, sanitize: true}', function () {
+            
+            var options = {compact: true, sanitize: true};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+            
+        });
+        
+        describe('options = {compact: true, nativeType: true}', function () {
+            
+            var options = {compact: true, nativeType: true};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+            
+        });
+        
+        describe('options = {compact: true, emptyChildren: true}', function () {
+            
+            var options = {compact: true, emptyChildren: true};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+            
+        });
+        
+        describe('options = {compact: true, addParent: true}', function () {
+            
+            var options = {compact: true, addParent: true};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+            
+        });
+        
+    });
+    
+    describe('options = {trim: true}', function () {
+        
+        var options = {trim: true};
+        testItems({trim: true}).forEach(function (test) {
             it(test.desc, function () {
-                console.log(options);
                 expect(convert.xml2js(test.xml, options)).toEqual(test.js);
             });
         });
@@ -6866,18 +7112,41 @@ describe('Testing xml2js.js:', function () {
         var options = {trim: true};
         
         it('trim text of element', function () {
-            console.log(options);
             expect(convert.xml2js('<a> hi \n </a>', options)).toEqual({"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":"hi"}]}]});
         });
         
         it('trim text of attribute', function () {
-            console.log(options);
             expect(convert.xml2js('<a x=" y \n " />', options)).toEqual({"elements":[{"type":"element","name":"a","attributes":{x:"y"}}]});
         });
         
         it('trim text of comment', function () {
-            console.log(options);
             expect(convert.xml2js('<!-- hi \n  -->', options)).toEqual({"elements":[{"type":"comment","comment":"hi"}]});
+        });
+        
+    });
+    
+    describe('xml2json:', function () {
+        
+        describe('No options supplied (fallback to defaults):', function () {
+            
+            var options = {};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2json(test.xml, options)).toEqual(JSON.stringify(test.js));
+                });
+            });
+            
+        });
+        
+        describe('options = {compact: true, addParent: true}:', function () {
+            
+            var options = {onlyItem:3, compact: true, addParent: true};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2json(test.xml, options)).toBe(JSON.stringify(test.js, function (k, v) { return k === '_parent'? '_' : v; }));
+                });
+            });
+            
         });
         
     });
