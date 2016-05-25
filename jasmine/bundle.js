@@ -10,6 +10,12 @@ module.exports = {
 },{"./js2xml":2,"./json2xml":3,"./xml2js":4,"./xml2json":5}],2:[function(require,module,exports){
 /*jslint node:true */
 
+function checkOptionExist (item, options) {
+    if (!(item in options) || typeof options[item] !== 'boolean') {
+        options[item] = false;
+    }
+}
+
 function validateOptions (userOptions) {
     var key, options = {};
     for (key in userOptions) {
@@ -17,24 +23,16 @@ function validateOptions (userOptions) {
             options[key] = userOptions[key];
         }
     }
-    if (!('spaces' in options) || (typeof options.spaces !== 'string' || isNaN(parseInt(options.spaces)))) {
+    if (!('spaces' in options) || (typeof options.spaces !== 'string' || isNaN(parseInt(options.spaces, 10)))) {
         options.spaces = 0;
     }
-    if (!isNaN(parseInt(options.spaces))) {
+    if (!isNaN(parseInt(options.spaces, 10))) {
         options.spaces = Array(options.spaces + 1).join(' ');
     }
-    if (!('ignoreText' in options) || typeof options.ignoreText !== 'boolean') {
-        options.ignoreText = false;
-    }
-    if (!('ignoreComment' in options) || typeof options.ignoreComment !== 'boolean') {
-        options.ignoreComment = false;
-    }
-    if (!('ignoreCdata' in options) || typeof options.ignoreCdata !== 'boolean') {
-        options.ignoreCdata = false;
-    }
-    if (!('fullTagEmptyElement' in options) || typeof options.fullTagEmptyElement !== 'boolean') {
-        options.fullTagEmptyElement = false;
-    }
+    checkOptionExist('ignoreText', options);
+    checkOptionExist('ignoreComment', options);
+    checkOptionExist('ignoreCdata', options);
+    checkOptionExist('fullTagEmptyElement', options);
     return options;
 }
 
@@ -142,6 +140,18 @@ var options;
 var pureJsParser = true;
 var currentElement;
 
+function checkOptionExist (item, options) {
+    if (!(item in options) || typeof options[item] !== 'boolean') {
+        options[item] = false;
+    }
+}
+
+function checkKeyExist (key, options) {
+    if (!(key + 'Key' in options) || typeof options[key + 'Key'] !== 'string') {
+        options[key + 'Key'] = options.compact ? '_' + key : key;
+    }
+}
+
 function validateOptions (userOptions) {
     var key, options = {};
     for (key in userOptions) {
@@ -149,51 +159,21 @@ function validateOptions (userOptions) {
             options[key] = userOptions[key];
         }
     }
-    if (!('compact' in options) || typeof options.compact !== 'boolean') {
-        options.compact = false;
-    }
-    if (!('emptyChildren' in options) || typeof options.emptyChildren !== 'boolean') {
-        options.emptyChildren = false;
-    }
-    if (!('addParent' in options) || typeof options.addParent !== 'boolean') {
-        options.addParent = false;
-    }
-    if (!('trim' in options) || typeof options.trim !== 'boolean') {
-        options.trim = false;
-    }
-    if (!('nativeType' in options) || typeof options.nativeType !== 'boolean') {
-        options.nativeType = false;
-    }
-    if (!('sanitize' in options) || typeof options.sanitize !== 'boolean') {
-        options.sanitize = false;
-    }
-    if (!('declarationKey' in options) || typeof options.declarationKey !== 'string') {
-        options.declarationKey = options.compact ? '_declaration' : 'declaration';
-    }
-    if (!('attributesKey' in options) || typeof options.attributesKey !== 'string') {
-        options.attributesKey = options.compact ? '_attributes' : 'attributes';
-    }
-    if (!('textKey' in options) || typeof options.textKey !== 'string') {
-        options.textKey = options.compact ? '_text' : 'text';
-    }
-    if (!('commentKey' in options) || typeof options.commentKey !== 'string') {
-        options.commentKey = options.compact ? '_comment' : 'comment';
-    }
-    if (!('cdataKey' in options) || typeof options.cdataKey !== 'string') {
-        options.cdataKey = options.compact ? '_cdata' : 'cdata';
-    }
-    if (!('typeKey' in options) || typeof options.typeKey !== 'string') {
-        options.typeKey = options.compact ? '_type' : 'type';
-    }
-    if (!('nameKey' in options) || typeof options.nameKey !== 'string') {
-        options.nameKey = options.compact ? '_name' : 'name';
-    }
-    if (!('elementsKey' in options) || typeof options.elementsKey !== 'string') {
-        options.elementsKey = options.compact ? '_elements' : 'elements';
-    }
-    if (!('parentKey' in options) || typeof options.parentKey !== 'string') {
-        options.parentKey = options.compact ? '_parent' : 'parent';
-    }
+    checkOptionExist('compact', options);
+    checkOptionExist('emptyChildren', options);
+    checkOptionExist('addParent', options);
+    checkOptionExist('trim', options);
+    checkOptionExist('nativeType', options);
+    checkOptionExist('sanitize', options);
+    checkKeyExist('declaration', options);
+    checkKeyExist('attributes', options);
+    checkKeyExist('text', options);
+    checkKeyExist('comment', options);
+    checkKeyExist('cdata', options);
+    checkKeyExist('type', options);
+    checkKeyExist('name', options);
+    checkKeyExist('elements', options);
+    checkKeyExist('parent', options);
     return options;
 }
 
@@ -243,7 +223,7 @@ module.exports = function(xml, userOptions) {
 
 };
 
-function onDeclaration(declaration) {
+function onDeclaration (declaration) {
     if (currentElement[options.declarationKey]) {
         return;
     }
@@ -265,7 +245,7 @@ function onDeclaration(declaration) {
     //console.error('result[options.declarationKey]', result[options.declarationKey]);
 }
 
-function onStartElement(name, attributes) {
+function onStartElement (name, attributes) {
     var key;
     if (typeof name === 'object') {
         attributes = name.attributes;
@@ -310,7 +290,7 @@ function onStartElement(name, attributes) {
     //console.log('startElement:', name, attributes);
 }
 
-function onText(text) {
+function onText (text) {
     //console.log('currentElement:', currentElement);
     if (!text.trim()) {
         return;
@@ -324,20 +304,7 @@ function onText(text) {
     if (options.sanitize) {
         text = sanitize(text);
     }
-    if (options.compact) {
-        currentElement[options.textKey] = (currentElement[options.textKey] ? currentElement[options.textKey] + '\n' : '') + text;
-    } else {
-        if (!currentElement[options.elementsKey]) {
-            currentElement[options.elementsKey] = [];
-        }
-        var element = {};
-        element[options.typeKey] = 'text';
-        element[options.textKey] = text;
-        if (options.addParent) {
-            element[options.parentKey] = currentElement;
-        }
-        currentElement[options.elementsKey].push(element);
-    }
+    addField('text', text, options);
     //console.log('text for current element name "' + currentElement.name + '"', text);
 }
 
@@ -348,20 +315,7 @@ function onComment(comment) {
     if (options.sanitize) {
         comment = sanitize(comment);
     }
-    if (options.compact) {
-        currentElement[options.commentKey] = (currentElement[options.commentKey] ? currentElement[options.commentKey] + '\n' : '') + comment;
-    } else {
-        if (!currentElement[options.elementsKey]) {
-            currentElement[options.elementsKey] = [];
-        }
-        var element = {};
-        element[options.typeKey] = 'comment';
-        element[options.commentKey] = comment;
-        if (options.addParent) {
-            element[options.parentKey] = currentElement;
-        }
-        currentElement[options.elementsKey].push(element);
-    }
+    addField('comment', comment, options);
     //console.log('comment', comment);
 }
 
@@ -374,36 +328,23 @@ function onEndElement (name) {
     //console.log('endElement', name);
 }
 
-function onCdata(cdata) {
+function onCdata (cdata) {
     if (options.trim) {
         cdata = cdata.trim();
     }
-    if (options.compact) {
-        currentElement[options.cdataKey] = (currentElement[options.cdataKey] ? currentElement[options.cdataKey] + '\n' : '') + cdata;
-    } else {
-        if (!currentElement[options.elementsKey]) {
-            currentElement[options.elementsKey] = [];
-        }
-        var element = {};
-        element[options.typeKey] = 'cdata';
-        element[options.cdataKey] = cdata;
-        if (options.addParent) {
-            element[options.parentKey] = currentElement;
-        }
-        currentElement[options.elementsKey].push(element);
-    }
+    addField('cdata', cdata, options);
     //console.error('cdata', cdata);
 }
 
-function onError(error) {
+function onError (error) {
     console.error('error', error);
 }
 
-function sanitize(text) {
+function sanitize (text) {
     return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
-function coerce(value) {
+function coerce (value) {
     if (value.trim() === '') {
         return value;
     }
@@ -418,6 +359,23 @@ function coerce(value) {
         return false;
     }
     return value;
+}
+
+function addField (type, value, options) {
+    if (options.compact) {
+        currentElement[options[type + 'Key']] = (currentElement[options[type + 'Key']] ? currentElement[options[type + 'Key']] + '\n' : '') + value;
+    } else {
+        if (!currentElement[options.elementsKey]) {
+            currentElement[options.elementsKey] = [];
+        }
+        var element = {};
+        element[options.typeKey] = type;
+        element[options[type + 'Key']] = value;
+        if (options.addParent) {
+            element[options.parentKey] = currentElement;
+        }
+        currentElement[options.elementsKey].push(element);
+    }
 }
 },{"sax":27}],5:[function(require,module,exports){
 /*jslint node:true */
