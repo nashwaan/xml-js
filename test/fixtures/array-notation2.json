@@ -1,0 +1,47 @@
+{
+    "elements": [
+        {
+            "type": "element",
+            "name": "abcd",
+            "attributes": {},
+            "elements": [
+                {
+                    "type": "element",
+                    "name": "efg",
+                    "attributes": {},
+                    "elements": [
+                        {
+                            "type": "element",
+                            "name": "hijk",
+                            "attributes": {},
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "qrstuv"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "element",
+                            "name": "hijk",
+                            "attributes": {},
+                            "elements": [
+                                {
+                                    "type": "element",
+                                    "name": "lmnop",
+                                    "attributes": {},
+                                    "elements": [
+                                        {
+                                            "type": "text",
+                                            "text": "wxyz"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

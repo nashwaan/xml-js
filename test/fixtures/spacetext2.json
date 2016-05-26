@@ -1,0 +1,150 @@
+{
+    "elements": [
+        {
+            "type": "element",
+            "name": "doc",
+            "attributes": {},
+            "elements": [
+                {
+                    "type": "element",
+                    "name": "Column",
+                    "attributes": {},
+                    "elements": [
+                        {
+                            "type": "element",
+                            "name": "Name",
+                            "attributes": {},
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "shit"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "element",
+                            "name": "Value",
+                            "attributes": {
+                                "type": "STRING"
+                            },
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "  abc\r\nasdf\r\na "
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "element",
+                    "name": "Column",
+                    "attributes": {},
+                    "elements": [
+                        {
+                            "type": "element",
+                            "name": "Name",
+                            "attributes": {},
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "foo"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "element",
+                            "name": "Value",
+                            "attributes": {
+                                "type": "STRING"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "element",
+                    "name": "Column",
+                    "attributes": {},
+                    "elements": [
+                        {
+                            "type": "element",
+                            "name": "Name",
+                            "attributes": {},
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "foo2"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "element",
+                            "name": "Value",
+                            "attributes": {
+                                "type": "STRING"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "element",
+                    "name": "Column",
+                    "attributes": {},
+                    "elements": [
+                        {
+                            "type": "element",
+                            "name": "Name",
+                            "attributes": {},
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "bar"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "element",
+                            "name": "Value",
+                            "attributes": {
+                                "type": "STRING"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "element",
+                    "name": "Column",
+                    "attributes": {
+                        "PK": "true"
+                    },
+                    "elements": [
+                        {
+                            "type": "element",
+                            "name": "Name",
+                            "attributes": {},
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "uid"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "element",
+                            "name": "Value",
+                            "attributes": {
+                                "type": "STRING"
+                            },
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "god"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

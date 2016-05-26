@@ -1,0 +1,194 @@
+{
+    "elements": [
+        {
+            "type": "element",
+            "name": "itemRecord",
+            "attributes": {},
+            "elements": [
+                {
+                    "type": "element",
+                    "name": "value",
+                    "attributes": {},
+                    "elements": [
+                        {
+                            "type": "element",
+                            "name": "longValue",
+                            "attributes": {},
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "12345"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "element",
+                    "name": "value",
+                    "attributes": {},
+                    "elements": [
+                        {
+                            "type": "element",
+                            "name": "stringValue",
+                            "attributes": {
+                                "number": "false"
+                            },
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "this is a string value\r\n    "
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "element",
+                    "name": "value",
+                    "attributes": {},
+                    "elements": [
+                        {
+                            "type": "element",
+                            "name": "moneyValue",
+                            "attributes": {
+                                "number": "true",
+                                "currencyId": "USD",
+                                "text": "123.45"
+                            },
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "104.95\r\n    "
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "element",
+                    "name": "value",
+                    "attributes": {},
+                    "elements": [
+                        {
+                            "type": "element",
+                            "name": "moneyValue",
+                            "attributes": {
+                                "currencyId": "USD"
+                            },
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "104.95\r\n    "
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "element",
+                    "name": "value",
+                    "attributes": {},
+                    "elements": [
+                        {
+                            "type": "element",
+                            "name": "longValue",
+                            "attributes": {},
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "0"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "element",
+                            "name": "bool",
+                            "attributes": {
+                                "id": "0"
+                            },
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "true"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "element",
+                    "name": "value",
+                    "attributes": {},
+                    "elements": [
+                        {
+                            "type": "element",
+                            "name": "longValue",
+                            "attributes": {},
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "0"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "element",
+                    "name": "value",
+                    "attributes": {},
+                    "elements": [
+                        {
+                            "type": "element",
+                            "name": "dateValue",
+                            "attributes": {},
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "2012-02-16T17:03:33.000-07:00"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "element",
+                    "name": "value",
+                    "attributes": {},
+                    "elements": [
+                        {
+                            "type": "element",
+                            "name": "stringValue",
+                            "attributes": {},
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "SmDZ8RlMIjDvlEW3KUibzj2Q"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "element",
+                    "name": "value",
+                    "attributes": {},
+                    "elements": [
+                        {
+                            "type": "element",
+                            "name": "text",
+                            "attributes": {},
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "42.42"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

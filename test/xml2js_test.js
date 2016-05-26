@@ -9,6 +9,17 @@ describe('Testing xml2js.js:', function () {
     
     //var books = require('fs').readFileSync('test/fixtures/books.xml');
     
+    /*describe('No options supplied (fallback to defaults):', function () {
+        
+        var options = {};
+        testItems(options).forEach(function (test) {
+            it(test.desc, function () {
+                expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+            });
+        });
+        
+    });*/
+    
     describe('No options supplied (fallback to defaults):', function () {
         
         var options = {};

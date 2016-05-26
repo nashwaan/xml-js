@@ -1,0 +1,20 @@
+{
+    "elements": [
+        {
+            "type": "element",
+            "name": "parent",
+            "attributes": {
+                "parent_property": "bar"
+            },
+            "elements": [
+                {
+                    "type": "element",
+                    "name": "child",
+                    "attributes": {
+                        "child_property": "foo"
+                    }
+                }
+            ]
+        }
+    ]
+}

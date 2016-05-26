@@ -1,0 +1,68 @@
+{
+    "itemRecord": {
+        "value": [
+            {
+                "longValue": {
+                    "_text": "12345"
+                }
+            },
+            {
+                "stringValue": {
+                    "_attributes": {
+                        "number": "false"
+                    },
+                    "_text": "this is a string value\r\n    "
+                }
+            },
+            {
+                "moneyValue": {
+                    "_attributes": {
+                        "number": "true",
+                        "currencyId": "USD",
+                        "text": "123.45"
+                    },
+                    "_text": "104.95\r\n    "
+                }
+            },
+            {
+                "moneyValue": {
+                    "_attributes": {
+                        "currencyId": "USD"
+                    },
+                    "_text": "104.95\r\n    "
+                }
+            },
+            {
+                "longValue": {
+                    "_text": "0"
+                },
+                "bool": {
+                    "_attributes": {
+                        "id": "0"
+                    },
+                    "_text": "true"
+                }
+            },
+            {
+                "longValue": {
+                    "_text": "0"
+                }
+            },
+            {
+                "dateValue": {
+                    "_text": "2012-02-16T17:03:33.000-07:00"
+                }
+            },
+            {
+                "stringValue": {
+                    "_text": "SmDZ8RlMIjDvlEW3KUibzj2Q"
+                }
+            },
+            {
+                "text": {
+                    "_text": "42.42"
+                }
+            }
+        ]
+    }
+}

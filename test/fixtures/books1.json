@@ -1,0 +1,47 @@
+{
+    "_declaration": {
+        "_attributes": {
+            "version": "1.0",
+            "encoding": "utf-8"
+        }
+    },
+    "soapenv:Envelope": {
+        "_attributes": {
+            "xmlns:soapenv": "http://schemas.xmlsoap.org/soap/envelope/",
+            "xmlns": "urn:enterprise.soap.sforce.com"
+        },
+        "soapenv:Body": {
+            "_attributes": {
+                "width": "123"
+            },
+            "createResponse": {
+                "result": [
+                    {
+                        "id": {
+                            "_text": "003D000000OY9omIAD"
+                        },
+                        "success": {
+                            "_text": "true"
+                        }
+                    },
+                    {
+                        "id": {
+                            "_text": "001D000000HTK3aIAH"
+                        },
+                        "success": {
+                            "_text": "true"
+                        }
+                    }
+                ],
+                "MOREresult": {
+                    "id": {
+                        "_text": "001D000000HTK3aIAH"
+                    },
+                    "success": {
+                        "_text": "true"
+                    }
+                }
+            }
+        }
+    }
+}

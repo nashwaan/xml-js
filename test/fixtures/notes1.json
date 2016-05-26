@@ -1,0 +1,23 @@
+{
+    "_declaration": {
+        "_attributes": {
+            "version": "1.0",
+            "encoding": "utf-8"
+        }
+    },
+    "note": {
+        "_attributes": {
+            "importance": "high",
+            "logged": "true"
+        },
+        "_text": "\r\n    Watch out!\r\n    ",
+        "time": [
+            {
+                "_text": "11:00 am"
+            },
+            {
+                "_text": "11:30 am"
+            }
+        ]
+    }
+}

@@ -1,0 +1,46 @@
+{
+    "declaration": {
+        "attributes": {
+            "version": "1.0",
+            "encoding": "utf-8"
+        }
+    },
+    "elements": [
+        {
+            "type": "element",
+            "name": "note",
+            "attributes": {
+                "importance": "high",
+                "logged": "true"
+            },
+            "elements": [
+                {
+                    "type": "text",
+                    "text": "\r\n    Watch out!\r\n    "
+                },
+                {
+                    "type": "element",
+                    "name": "time",
+                    "attributes": {},
+                    "elements": [
+                        {
+                            "type": "text",
+                            "text": "11:00 am"
+                        }
+                    ]
+                },
+                {
+                    "type": "element",
+                    "name": "time",
+                    "attributes": {},
+                    "elements": [
+                        {
+                            "type": "text",
+                            "text": "11:30 am"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

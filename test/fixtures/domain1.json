@@ -1,0 +1,110 @@
+{
+    "domain": {
+        "_attributes": {
+            "type": "qemu"
+        },
+        "name": {
+            "_text": "QEmu-fedora-i686"
+        },
+        "uuid": {
+            "_text": "c7a5fdbd-cdaf-9455-926a-d65c16db1809"
+        },
+        "memory": {
+            "_text": "219200"
+        },
+        "currentMemory": {
+            "_text": "219200"
+        },
+        "vcpu": {
+            "_text": "2"
+        },
+        "os": {
+            "type": {
+                "_attributes": {
+                    "arch": "i686",
+                    "machine": "pc"
+                },
+                "_text": "hvm"
+            },
+            "boot": {
+                "_attributes": {
+                    "dev": "cdrom"
+                }
+            }
+        },
+        "devices": {
+            "emulator": {
+                "_text": "/usr/bin/qemu-system-x86_64"
+            },
+            "disk": [
+                {
+                    "_attributes": {
+                        "type": "file",
+                        "device": "cdrom"
+                    },
+                    "source": {
+                        "_attributes": {
+                            "file": "/home/user/boot.iso"
+                        }
+                    },
+                    "target": {
+                        "_attributes": {
+                            "dev": "hdc"
+                        }
+                    },
+                    "readonly": {}
+                },
+                {
+                    "_attributes": {
+                        "type": "file",
+                        "device": "disk"
+                    },
+                    "source": {
+                        "_attributes": {
+                            "file": "/home/user/fedora.img"
+                        }
+                    },
+                    "target": {
+                        "_attributes": {
+                            "dev": "hda"
+                        }
+                    }
+                }
+            ],
+            "interface": {
+                "_attributes": {
+                    "type": "network"
+                },
+                "source": {
+                    "_attributes": {
+                        "network": "default"
+                    }
+                }
+            },
+            "graphics": {
+                "_attributes": {
+                    "type": "vnc",
+                    "port": "-1"
+                }
+            }
+        },
+        "ah": [
+            {
+                "_attributes": {
+                    "type": "rare",
+                    "foo": "bar"
+                },
+                "_text": "cosa1"
+            },
+            {
+                "_attributes": {
+                    "type": "normal"
+                },
+                "_text": "cosa2"
+            },
+            {
+                "_text": "cosa3"
+            }
+        ]
+    }
+}

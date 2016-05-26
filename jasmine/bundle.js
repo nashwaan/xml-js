@@ -2,6 +2,15 @@
 /*jslint node:true */
 
 module.exports = {
+    copyOptions: function (options) {
+        var key, copy = {};
+        for (key in options) {
+            if (options.hasOwnProperty(key)) {
+                copy[key] = options[key];
+            }
+        }
+        return copy;
+    },
     checkOptionExist: function (item, options) {
         if (!(item in options) || typeof options[item] !== 'boolean') {
             options[item] = false;
@@ -28,12 +37,7 @@ module.exports = {
 var common = require('./common');
 
 function validateOptions (userOptions) {
-    var key, options = {};
-    for (key in userOptions) {
-        if (userOptions.hasOwnProperty(key)) {
-            options[key] = userOptions[key];
-        }
-    }
+    var options = common.copyOptions(userOptions);
     if (!('spaces' in options) || (typeof options.spaces !== 'string' || isNaN(parseInt(options.spaces, 10)))) {
         options.spaces = 0;
     }
@@ -153,12 +157,7 @@ var pureJsParser = true;
 var currentElement;
 
 function validateOptions (userOptions) {
-    var key, options = {};
-    for (key in userOptions) {
-        if (userOptions.hasOwnProperty(key)) {
-            options[key] = userOptions[key];
-        }
-    }
+    options = common.copyOptions(userOptions);
     common.checkOptionExist('compact', options);
     common.checkOptionExist('emptyChildren', options);
     common.checkOptionExist('addParent', options);
@@ -246,7 +245,7 @@ function onDeclaration (declaration) {
 }
 
 function onStartElement (name, attributes) {
-    var key;
+    var key, element;
     if (typeof name === 'object') {
         attributes = name.attributes;
         name = name.name;
@@ -259,24 +258,30 @@ function onStartElement (name, attributes) {
         }
     }
     if (options.compact) {
+        element = {};
+        if (attributes && Object.keys(attributes).length) {
+            element[options.attributesKey] = {};
+            for (key in attributes) {
+                if (attributes.hasOwnProperty(key)) {
+                    element[options.attributesKey][key] = attributes[key];
+                }
+            }
+        }
+        element[options.parentKey] = currentElement;
         if (!(name in currentElement)) {
-            currentElement[name] = {};
-            if (attributes && Object.keys(attributes).length) {
-                currentElement[name][options.attributesKey] = {};
+            currentElement[name] = element;
+        } else {
+            if (!(currentElement[name] instanceof Array)) {
+                currentElement[name] = [currentElement[name]];
             }
-            currentElement[name][options.parentKey] = currentElement;
+            currentElement[name].push(element);
         }
-        for (key in attributes) {
-            if (attributes.hasOwnProperty(key)) {
-                currentElement[name][options.attributesKey][key] = attributes[key];
-            }
-        }
-        currentElement = currentElement[name];
+        currentElement = element;
     } else {
         if (!currentElement[options.elementsKey]) {
             currentElement[options.elementsKey] = [];
         }
-        var element = {};
+        element = {};
         element[options.typeKey] = 'element';
         element[options.nameKey] = name;
         element[options.attributesKey] = attributes;
@@ -285,7 +290,7 @@ function onStartElement (name, attributes) {
             element[options.elementsKey] = [];
         }
         currentElement[options.elementsKey].push(element);
-        currentElement = currentElement[options.elementsKey][currentElement[options.elementsKey].length - 1];
+        currentElement = element;
     }
     //console.log('startElement:', name, attributes);
 }
@@ -308,7 +313,7 @@ function onText (text) {
     //console.log('text for current element name "' + currentElement.name + '"', text);
 }
 
-function onComment(comment) {
+function onComment (comment) {
     if (options.trim) {
         comment = comment.trim();
     }
@@ -379,20 +384,31 @@ function addField (type, value, options) {
 }
 },{"./common":1,"sax":26}],6:[function(require,module,exports){
 /*jslint node:true */
+var common = require('./common');
 var xml2js = require('./xml2js');
 
-module.exports = function(xml, options) {
+function validateOptions (userOptions) {
+    var options = common.copyOptions(userOptions);
+    if (!('spaces' in options) || (typeof options.spaces !== 'string' || isNaN(parseInt(options.spaces, 10)))) {
+        options.spaces = 0;
+    }
+    return options;
+}
+
+module.exports = function(xml, userOptions) {
     'use strict';
-    var js = xml2js(xml, options), json, parentKey;
+    var options, js, json, parentKey;
+    options = validateOptions(userOptions);
+    js = xml2js(xml, options);
     parentKey = 'compact' in options && options.compact ? '_parent' : 'parent';
     if ('addParent' in options && options.addParent) {
-        json = JSON.stringify(js, function (k, v) { return k === parentKey? '_' : v; });
+        json = JSON.stringify(js, function (k, v) { return k === parentKey? '_' : v; }, options.spaces);
     } else {
-        json = JSON.stringify(js);
+        json = JSON.stringify(js, null, options.spaces);
     }
     return json.replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
 };
-},{"./xml2js":5}],7:[function(require,module,exports){
+},{"./common":1,"./xml2js":5}],7:[function(require,module,exports){
 
 },{}],8:[function(require,module,exports){
 (function (Buffer){
@@ -6627,6 +6643,7 @@ function isnan (val) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"base64-js":30,"ieee754":10,"isarray":13}],32:[function(require,module,exports){
+(function (Buffer){
 /*jslint node:true */
 /*global describe,it,expect,beforeEach*/
 
@@ -6635,20 +6652,6 @@ var testItems = require('./test-items');
 
 describe('Testing js2xml.js:', function () {
     'use strict';
-    
-    //var books = require('fs').readFileSync('test/fixtures/books.xml');
-    
-    var options;
-    
-    //testItems.pop();
-    //tests = [tests[5]];
-    
-    beforeEach(function () {
-        
-    });
-    
-    //console.log(js2xml({"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"element","name":"b","attributes":{}}]}]}, options));
-    //expect(js2xml(test.js2, options)).toEqual(test.xml);
     
     describe('No options supplied (fallback to defaults):', function () {
         
@@ -6733,25 +6736,45 @@ describe('Testing js2xml.js:', function () {
     
     describe('json2xml:', function () {
         
-        var options = {};
-        testItems(options).forEach(function (test) {
-            it(test.desc, function () {
-                expect(convert.json2xml(JSON.stringify(test.js), options)).toEqual(test.xml);
+        describe('using default options', function () {
+            
+            var options = {};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.json2xml(JSON.stringify(test.js), options)).toEqual(test.xml);
+                });
             });
+            
+        });
+        
+        describe('submitting json as javascript object', function () {
+            
+            var options = {};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.json2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+            
+        });
+        
+        describe('using buffer', function () {
+            
+            var options = {};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.json2xml(new Buffer(JSON.stringify(test.js)), options)).toEqual(test.xml);
+                });
+            });
+            
         });
         
     });
     
 });
-},{"../lib":2,"./test-items":33}],33:[function(require,module,exports){
+}).call(this,require("buffer").Buffer)
+},{"../lib":2,"./test-items":33,"buffer":31}],33:[function(require,module,exports){
 /*jslint node:true */
-
-var xml = '<?xml version="1.0" encoding="utf-8"?>' + '\n' +
-          '<note importance="high" logged="true">' + '\n' +
-          '    Watch out!' + '\n' +
-          '    <time>11:00 am</time>' + '\n' +
-          '    <time>11:30 am</time>' + '\n' +
-          '</note>';
 
 var cases = [
     {
@@ -6906,6 +6929,17 @@ describe('Testing xml2js.js:', function () {
     'use strict';
     
     //var books = require('fs').readFileSync('test/fixtures/books.xml');
+    
+    /*describe('No options supplied (fallback to defaults):', function () {
+        
+        var options = {};
+        testItems(options).forEach(function (test) {
+            it(test.desc, function () {
+                expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+            });
+        });
+        
+    });*/
     
     describe('No options supplied (fallback to defaults):', function () {
         

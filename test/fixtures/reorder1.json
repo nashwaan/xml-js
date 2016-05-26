@@ -1,0 +1,12 @@
+{
+    "parent": {
+        "_attributes": {
+            "parent_property": "bar"
+        },
+        "child": {
+            "_attributes": {
+                "child_property": "foo"
+            }
+        }
+    }
+}

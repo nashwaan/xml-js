@@ -1,12 +1,5 @@
 /*jslint node:true */
 
-var xml = '<?xml version="1.0" encoding="utf-8"?>' + '\n' +
-          '<note importance="high" logged="true">' + '\n' +
-          '    Watch out!' + '\n' +
-          '    <time>11:00 am</time>' + '\n' +
-          '    <time>11:30 am</time>' + '\n' +
-          '</note>';
-
 var cases = [
     {
         desc: 'declaration <?xml>',

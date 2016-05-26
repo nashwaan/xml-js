@@ -1,0 +1,16 @@
+{
+    "abcd": {
+        "efg": {
+            "hijk": [
+                {
+                    "_text": "qrstuv"
+                },
+                {
+                    "lmnop": {
+                        "_text": "wxyz"
+                    }
+                }
+            ]
+        }
+    }
+}
