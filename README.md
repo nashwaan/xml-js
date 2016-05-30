@@ -1,4 +1,6 @@
 ![Alt text](/logo.svg?raw=true "Logo")
+![Alt text](http://nashwaan.github.io/xml-js/logo.svg)
+<img src="http://nashwaan.github.io/xml-js/logo.svg">
 
 [![Build Status](https://ci.appveyor.com/api/projects/status/0ky9f115m0f0r0gf?svg=true)](https://ci.appveyor.com/project/nashwaan/xml-js)
 [![Build Status](https://travis-ci.org/nashwaan/xml-js.svg?branch=master)](https://travis-ci.org/nashwaan/xml-js)
@@ -28,16 +30,6 @@ npm install --save xml-js
 
 Quick start:
 
-note.xml
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<note importance="high" logged="true">
-    <title>Happy</title>
-    <todo>Work</todo>
-    <todo>Play</todo>
-</note>
-```
-
 ```js
 var convert = require('xml-js');
 var xml = 
@@ -51,7 +43,7 @@ var result = convert.xml2json(xml, {compact: true});
 console.log(result);
 ```
 
-Output object as compact version. options = {compact: true}
+Output object as compact version. `options = {compact: true}`
 ```json
 {
     "_declaration": {
@@ -80,7 +72,7 @@ Output object as compact version. options = {compact: true}
 }
 ```
 
-Output object as detailed version. options = {compact: false}
+Output object as detailed version. `options = {compact: false}`
 ```json
 {
     "declaration": {
@@ -141,13 +133,67 @@ Output object as detailed version. options = {compact: false}
 
 There are many XML to JavaScript/JSON converters out there, but could not satisfy the following requirements:
 
- * Compliant
- * Fast
+ * Full XML Compliant
+ * Portable (if required: only JS)
+ * Fast (if required; will compile on VC++)
  * Support streaming
+ * Support command line
 
 ## API Reference
 
-Depending on the size of the project, if it is small and simple enough the reference docs can be added to the README. For medium size to larger projects it is important to at least provide a link to where the API reference docs live.
+### Convert JS object / JSON to XML
+
+```js
+var convert = require('xml-js');
+var json = require('fs').readFileSync('test.json');
+var options = {ignoreText: true, spaces: 4};
+var result = convert.json2xml(json, options);
+console.log(result);
+```
+
+| Option                | Default | Description
+|-----------------------|---------|-------------|
+| `ignoreDeclaration`   | false   | Whether to ignore writing declaration directives of xml. For example, `<?xml?>` will be ignored. |
+| `ignoreAttributes`    | false   | Whether to ignore writing texts of the elements. For example, `x="1"` in `<a x="1"></a>` will be ignored |
+| `ignoreText`          | false   | Whether to ignore writing texts of the elements. For example, `hi` text in `<a>hi</a>` will be ignored. |
+| `ignoreComment`       | false   | Whether to ignore writing comments of the elements. That is, no `<!--  -->` will be generated. |
+| `ignoreCdata`         | false   | Whether to ignore writing CData of the elements. That is, no `<![CDATA[  ]]>` will be generated. |
+| `spaces`              | `0`     | Number of spaces to be used for indenting xml output. |
+| `fromCompact`         | false   | whether the source object is in compact form. |
+| `fullTagEmptyElement` | false   | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `</a>`. |
+
+### Convert XML to JS object / JSON
+
+```js
+var convert = require('xml-js');
+var xml = require('fs').readFileSync('test.xml');
+var options = {ignoreText: true, emptyChildren: true};
+var result = convert.xml2js(xml, options); // or convert.xml2json(xml, options)
+console.log(result);
+```
+
+| Option              | Default | Description
+|---------------------|---------|-------------|
+| `ignoreDeclaration` | false   | Whether to ignore writing declaration property. That is, no `declaration` property will be generated. |
+| `ignoreAttributes`  | false   | Whether to ignore writing attributes of elements.That is, no `attributes` property will be generated. |
+| `ignoreText`        | false   | Whether to ignore writing texts of the elements. That is, no `text` property will be generated. |
+| `ignoreComment`     | false   | Whether to ignore writing comments of the elements. That is, no `comment` will be generated. |
+| `ignoreCdata`       | false   | Whether to ignore writing CData of the elements. That is, no `cdata` property will be generated. |
+| `compact`           | false   | Whether to produce detailed object or compact object. |
+| `emptyChildren`     | false   | Whether to always generate `elements` property even when there are no actual sub elements. |
+| `addParent`         | false   | Whether to add `parent` property in each element object that points to parent object. |
+| `trim`              | false   | Whether to trim white space characters that may exist before and after the text. |
+| `nativeType`        | false   | whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
+| `sanitize`          | false   | Whether to replace `&` `<` `>` `"` `'` with `&amp;` `&lt;` `&gt;` `&quot;` `&#039;` respectively in the resultant text. |
+| `declarationKey`    | `"declaration"` or `"declaration"` | Name of the property key which will be used for the declaration. For example, if `declarationKey: '$declaration'` then output of `<?xml?>` will be `{"$declaration":{}}` *(in compact form)* |
+| `attributesKey`     | `"attributes"` or `"_attributes"` | Name of the property key which will be used for the attributes. For example, if `attributesKey: '$attributes'` then output of `<a x="hello"/>` will be `{"a":{$attributes:{"x":"hello"}}}` *(in compact form)* |
+| `textKey`           | `"text"` or `"_text"` | Name of the property key which will be used for the text. For example, if `textKey: '$text'` then output of `<a>hi</a>` will be `{"a":{"$text":"Hi"}}` *(in compact form)* |
+| `commentKey`        | `"comment"` or `"_comment"` | Name of the property key which will be used for the comment. For example, if `commentKey: '$comment'` then output of `<!--note-->` will be `{"$comment":"note"}` *(in compact form)* |
+| `cdataKey`          | `"cdat"` or `"_cdata"` | Name of the property key which will be used for the cdata. For example, if `cdataKey: '$cdata'` then output of `<![CDATA[1 is < 2]]>` will be `{"$cdata":"1 is < 2"}` *(in compact form)* |
+| `parentKey`         | `"parent"` or `"_parent"` | Name of the property key which will be used for the parent. For example, if `parentKey: '$parent'` then output of `<a></b></a>` will be `{"a":{"b":{$parent:_points_to_a}}}` *(in compact form)* |
+| `typeKey`           | `"type"` | Name of the property key which will be used for the type. For example, if `typeKey: '$type'` then output of `<a></a>` will be `{"elements":[{"$type":"element","name":"a","attributes":{}}]}` *(in non-compact form)* |
+| `nameKey`           | `"name"` | Name of the property key which will be used for the name. For example, if `nameKey: '$name'` then output of `<a></a>` will be `{"elements":[{"type":"element","$name":"a","attributes":{}}]}` *(in non-compact form)* |
+| `elementsKey`       | `"elements"` | Name of the property key which will be used for the elements. For example, if `elementsKey: '$elements'` then output of `<a></a>` will be `{"$elements":[{"type":"element","name":"a","attributes":{}}]}` *(in non-compact form)* |
 
 ## Tests
 

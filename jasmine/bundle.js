@@ -38,17 +38,19 @@ var common = require('./common');
 
 function validateOptions (userOptions) {
     var options = common.copyOptions(userOptions);
+    common.checkOptionExist('ignoreDeclaration', options);
+    common.checkOptionExist('ignoreAttributes', options);
+    common.checkOptionExist('ignoreText', options);
+    common.checkOptionExist('ignoreComment', options);
+    common.checkOptionExist('ignoreCdata', options);
+    common.checkOptionExist('fromCompact', options);
+    common.checkOptionExist('fullTagEmptyElement', options);
     if (!('spaces' in options) || (typeof options.spaces !== 'number' && typeof options.spaces !== 'string' || isNaN(parseInt(options.spaces, 10)))) {
         options.spaces = 0;
     }
     if (!isNaN(parseInt(options.spaces, 10))) {
         options.spaces = Array(options.spaces + 1).join(' ');
     }
-    common.checkOptionExist('ignoreText', options);
-    common.checkOptionExist('ignoreComment', options);
-    common.checkOptionExist('ignoreCdata', options);
-    common.checkOptionExist('fromCompact', options);
-    common.checkOptionExist('fullTagEmptyElement', options);
     return options;
 }
 
@@ -158,6 +160,11 @@ var currentElement;
 
 function validateOptions (userOptions) {
     options = common.copyOptions(userOptions);
+    common.checkOptionExist('ignoreDeclaration', options);
+    common.checkOptionExist('ignoreAttributes', options);
+    common.checkOptionExist('ignoreText', options);
+    common.checkOptionExist('ignoreComment', options);
+    common.checkOptionExist('ignoreCdata', options);
     common.checkOptionExist('compact', options);
     common.checkOptionExist('emptyChildren', options);
     common.checkOptionExist('addParent', options);
@@ -223,6 +230,7 @@ module.exports = function(xml, userOptions) {
 };
 
 function onDeclaration (declaration) {
+    if (options.ignoreDeclaration) return;
     if (currentElement[options.declarationKey]) {
         return;
     }
@@ -259,7 +267,7 @@ function onStartElement (name, attributes) {
     }
     if (options.compact) {
         element = {};
-        if (attributes && Object.keys(attributes).length) {
+        if (!options.ignoreAttributes && attributes && Object.keys(attributes).length) {
             element[options.attributesKey] = {};
             for (key in attributes) {
                 if (attributes.hasOwnProperty(key)) {
@@ -284,7 +292,9 @@ function onStartElement (name, attributes) {
         element = {};
         element[options.typeKey] = 'element';
         element[options.nameKey] = name;
-        element[options.attributesKey] = attributes;
+        if (!options.ignoreAttributes) {
+            element[options.attributesKey] = attributes;
+        }
         element[options.parentKey] = currentElement;
         if (options.emptyChildren) {
             element[options.elementsKey] = [];
@@ -297,6 +307,7 @@ function onStartElement (name, attributes) {
 
 function onText (text) {
     //console.log('currentElement:', currentElement);
+    if (options.ignoreText) return;
     if (!text.trim()) {
         return;
     }
@@ -314,6 +325,7 @@ function onText (text) {
 }
 
 function onComment (comment) {
+    if (options.ignoreComment) return;
     if (options.trim) {
         comment = comment.trim();
     }
@@ -334,6 +346,7 @@ function onEndElement (name) {
 }
 
 function onCdata (cdata) {
+    if (options.ignoreCdata) return;
     if (options.trim) {
         cdata = cdata.trim();
     }
