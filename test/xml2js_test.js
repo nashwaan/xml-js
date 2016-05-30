@@ -158,17 +158,6 @@ describe('Testing xml2js.js:', function () {
             
         });
         
-        describe('options = {compact: true, nativeType: true}', function () {
-            
-            var options = {compact: true, nativeType: true};
-            testItems(options).forEach(function (test) {
-                it(test.desc, function () {
-                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
-                });
-            });
-            
-        });
-        
         describe('options = {compact: true, emptyChildren: true}', function () {
             
             var options = {compact: true, emptyChildren: true};
@@ -193,31 +182,37 @@ describe('Testing xml2js.js:', function () {
         
     });
     
-    describe('options = {trim: true}', function () {
+    describe('Various options:', function () {
         
-        var options = {trim: true};
-        testItems({trim: true}).forEach(function (test) {
-            it(test.desc, function () {
-                expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+        describe('options = {trim: true}', function () {
+
+            var options = {trim: true};
+            testItems({trim: true}).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
             });
+
         });
         
-    });
-    
-    describe('Trim text:', function () {
-        
-        var options = {trim: true};
-        
-        it('trim text of element', function () {
-            expect(convert.xml2js('<a> hi \n </a>', options)).toEqual({"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":"hi"}]}]});
-        });
-        
-        it('trim text of attribute', function () {
-            expect(convert.xml2js('<a x=" y \n " />', options)).toEqual({"elements":[{"type":"element","name":"a","attributes":{x:"y"}}]});
-        });
-        
-        it('trim text of comment', function () {
-            expect(convert.xml2js('<!-- hi \n  -->', options)).toEqual({"elements":[{"type":"comment","comment":"hi"}]});
+        describe('options = {nativeType: true}', function () {
+
+            var options = {nativeType: true};
+
+            it('Parse number', function () {
+                expect(convert.xml2js('<a>123</a>', options)).toEqual({"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":123}]}]});
+            });
+            it('Parse true', function () {
+                expect(convert.xml2js('<a>true</a>', options)).toEqual({"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":true}]}]});
+            });
+            it('Parse false', function () {
+                expect(convert.xml2js('<a>false</a>', options)).toEqual({"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":false}]}]});
+            });
+            convert.xml2js('<a>x', {});
+            /*it('Parse improper XML', function () {
+                expect(convert.xml2js('<a>x', {})).toEqual({"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":"x"}]}]});
+            });*/
+
         });
         
     });

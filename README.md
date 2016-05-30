@@ -1,4 +1,4 @@
-![Alt text](/logo.png?raw=true "Logo")
+![Alt text](/logo.svg?raw=true "Logo")
 
 [![Build Status](https://ci.appveyor.com/api/projects/status/0ky9f115m0f0r0gf?svg=true)](https://ci.appveyor.com/project/nashwaan/xml-js)
 [![Build Status](https://travis-ci.org/nashwaan/xml-js.svg?branch=master)](https://travis-ci.org/nashwaan/xml-js)
@@ -47,10 +47,40 @@ var xml =
 '    <todo>Work</todo>' + '\n' +
 '    <todo>Play</todo>' + '\n' +
 '</note>';
-var result = convert.xml2json(xml);
+var result = convert.xml2json(xml, {compact: true});
 console.log(result);
 ```
 
+Output object as compact version. options = {compact: true}
+```json
+{
+    "_declaration": {
+        "_attributes": {
+            "version": "1.0",
+            "encoding": "utf-8"
+        }
+    },
+    "note": {
+        "_attributes": {
+            "importance": "high",
+            "logged": "true"
+        },
+        "title": {
+            "_text": "Happy"
+        },
+        "todo": [
+            {
+                "_text": "Work"
+            },
+            {
+                "_text": "Play"
+            }
+        ]
+    }
+}
+```
+
+Output object as detailed version. options = {compact: false}
 ```json
 {
     "declaration": {

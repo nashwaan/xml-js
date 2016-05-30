@@ -87,6 +87,32 @@ describe('Testing js2xml.js:', function () {
         });
         
     });
+        
+    describe('Varying spaces', function () {
+        
+        describe('options = {spaces: 2}', function () {
+            
+            var options = {spaces: 2};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+            
+        });
+        
+        describe('options = {spaces: 4}', function () {
+            
+            var options = {spaces: 2};
+            testItems(options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+            
+        });
+        
+    });
     
     describe('json2xml:', function () {
         
@@ -120,6 +146,14 @@ describe('Testing js2xml.js:', function () {
                     expect(convert.json2xml(new Buffer(JSON.stringify(test.js)), options)).toEqual(test.xml);
                 });
             });
+            
+        });
+        
+        describe('imporper json', function () {
+            
+            try {
+                convert.json2xml('{a:', {});
+            } catch (e) {}
             
         });
         

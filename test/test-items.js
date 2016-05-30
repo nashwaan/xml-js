@@ -52,7 +52,7 @@ var cases = [
         js1: {"a":{_attributes:{"x":"1.234","y":"It\'s"}}},
         js2: {"elements":[{"type":"element","name":"a","attributes":{"x":"1.234","y":"It\'s"}}]},
     }, {
-        desc: 'should convert text in element"',
+        desc: 'should convert text in element',
         xml: '<a> \t Hi \t </a>',
         js1: {"a":{"_text":" \t Hi \t "}},
         js2: {"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":" \t Hi \t "}]}]},
@@ -63,12 +63,12 @@ var cases = [
         js2: {"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":"  Hi \n There \t "}]}]},
     }, {
         desc: 'should convert nested elements',
-        xml: '<a>\n\t<b/>\n</a>',
+        xml: '<a>\n\v<b/>\n</a>',
         js1: {"a":{"b":{}}},
         js2: {"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"element","name":"b","attributes":{}}]}]},
     }, {
         desc: 'should convert 3 nested elements',
-        xml: '<a>\n\t<b>\n\t\t<c/>\n\t</b>\n</a>',
+        xml: '<a>\n\v<b>\n\v\v<c/>\n\v</b>\n</a>',
         js1: {"a":{"b":{"c":{}}}},
         js2: {"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"element","name":"b","attributes":{},"elements":[{"type":"element","name":"c","attributes":{}}]}]}]},
     }
@@ -126,7 +126,8 @@ module.exports = function (options) {
         tests.push({desc: cases[i].desc, xml: null, js: null});
         //tests[i].xml = options.singleLine ? cases[i].xml.replace(/\r\n|\r|\n|^\s+/gm, '') : cases[i].xml;
         tests[i].xml = cases[i].xml;
-        if (!('spaces' in options) || options.spaces === 0) { tests[i].xml = tests[i].xml.replace(/>\n\t*/gm, '>'); }
+        if (!('spaces' in options) || options.spaces === 0) { tests[i].xml = tests[i].xml.replace(/>\n\v*/gm, '>'); }
+        if ('spaces' in options && options.spaces !== 0) { tests[i].xml = tests[i].xml.replace(/\v/g, Array(options.spaces + 1).join(' ')); }
         if (options.ignoreText) { tests[i].xml = tests[i].xml.replace(/>([\s\S]*?)</gm, '><'); }
         if (options.ignoreComment) { tests[i].xml = tests[i].xml.replace(/<!--.*?-->/gm, ''); }
         if (options.ignoreCdata) { tests[i].xml = tests[i].xml.replace(/<!\[CDATA\[.*?\]\]>/gm, ''); }
