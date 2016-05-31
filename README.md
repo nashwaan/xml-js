@@ -1,5 +1,4 @@
 ![Alt text](http://nashwaan.github.io/xml-js/images/logo.svg)
-<img src="http://nashwaan.github.io/xml-js/images/logo.svg">
 
 [![Build Status](https://ci.appveyor.com/api/projects/status/0ky9f115m0f0r0gf?svg=true)](https://ci.appveyor.com/project/nashwaan/xml-js)
 [![Build Status](https://travis-ci.org/nashwaan/xml-js.svg?branch=master)](https://travis-ci.org/nashwaan/xml-js)
