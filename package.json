@@ -1,6 +1,6 @@
 {
   "name": "xml-js",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "A convertor between XML text and Javascript object / JSON text.",
   "main": "index.js",
   "repository": {
@@ -15,17 +15,26 @@
   "homepage": "https://github.com/nashwaan/xml-js#readme",
   "keywords": [
     "XML",
+    "xml",
     "js",
     "JSON",
+    "json",
     "Javascript",
+    "js2xml",
+    "json2xml",
+    "xml2js",
+    "xml2json",
     "transformation",
     "transforming",
     "transformer",
-    "convertion",
+    "transform",
+    "conversion",
     "converting",
     "convertor",
+    "convert",
     "parsing",
-    "parser"
+    "parser",
+    "parse"
   ],
   "dependencies": {
     "sax": "^1.2.1"

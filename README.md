@@ -1,6 +1,5 @@
-![Alt text](/logo.svg?raw=true "Logo")
-![Alt text](http://nashwaan.github.io/xml-js/logo.svg)
-<img src="http://nashwaan.github.io/xml-js/logo.svg">
+![Alt text](http://nashwaan.github.io/xml-js/images/logo.svg)
+<img src="http://nashwaan.github.io/xml-js/images/logo.svg">
 
 [![Build Status](https://ci.appveyor.com/api/projects/status/0ky9f115m0f0r0gf?svg=true)](https://ci.appveyor.com/project/nashwaan/xml-js)
 [![Build Status](https://travis-ci.org/nashwaan/xml-js.svg?branch=master)](https://travis-ci.org/nashwaan/xml-js)
@@ -25,7 +24,7 @@ Convert XML text to Javascript object (and vice versa) or to JSON text (and vice
 There are many XML to JavaScript/JSON converters out there, but could not satisfy the following requirements:
 
  * **Maintain order of sub-nodes in xml**:
-    I wanted `<a/><b/><a/>` to give output as `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"},{"type":"element","name":"a"}]}` instead of `{a:"",b:""}`.
+    I wanted `<a/><b/><a/>` to give output as `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"},{"type":"element","name":"a"}]}` instead of `{a:{},b:{}}`.
  * Fully XML Compliant
  * Portable (this is default behavior: only Javascript code, slower execution)
  * Fast (if required; will compile on VC++)
@@ -40,7 +39,7 @@ There are many XML to JavaScript/JSON converters out there, but could not satisf
 npm install xml-js
 ```
 
-### Quick start:
+### Quick start
 
 ```js
 var convert = require('xml-js');
@@ -51,16 +50,18 @@ var xml =
 '    <todo>Work</todo>' +
 '    <todo>Play</todo>' +
 '</note>';
-var result1 = convert.xml2json(xml, {compact: true});
-var result2 = convert.xml2json(xml, {compact: false});
+var result1 = convert.xml2json(xml, {compact: true, spaces: 4});
+var result2 = convert.xml2json(xml, {compact: false, spaces: 4});
 console.log(result1, '\n', result2);
 ```
 
+### Examples
+
 ## API Reference
 
-### Convert JS object / JSON to XML
+### 1. Convert JS object / JSON → XML
 
-To convert JavaScript object to XML text, use `js2xml()`. To convert JSON text to XML text, use `json2xml()`. The below options are applicable to both functions.
+To convert JavaScript object to XML text, use `js2xml()`. To convert JSON text to XML text, use `json2xml()`.
 
 ```js
 var convert = require('xml-js');
@@ -70,6 +71,10 @@ var result = convert.json2xml(json, options);
 console.log(result);
 ```
 
+### 2. Options for Converting JS object / JSON → XML
+
+The below options are applicable for both `js2xml()` and `json2xml()` functions.
+
 | Option                | Default | Description |
 |:----------------------|:--------|:------------|
 | `ignoreDeclaration`   | `false` | Whether to ignore writing declaration directives of xml. For example, `<?xml?>` will be ignored. |
@@ -77,13 +82,13 @@ console.log(result);
 | `ignoreText`          | `false` | Whether to ignore writing texts of the elements. For example, `hi` text in `<a>hi</a>` will be ignored. |
 | `ignoreComment`       | `false` | Whether to ignore writing comments of the elements. That is, no `<!--  -->` will be generated. |
 | `ignoreCdata`         | `false` | Whether to ignore writing CData of the elements. That is, no `<![CDATA[  ]]>` will be generated. |
-| `spaces`              | `0`     | Number of spaces to be used for indenting xml output. |
+| `spaces`              | `0`     | Number of spaces to be used for indenting XML output. |
 | `fromCompact`         | `false` | whether the source object is in compact form. |
 | `fullTagEmptyElement` | `false` | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `</a>`. |
 
-### Convert XML to JS object / JSON
+### 3. Convert XML → JS object / JSON
 
-To convert XML text to JavaScript object, use `xml2js()`. To convert XML text to JSON text, use `xml2json()`. The below options are applicable to both functions.
+To convert XML text to JavaScript object, use `xml2js()`. To convert XML text to JSON text, use `xml2json()`.
 
 ```js
 var convert = require('xml-js');
@@ -92,6 +97,10 @@ var options = {ignoreText: true, emptyChildren: true};
 var result = convert.xml2js(xml, options); // or convert.xml2json(xml, options)
 console.log(result);
 ```
+
+### 4. Options for Converting XML → JS object / JSON
+
+The below options are applicable for both `xml2js()` and `xml2json()` functions.
 
 | Option              | Default | Description |
 |:--------------------|:--------|:------------|
@@ -107,7 +116,15 @@ console.log(result);
 | `nativeType`        | `false` | whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
 | `sanitize`          | `false` | Whether to replace `&` `<` `>` `"` `'` with `&amp;` `&lt;` `&gt;` `&quot;` `&#039;` respectively in the resultant text. |
 
-To change default key names in the output object, use the following options:
+The below option is applicable only for `xml2json()` function.
+
+| Option              | Default | Description |
+|:--------------------|:--------|:------------|
+| `spaces`            | `0`     | Number of spaces to be used for indenting JSON output. |
+
+### 5. Options for Changing Key Names
+
+To change default key names in the output object or the default key names assumed in the input JavaScript object / JSON, use the following options:
 
 | Option              | Default | Description |
 |:--------------------|:--------|:------------|

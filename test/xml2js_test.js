@@ -22,7 +22,7 @@ describe('Testing xml2js.js:', function () {
     
     describe('No options supplied (fallback to defaults):', function () {
         
-        var options = {};
+        var options = {onlyItem: 6};
         testItems(options).forEach(function (test) {
             it(test.desc, function () {
                 expect(convert.xml2js(test.xml, options)).toEqual(test.js);
@@ -200,17 +200,17 @@ describe('Testing xml2js.js:', function () {
             var options = {nativeType: true};
 
             it('Parse number', function () {
-                expect(convert.xml2js('<a>123</a>', options)).toEqual({"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":123}]}]});
+                expect(convert.xml2js('<a>123</a>', options)).toEqual({"elements":[{"type":"element","name":"a","elements":[{"type":"text","text":123}]}]});
             });
             it('Parse true', function () {
-                expect(convert.xml2js('<a>true</a>', options)).toEqual({"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":true}]}]});
+                expect(convert.xml2js('<a>true</a>', options)).toEqual({"elements":[{"type":"element","name":"a","elements":[{"type":"text","text":true}]}]});
             });
             it('Parse false', function () {
-                expect(convert.xml2js('<a>false</a>', options)).toEqual({"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":false}]}]});
+                expect(convert.xml2js('<a>false</a>', options)).toEqual({"elements":[{"type":"element","name":"a","elements":[{"type":"text","text":false}]}]});
             });
             convert.xml2js('<a>x', {});
             /*it('Parse improper XML', function () {
-                expect(convert.xml2js('<a>x', {})).toEqual({"elements":[{"type":"element","name":"a","attributes":{},"elements":[{"type":"text","text":"x"}]}]});
+                expect(convert.xml2js('<a>x', {})).toEqual({"elements":[{"type":"element","name":"a","elements":[{"type":"text","text":"x"}]}]});
             });*/
 
         });
