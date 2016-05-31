@@ -20,10 +20,22 @@ Convert XML text to Javascript object (and vice versa) or to JSON text (and vice
 
 ![Alt text](/synopsis.png?raw=true "Synopsis Diagram")
 
+## Motivation
+
+There are many XML to JavaScript/JSON converters out there, but could not satisfy the following requirements:
+
+ * **Maintain order of sub-nodes in xml**:
+    I wanted `<a/><b/><a/>` to give output as `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"},{"type":"element","name":"a"}]}` instead of `{a:"",b:""}`.
+ * Fully XML Compliant
+ * Portable (this is default behavior: only Javascript code, slower execution)
+ * Fast (if required; will compile on VC++)
+ * Support streaming
+ * Support command line
+
 ## Installation
 
 ```bash
-npm install --save xml-js
+npm install xml-js
 ```
 
 ## Code Example
@@ -33,111 +45,21 @@ Quick start:
 ```js
 var convert = require('xml-js');
 var xml = 
-'<?xml version="1.0" encoding="utf-8"?>' + '\n' +
-'<note importance="high" logged="true">' + '\n' +
-'    <title>Happy</title>' + '\n' +
-'    <todo>Work</todo>' + '\n' +
-'    <todo>Play</todo>' + '\n' +
+'<?xml version="1.0" encoding="utf-8"?>' +
+'<note importance="high" logged="true">' +
+'    <title>Happy</title>' +
+'    <todo>Work</todo>' +
+'    <todo>Play</todo>' +
 '</note>';
-var result = convert.xml2json(xml, {compact: true});
-console.log(result);
+var result1 = convert.xml2json(xml, {compact: true});
+var result2 = convert.xml2json(xml, {compact: false});
+console.log(result1, '\n', result2);
 ```
 
-Output object as compact version. `options = {compact: true}`
-```json
-{
-    "_declaration": {
-        "_attributes": {
-            "version": "1.0",
-            "encoding": "utf-8"
-        }
-    },
-    "note": {
-        "_attributes": {
-            "importance": "high",
-            "logged": "true"
-        },
-        "title": {
-            "_text": "Happy"
-        },
-        "todo": [
-            {
-                "_text": "Work"
-            },
-            {
-                "_text": "Play"
-            }
-        ]
-    }
-}
-```
+| result1 (compact) | result2 (non-compact) |
+|:------------------|:----------------------|
+| <code>{<br>&nbsp;&nbsp;&nbsp;&nbsp;"_declaration":&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"_attributes":&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"version":&nbsp;"1.0",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"encoding":&nbsp;"utf-8"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;},<br>&nbsp;&nbsp;&nbsp;&nbsp;"note":&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"_attributes":&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"importance":&nbsp;"high",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"logged":&nbsp;"true"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"title":&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"_text":&nbsp;"Happy"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"todo":&nbsp;[<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"_text":&nbsp;"Work"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"_text":&nbsp;"Play"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>}</code>|<code>{<br>&nbsp;&nbsp;&nbsp;&nbsp;"declaration":&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"attributes":&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"version":&nbsp;"1.0",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"encoding":&nbsp;"utf-8"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;},<br>&nbsp;&nbsp;&nbsp;&nbsp;"elements":&nbsp;[<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type":&nbsp;"element",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"name":&nbsp;"note",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"attributes":&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"importance":&nbsp;"high",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"logged":&nbsp;"true"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"elements":&nbsp;[<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type":&nbsp;"element",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"name":&nbsp;"title",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"elements":&nbsp;[<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type":&nbsp;"text",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"text":&nbsp;"Happy"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type":&nbsp;"element",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"name":&nbsp;"todo",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"elements":&nbsp;[<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type":&nbsp;"text",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"text":&nbsp;"Work"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type":&nbsp;"element",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"name":&nbsp;"todo",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"elements":&nbsp;[<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type":&nbsp;"text",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"text":&nbsp;"Play"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;]<br>}</code>|
 
-Output object as detailed version. `options = {compact: false}`
-```json
-{
-    "declaration": {
-        "attributes": {
-            "version": "1.0",
-            "encoding": "utf-8"
-        }
-    },
-    "elements": [
-        {
-            "type": "element",
-            "name": "note",
-            "attributes": {
-                "importance": "high",
-                "logged": "true"
-            },
-            "elements": [
-                {
-                    "type": "element",
-                    "name": "title",
-                    "attributes": {},
-                    "elements": [
-                        {
-                            "type": "text",
-                            "text": "Happy"
-                        }
-                    ]
-                },
-                {
-                    "type": "element",
-                    "name": "todo",
-                    "attributes": {},
-                    "elements": [
-                        {
-                            "type": "text",
-                            "text": "Work"
-                        }
-                    ]
-                },
-                {
-                    "type": "element",
-                    "name": "todo",
-                    "attributes": {},
-                    "elements": [
-                        {
-                            "type": "text",
-                            "text": "Play"
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-}
-```
-
-## Motivation
-
-There are many XML to JavaScript/JSON converters out there, but could not satisfy the following requirements:
-
- * Full XML Compliant
- * Portable (if required: only JS)
- * Fast (if required; will compile on VC++)
- * Support streaming
- * Support command line
 
 ## API Reference
 
@@ -152,15 +74,15 @@ console.log(result);
 ```
 
 | Option                | Default | Description
-|-----------------------|---------|-------------|
-| `ignoreDeclaration`   | false   | Whether to ignore writing declaration directives of xml. For example, `<?xml?>` will be ignored. |
-| `ignoreAttributes`    | false   | Whether to ignore writing texts of the elements. For example, `x="1"` in `<a x="1"></a>` will be ignored |
-| `ignoreText`          | false   | Whether to ignore writing texts of the elements. For example, `hi` text in `<a>hi</a>` will be ignored. |
-| `ignoreComment`       | false   | Whether to ignore writing comments of the elements. That is, no `<!--  -->` will be generated. |
-| `ignoreCdata`         | false   | Whether to ignore writing CData of the elements. That is, no `<![CDATA[  ]]>` will be generated. |
+|:----------------------|:--------|:------------|
+| `ignoreDeclaration`   | `false` | Whether to ignore writing declaration directives of xml. For example, `<?xml?>` will be ignored. |
+| `ignoreAttributes`    | `false` | Whether to ignore writing texts of the elements. For example, `x="1"` in `<a x="1"></a>` will be ignored |
+| `ignoreText`          | `false` | Whether to ignore writing texts of the elements. For example, `hi` text in `<a>hi</a>` will be ignored. |
+| `ignoreComment`       | `false` | Whether to ignore writing comments of the elements. That is, no `<!--  -->` will be generated. |
+| `ignoreCdata`         | `false` | Whether to ignore writing CData of the elements. That is, no `<![CDATA[  ]]>` will be generated. |
 | `spaces`              | `0`     | Number of spaces to be used for indenting xml output. |
-| `fromCompact`         | false   | whether the source object is in compact form. |
-| `fullTagEmptyElement` | false   | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `</a>`. |
+| `fromCompact`         | `false` | whether the source object is in compact form. |
+| `fullTagEmptyElement` | `false` | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `</a>`. |
 
 ### Convert XML to JS object / JSON
 
@@ -173,18 +95,22 @@ console.log(result);
 ```
 
 | Option              | Default | Description
-|---------------------|---------|-------------|
-| `ignoreDeclaration` | false   | Whether to ignore writing declaration property. That is, no `declaration` property will be generated. |
-| `ignoreAttributes`  | false   | Whether to ignore writing attributes of elements.That is, no `attributes` property will be generated. |
-| `ignoreText`        | false   | Whether to ignore writing texts of the elements. That is, no `text` property will be generated. |
-| `ignoreComment`     | false   | Whether to ignore writing comments of the elements. That is, no `comment` will be generated. |
-| `ignoreCdata`       | false   | Whether to ignore writing CData of the elements. That is, no `cdata` property will be generated. |
-| `compact`           | false   | Whether to produce detailed object or compact object. |
-| `emptyChildren`     | false   | Whether to always generate `elements` property even when there are no actual sub elements. |
-| `addParent`         | false   | Whether to add `parent` property in each element object that points to parent object. |
-| `trim`              | false   | Whether to trim white space characters that may exist before and after the text. |
-| `nativeType`        | false   | whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
-| `sanitize`          | false   | Whether to replace `&` `<` `>` `"` `'` with `&amp;` `&lt;` `&gt;` `&quot;` `&#039;` respectively in the resultant text. |
+|:--------------------|:--------|:------------|
+| `ignoreDeclaration` | `false` | Whether to ignore writing declaration property. That is, no `declaration` property will be generated. |
+| `ignoreAttributes`  | `false` | Whether to ignore writing attributes of elements.That is, no `attributes` property will be generated. |
+| `ignoreText`        | `false` | Whether to ignore writing texts of the elements. That is, no `text` property will be generated. |
+| `ignoreComment`     | `false` | Whether to ignore writing comments of the elements. That is, no `comment` will be generated. |
+| `ignoreCdata`       | `false` | Whether to ignore writing CData of the elements. That is, no `cdata` property will be generated. |
+| `compact`           | `false` | Whether to produce detailed object or compact object. |
+| `emptyChildren`     | `false` | Whether to always generate `elements` property even when there are no actual sub elements. |
+| `addParent`         | `false` | Whether to add `parent` property in each element object that points to parent object. |
+| `trim`              | `false` | Whether to trim white space characters that may exist before and after the text. |
+| `nativeType`        | `false` | whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
+| `sanitize`          | `false` | Whether to replace `&` `<` `>` `"` `'` with `&amp;` `&lt;` `&gt;` `&quot;` `&#039;` respectively in the resultant text. |
+
+To change default key names in the output object, use the following options:
+| Option              | Default | Description
+|:--------------------|:--------|:------------|
 | `declarationKey`    | `"declaration"` or `"declaration"` | Name of the property key which will be used for the declaration. For example, if `declarationKey: '$declaration'` then output of `<?xml?>` will be `{"$declaration":{}}` *(in compact form)* |
 | `attributesKey`     | `"attributes"` or `"_attributes"` | Name of the property key which will be used for the attributes. For example, if `attributesKey: '$attributes'` then output of `<a x="hello"/>` will be `{"a":{$attributes:{"x":"hello"}}}` *(in compact form)* |
 | `textKey`           | `"text"` or `"_text"` | Name of the property key which will be used for the text. For example, if `textKey: '$text'` then output of `<a>hi</a>` will be `{"a":{"$text":"Hi"}}` *(in compact form)* |
@@ -200,9 +126,11 @@ console.log(result);
 To perform tests on this project:
 
 ```
-cd node_modules/xml-js/test
+cd node_modules/xml-js
+npm install
 npm test
 ```
+For live testing, use `npm start` instead of `npm test`.
 
 ## Contributions
 

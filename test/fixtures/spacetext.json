@@ -1,1 +1,0 @@
-{"doc":{"Column":[{"Name":"shit","Value":{"type":"STRING","$t":"  abc\nasdf\na "}},{"Name":"foo","Value":{"type":"STRING"}},{"Name":"foo2","Value":{"type":"STRING"}},{"Name":"bar","Value":{"type":"STRING","$t":" "}},{"PK":"true","Name":"uid","Value":{"type":"STRING","$t":"god"}}]}}
