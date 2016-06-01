@@ -1,7 +1,92 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*jslint node:true */
+var fs = require('fs');
+var common = require('./common');
+var xml2json = require('./xml2json');
+var json2xml = require('./json2xml');
+
+var possibleArguments = [
+    {arg: 'help', type: 'flag', option: 'help', desc: 'Display help content.'},
+    {arg: 'src', type: 'file', option: 'src', desc: 'Input file that need to be processed.'},
+    {arg: 'out', type: 'file', option: 'out', desc: 'Output file where result should be written.'},
+    {arg: 'spaces', type: 'number', option:'spaces', desc: 'Specifies amount of space indentation in the output.'},
+    {arg: 'full-tag', type: 'flag', option:'fullTagEmptyElement', desc: 'XML elements will always be in <a></a> form.'},
+    {arg: 'no-decl', type: 'flag', option:'ignoreDeclaration', desc: 'Declaration instruction <?xml ..?> will be ignored.'},
+    {arg: 'no-attr', type: 'flag', option:'ignoreAttributes', desc: 'Attributes of elements will be ignored.'},
+    {arg: 'no-text', type: 'flag', option:'ignoreText', desc: 'Texts of elements will be ignored.'},
+    {arg: 'no-cdata', type: 'flag', option:'ignoreCdata', desc: 'Cdata of elements will be ignored.'},
+    {arg: 'no-comment', type: 'flag', option:'ignoreComment', desc: 'Comments of elements will be ignored.'},
+    {arg: 'trim', type: 'flag', option:'trim', desc: 'Whitespaces surrounding texts will be trimmed.'},
+    {arg: 'compact', type: 'flag', option:'compact', desc: 'Compact JSON form (see www.npmjs.com/package/xml-js).'},
+    {arg: 'sanitize', type: 'flag', option:'sanitize', desc: 'Special xml characters will be replaced with entity codes.'},
+    {arg: 'native-type', type: 'flag', option:'nativeType', desc: 'Text will be converted to native type.'},
+    {arg: 'always-children', type: 'flag', option:'alwaysChildren', desc: 'Every element will always contain sub-elements (applicable if --compact is not set).'},
+    {arg: 'text-key', type: 'string', option:'textKey', desc: 'To change the default \'text\' key.'},
+    {arg: 'cdata-key', type: 'string', option:'cdataKey', desc: 'To change the default \'cdata\' key.'},
+    {arg: 'comment-key', type: 'string', option:'commentKey', desc: 'To change the default \'comment\' key.'},
+    {arg: 'attributes-key', type: 'string', option:'attributesKey', desc: 'To change the default \'attributes\' key.'},
+    {arg: 'declaration-key', type: 'string', option:'declarationKey', desc: 'To change the default \'declaration\' key.'},
+    {arg: 'type-key', type: 'string', option:'typeKey', desc: 'To change the default \'type\' key. (applicable if --compact is not set)'},
+    {arg: 'cdata-key', type: 'string', option:'name', desc: 'To change the default \'name\' key. (applicable if --compact is not set)'},
+    {arg: 'elements-key', type: 'string', option:'elements', desc: 'To change the default \'elements\' key. (applicable if --compact is not set)'}
+];
+
+module.exports = function () {
+    var output, options = common.mapCommandLineArgs(possibleArguments);
+    if (options.help) {
+        common.printCommandLineHelp ('xml-js', possibleArguments);
+    } else if (fs.statSync(options.src).isFile()) {
+        if (options.src.split('.').pop() === 'xml') {
+            output = xml2json(fs.readFileSync(options.src, 'utf8'), options);
+        } else if (options.src.split('.').pop() === 'json') {
+            output = json2xml(fs.readFileSync(options.src, 'utf8'), options);
+        }
+        if (options.out) {
+            fs.writeFileSync(options.out, output, 'utf8');
+        } else {
+            console.log(output);
+        }
+    } else {
+        return -1;
+    }    
+};
+},{"./common":2,"./json2xml":5,"./xml2json":7,"fs":32}],2:[function(require,module,exports){
+(function (process){
+/*jslint node:true */
 
 module.exports = {
+    printCommandLineHelp: function (command, possibleArguments) {
+        var output = 'Usage: ' + command + ' src [options]' + '\n\n';
+        output += '  src  ' + Array(20 - 'src'.length).join(' ') + 'Input file that need to be processed.' + '\n';
+        output += '    ' + Array(20).join(' ') + 'Operation type xml->json or json->xml will be inferred from file extension.' + '\n\n';
+        output += 'Options:' + '\n';
+        possibleArguments.forEach(function (argument) {
+            if (argument.arg !== 'src') {
+                output += '  --' + argument.arg + Array(20 - argument.arg.length).join(' ') + argument.desc + '\n';
+            }
+        });
+        console.log(output);
+    },
+    mapCommandLineArgs: function (possibleArguments) {
+        var i, j, options = {};
+        for (i = 2; i < process.argv.length; ++i) {
+            j = -1;
+            possibleArguments.forEach(function (argument, index) {
+                if (argument.arg === process.argv[i].slice(2)) {
+                    j = index;
+                }
+            });
+            if (j >= 0) {
+                switch (possibleArguments[j].type) {
+                    case 'file': case 'number': case 'string':
+                        options[possibleArguments[j].option] = options[possibleArguments[++j].option]; break;
+                    case 'flag':
+                        options[possibleArguments[j].option] = true; break;
+                }
+            }
+        }
+        return options;
+    },
     copyOptions: function (options) {
         var key, copy = {};
         for (key in options) {
@@ -18,20 +103,27 @@ module.exports = {
     },
     checkKeyExist: function (key, options) {
         if (!(key + 'Key' in options) || typeof options[key + 'Key'] !== 'string') {
-            options[key + 'Key'] = options.compact || options.fromCompact ? '_' + key : key;
+            options[key + 'Key'] = options.compact ? '_' + key : key;
         }
     }
 };
-},{}],2:[function(require,module,exports){
+}).call(this,require('_process'))
+},{"_process":16}],3:[function(require,module,exports){
+(function (process){
 /*jslint node:true */
 
-module.exports = {
-    xml2js: require('./xml2js'),
-    xml2json: require('./xml2json'),
-    js2xml: require('./js2xml'),
-    json2xml: require('./json2xml')
-};
-},{"./js2xml":3,"./json2xml":4,"./xml2js":5,"./xml2json":6}],3:[function(require,module,exports){
+if (process.argv.length > 2) {
+    require('./cli')();
+} else {
+    module.exports = {
+        xml2js: require('./xml2js'),
+        xml2json: require('./xml2json'),
+        js2xml: require('./js2xml'),
+        json2xml: require('./json2xml')
+    };
+}
+}).call(this,require('_process'))
+},{"./cli":1,"./js2xml":4,"./json2xml":5,"./xml2js":6,"./xml2json":7,"_process":16}],4:[function(require,module,exports){
 /*jslint node:true */
 
 var common = require('./common');
@@ -43,12 +135,12 @@ function validateOptions (userOptions) {
     common.checkOptionExist('ignoreText', options);
     common.checkOptionExist('ignoreComment', options);
     common.checkOptionExist('ignoreCdata', options);
-    common.checkOptionExist('fromCompact', options);
+    common.checkOptionExist('compact', options);
     common.checkOptionExist('fullTagEmptyElement', options);
-    if (!('spaces' in options) || (typeof options.spaces !== 'number' && typeof options.spaces !== 'string' || isNaN(parseInt(options.spaces, 10)))) {
+    if (!('spaces' in options) || (typeof options.spaces !== 'number' && typeof options.spaces !== 'string')) {
         options.spaces = 0;
     }
-    if (!isNaN(parseInt(options.spaces, 10))) {
+    if (typeof options.spaces === 'number') {
         options.spaces = Array(options.spaces + 1).join(' ');
     }
     common.checkKeyExist('declaration', options);
@@ -69,7 +161,7 @@ module.exports = function (js, options) {
     if (js[options.declarationKey]) {
         xml += writeDeclaration(js[options.declarationKey], options);
     }
-    if (options.fromCompact) {
+    if (options.compact) {
         if (xml !== '' && Object.keys(js).length > 1 || xml === '' && Object.keys(js).length) {
             xml += writeElementCompact(js, null, options, 0, !xml);
         }
@@ -127,12 +219,12 @@ function writeElementCompact (element, name, options, depth, firstLine) {
     for (key in element) {
         if (element.hasOwnProperty(key)) {
             switch (key) {
-                case options.attributesKey: break;
+                case options.attributesKey: case options.parentKey: break;
                 case options.textKey: xml += writeText(element, options); break;
                 case options.cdataKey: xml += writeCdata(element, options); break;
                 case options.commentKey: xml += writeComment(element, options); break;
                 default:
-                    if (key !== [options.declarationKey] || depth !== 0) {
+                    if (depth !== 0 || key !== [options.declarationKey]) {
                         xml += writeElementCompact (element[key], key, options, depth + 1);
                     }
             }
@@ -174,7 +266,7 @@ function writeElement (element, options, depth) {
     }
     return xml;
 }
-},{"./common":1}],4:[function(require,module,exports){
+},{"./common":2}],5:[function(require,module,exports){
 (function (Buffer){
 /*jslint node:true */
 var js2xml = require('./js2xml.js');
@@ -197,7 +289,7 @@ module.exports = function (json, options) {
     return js2xml(js, options);
 };
 }).call(this,require("buffer").Buffer)
-},{"./js2xml.js":3,"buffer":31}],5:[function(require,module,exports){
+},{"./js2xml.js":4,"buffer":33}],6:[function(require,module,exports){
 /*jslint node:true */
 var sax = require('sax');
 var expat = {};
@@ -216,7 +308,7 @@ function validateOptions (userOptions) {
     common.checkOptionExist('ignoreComment', options);
     common.checkOptionExist('ignoreCdata', options);
     common.checkOptionExist('compact', options);
-    common.checkOptionExist('emptyChildren', options);
+    common.checkOptionExist('alwaysChildren', options);
     common.checkOptionExist('addParent', options);
     common.checkOptionExist('trim', options);
     common.checkOptionExist('nativeType', options);
@@ -239,7 +331,7 @@ module.exports = function(xml, userOptions) {
     var result = {};
     currentElement = result;
     
-    options = validateOptions(userOptions); //console.log(JSON.stringify(options, null, 4));
+    options = validateOptions(userOptions);
     
     if (pureJsParser) {
         parser.onopentag = onStartElement;
@@ -346,7 +438,7 @@ function onStartElement (name, attributes) {
             element[options.attributesKey] = attributes;
         }
         element[options.parentKey] = currentElement;
-        if (options.emptyChildren) {
+        if (options.alwaysChildren) {
             element[options.elementsKey] = [];
         }
         currentElement[options.elementsKey].push(element);
@@ -437,14 +529,14 @@ function addField (type, value, options) {
         currentElement[options.elementsKey].push(element);
     }
 }
-},{"./common":1,"sax":26}],6:[function(require,module,exports){
+},{"./common":2,"sax":27}],7:[function(require,module,exports){
 /*jslint node:true */
 var common = require('./common');
 var xml2js = require('./xml2js');
 
 function validateOptions (userOptions) {
     var options = common.copyOptions(userOptions);
-    if (!('spaces' in options) || (typeof options.spaces !== 'string' || isNaN(parseInt(options.spaces, 10)))) {
+    if (!('spaces' in options) || (typeof options.spaces !== 'string' && typeof options.spaces !== 'number')) {
         options.spaces = 0;
     }
     return options;
@@ -463,9 +555,9 @@ module.exports = function(xml, userOptions) {
     }
     return json.replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
 };
-},{"./common":1,"./xml2js":5}],7:[function(require,module,exports){
+},{"./common":2,"./xml2js":6}],8:[function(require,module,exports){
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -576,7 +668,7 @@ function objectToString(o) {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":12}],9:[function(require,module,exports){
+},{"../../is-buffer/index.js":13}],10:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -876,7 +968,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -962,7 +1054,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -987,7 +1079,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /**
  * Determine if an object is Buffer
  *
@@ -1006,14 +1098,14 @@ module.exports = function (obj) {
     ))
 }
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -1060,7 +1152,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 }
 
 }).call(this,require('_process'))
-},{"_process":15}],15:[function(require,module,exports){
+},{"_process":16}],16:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -1156,10 +1248,10 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = require("./lib/_stream_duplex.js")
 
-},{"./lib/_stream_duplex.js":17}],17:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":18}],18:[function(require,module,exports){
 // a duplex stream is just a stream that is both readable and writable.
 // Since JS doesn't have multiple prototypal inheritance, this class
 // prototypally inherits from Readable, and then parasitically from
@@ -1235,7 +1327,7 @@ function forEach(xs, f) {
     f(xs[i], i);
   }
 }
-},{"./_stream_readable":19,"./_stream_writable":21,"core-util-is":8,"inherits":11,"process-nextick-args":14}],18:[function(require,module,exports){
+},{"./_stream_readable":20,"./_stream_writable":22,"core-util-is":9,"inherits":12,"process-nextick-args":15}],19:[function(require,module,exports){
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
@@ -1262,7 +1354,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":20,"core-util-is":8,"inherits":11}],19:[function(require,module,exports){
+},{"./_stream_transform":21,"core-util-is":9,"inherits":12}],20:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -2145,7 +2237,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":17,"_process":15,"buffer":31,"core-util-is":8,"events":9,"inherits":11,"isarray":13,"process-nextick-args":14,"string_decoder/":28,"util":7}],20:[function(require,module,exports){
+},{"./_stream_duplex":18,"_process":16,"buffer":33,"core-util-is":9,"events":10,"inherits":12,"isarray":14,"process-nextick-args":15,"string_decoder/":29,"util":8}],21:[function(require,module,exports){
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -2326,7 +2418,7 @@ function done(stream, er) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":17,"core-util-is":8,"inherits":11}],21:[function(require,module,exports){
+},{"./_stream_duplex":18,"core-util-is":9,"inherits":12}],22:[function(require,module,exports){
 (function (process){
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
@@ -2845,10 +2937,10 @@ function CorkedRequest(state) {
   };
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":17,"_process":15,"buffer":31,"core-util-is":8,"events":9,"inherits":11,"process-nextick-args":14,"util-deprecate":29}],22:[function(require,module,exports){
+},{"./_stream_duplex":18,"_process":16,"buffer":33,"core-util-is":9,"events":10,"inherits":12,"process-nextick-args":15,"util-deprecate":30}],23:[function(require,module,exports){
 module.exports = require("./lib/_stream_passthrough.js")
 
-},{"./lib/_stream_passthrough.js":18}],23:[function(require,module,exports){
+},{"./lib/_stream_passthrough.js":19}],24:[function(require,module,exports){
 var Stream = (function (){
   try {
     return require('st' + 'ream'); // hack to fix a circular dependency issue when used with browserify
@@ -2862,13 +2954,13 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":17,"./lib/_stream_passthrough.js":18,"./lib/_stream_readable.js":19,"./lib/_stream_transform.js":20,"./lib/_stream_writable.js":21}],24:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":18,"./lib/_stream_passthrough.js":19,"./lib/_stream_readable.js":20,"./lib/_stream_transform.js":21,"./lib/_stream_writable.js":22}],25:[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
-},{"./lib/_stream_transform.js":20}],25:[function(require,module,exports){
+},{"./lib/_stream_transform.js":21}],26:[function(require,module,exports){
 module.exports = require("./lib/_stream_writable.js")
 
-},{"./lib/_stream_writable.js":21}],26:[function(require,module,exports){
+},{"./lib/_stream_writable.js":22}],27:[function(require,module,exports){
 (function (Buffer){
 ;(function (sax) { // wrapper for non-node envs
   sax.parser = function (strict, opt) { return new SAXParser(strict, opt) }
@@ -4448,7 +4540,7 @@ module.exports = require("./lib/_stream_writable.js")
 })(typeof exports === 'undefined' ? this.sax = {} : exports)
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":31,"stream":27,"string_decoder":28}],27:[function(require,module,exports){
+},{"buffer":33,"stream":28,"string_decoder":29}],28:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -4577,7 +4669,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":9,"inherits":11,"readable-stream/duplex.js":16,"readable-stream/passthrough.js":22,"readable-stream/readable.js":23,"readable-stream/transform.js":24,"readable-stream/writable.js":25}],28:[function(require,module,exports){
+},{"events":10,"inherits":12,"readable-stream/duplex.js":17,"readable-stream/passthrough.js":23,"readable-stream/readable.js":24,"readable-stream/transform.js":25,"readable-stream/writable.js":26}],29:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -4800,7 +4892,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":31}],29:[function(require,module,exports){
+},{"buffer":33}],30:[function(require,module,exports){
 (function (global){
 
 /**
@@ -4871,7 +4963,7 @@ function config (name) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict'
 
 exports.toByteArray = toByteArray
@@ -4982,7 +5074,9 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
+arguments[4][8][0].apply(exports,arguments)
+},{"dup":8}],33:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -6697,7 +6791,7 @@ function isnan (val) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":30,"ieee754":10,"isarray":13}],32:[function(require,module,exports){
+},{"base64-js":31,"ieee754":11,"isarray":14}],34:[function(require,module,exports){
 (function (Buffer){
 /*jslint node:true */
 /*global describe,it,expect,beforeEach*/
@@ -6719,11 +6813,11 @@ describe('Testing js2xml.js:', function () {
         
     });
     
-    describe('options = {fromCompact: true}', function () {
+    describe('options = {compact: true}', function () {
         
         describe('Options set to default values explicitly:', function () {
             
-            var options = {fromCompact: true, spaces: 0, ignoreText: false, ignoreComment: false, ignoreCdata: false, fullTagEmptyElement: false};
+            var options = {compact: true, spaces: 0, ignoreText: false, ignoreComment: false, ignoreCdata: false, fullTagEmptyElement: false};
             testItems(options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
@@ -6734,7 +6828,7 @@ describe('Testing js2xml.js:', function () {
         
         describe('options = {spaces: 0}', function () {
             
-            var options = {fromCompact: true, spaces: 0};
+            var options = {compact: true, spaces: 0};
             testItems(options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
@@ -6745,7 +6839,7 @@ describe('Testing js2xml.js:', function () {
         
         describe('options = {spaces: 0, ignoreText: true}', function () {
             
-            var options = {fromCompact: true, spaces: 0, ignoreText: true};
+            var options = {compact: true, spaces: 0, ignoreText: true};
             testItems(options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
@@ -6756,7 +6850,7 @@ describe('Testing js2xml.js:', function () {
         
         describe('options = {spaces: 0, ignoreComment: true}', function () {
             
-            var options = {fromCompact: true, spaces: 0, ignoreComment: true};
+            var options = {compact: true, spaces: 0, ignoreComment: true};
             testItems(options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
@@ -6767,7 +6861,7 @@ describe('Testing js2xml.js:', function () {
         
         describe('options = {spaces: 0, ignoreCdata: true}', function () {
             
-            var options = {fromCompact: true, spaces: 0, ignoreCdata: true};
+            var options = {compact: true, spaces: 0, ignoreCdata: true};
             testItems(options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
@@ -6778,7 +6872,7 @@ describe('Testing js2xml.js:', function () {
         
         describe('options = {spaces: 0, fullTagEmptyElement: true}', function () {
             
-            var options = {fromCompact: true, spaces: 0, fullTagEmptyElement: true};
+            var options = {compact: true, spaces: 0, fullTagEmptyElement: true};
             testItems(options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
@@ -6789,11 +6883,11 @@ describe('Testing js2xml.js:', function () {
         
     });
         
-    describe('options = {fromCompact: false}', function () {
+    describe('options = {compact: false}', function () {
         
         describe('Options set to default values explicitly:', function () {
             
-            var options = {fromCompact: false, spaces: 0, ignoreText: false, ignoreComment: false, ignoreCdata: false, fullTagEmptyElement: false};
+            var options = {compact: false, spaces: 0, ignoreText: false, ignoreComment: false, ignoreCdata: false, fullTagEmptyElement: false};
             testItems(options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
@@ -6872,7 +6966,7 @@ describe('Testing js2xml.js:', function () {
             
         });
         
-        xdescribe('options = {spaces: true}', function () {
+        describe('options = {spaces: true}', function () {
             
             var options = {spaces: true};
             testItems(options).forEach(function (test) {
@@ -6905,9 +6999,9 @@ describe('Testing js2xml.js:', function () {
             
         });
         
-        xdescribe('options = {spaces: \'  \'}', function () {
+        describe('options = {spaces: \'  \'}', function () {
             
-            var options = {spaces: '  '};
+            var options = {spaces: 'mm'};
             testItems(options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
@@ -6965,7 +7059,7 @@ describe('Testing js2xml.js:', function () {
     
 });
 }).call(this,require("buffer").Buffer)
-},{"../lib":2,"./test-items":33,"buffer":31}],33:[function(require,module,exports){
+},{"../lib":3,"./test-items":35,"buffer":33}],35:[function(require,module,exports){
 /*jslint node:true */
 
 var cases = [
@@ -7073,7 +7167,7 @@ module.exports = function (options) {
                     el.parent = obj;
                 });
             }
-            if (!options.compact && options.emptyChildren && obj.type === 'element' && !obj.elements) {
+            if (!options.compact && options.alwaysChildren && obj.type === 'element' && !obj.elements) {
                 obj.elements = [];
             }
         }
@@ -7094,13 +7188,14 @@ module.exports = function (options) {
         tests.push({desc: cases[i].desc, xml: null, js: null});
         //tests[i].xml = options.singleLine ? cases[i].xml.replace(/\r\n|\r|\n|^\s+/gm, '') : cases[i].xml;
         tests[i].xml = cases[i].xml;
-        if (!('spaces' in options) || options.spaces === 0) { tests[i].xml = tests[i].xml.replace(/>\n\v*/gm, '>'); }
-        if ('spaces' in options && options.spaces !== 0) { tests[i].xml = tests[i].xml.replace(/\v/g, Array(options.spaces + 1).join(' ')); }
+        if (!('spaces' in options) || options.spaces === 0 || typeof options.spaces === 'boolean') { tests[i].xml = tests[i].xml.replace(/>\n\v*/gm, '>'); }
+        if ('spaces' in options && options.spaces !== 0 && typeof options.spaces === 'number') { tests[i].xml = tests[i].xml.replace(/\v/g, Array(options.spaces + 1).join(' ')); }
+        if ('spaces' in options && typeof options.spaces === 'string') { tests[i].xml = tests[i].xml.replace(/\v/g, options.spaces); }
         if (options.ignoreText) { tests[i].xml = tests[i].xml.replace(/>([\s\S]*?)</gm, '><'); }
         if (options.ignoreComment) { tests[i].xml = tests[i].xml.replace(/<!--.*?-->/gm, ''); }
         if (options.ignoreCdata) { tests[i].xml = tests[i].xml.replace(/<!\[CDATA\[.*?\]\]>/gm, ''); }
         if (options.fullTagEmptyElement) { tests[i].xml = tests[i].xml.replace('<a/>', '<a></a>').replace('<b/>', '<b></b>').replace('<c/>', '<c></c>').replace('/>', '></a>'); }
-        if ('compact' in options && options.compact || 'fromCompact' in options && options.fromCompact) {
+        if ('compact' in options && options.compact) {
             tests[i].js = applyOptions(JSON.parse(JSON.stringify(cases[i].js1)));
         } else {
             tests[i].js = applyOptions(JSON.parse(JSON.stringify(cases[i].js2)));
@@ -7111,7 +7206,7 @@ module.exports = function (options) {
     }
     return tests;
 };
-},{}],34:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 /*jslint node:true */
 /*global describe,it,expect,beforeEach,afterEach*/
 
@@ -7149,7 +7244,7 @@ describe('Testing xml2js.js:', function () {
         
         describe('Options set to default values explicitly:', function () {
             
-            var options = {singleLine: false, compact: false, trim: false, sanitize: false, nativeType: false, emptyChildren: false, addParent: false};
+            var options = {singleLine: false, compact: false, trim: false, sanitize: false, nativeType: false, alwaysChildren: false, addParent: false};
             testItems(options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
@@ -7202,9 +7297,9 @@ describe('Testing xml2js.js:', function () {
             
         });
         
-        describe('options = {compact: false, emptyChildren: true}', function () {
+        describe('options = {compact: false, alwaysChildren: true}', function () {
             
-            var options = {compact: false, emptyChildren: true};
+            var options = {compact: false, alwaysChildren: true};
             testItems(options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
@@ -7230,7 +7325,7 @@ describe('Testing xml2js.js:', function () {
         
         describe('Options set to default values explicitly:', function () {
             
-            var options = {compact: true, trim: false, sanitize: false, nativeType: false, emptyChildren: false, addParent: false};
+            var options = {compact: true, trim: false, sanitize: false, nativeType: false, alwaysChildren: false, addParent: false};
             testItems(options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
@@ -7272,9 +7367,9 @@ describe('Testing xml2js.js:', function () {
             
         });
         
-        describe('options = {compact: true, emptyChildren: true}', function () {
+        describe('options = {compact: true, alwaysChildren: true}', function () {
             
-            var options = {compact: true, emptyChildren: true};
+            var options = {compact: true, alwaysChildren: true};
             testItems(options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
@@ -7358,4 +7453,4 @@ describe('Testing xml2js.js:', function () {
     });
     
 });
-},{"../lib":2,"./test-items":33}]},{},[32,34]);
+},{"../lib":3,"./test-items":35}]},{},[34,36]);

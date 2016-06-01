@@ -1,6 +1,6 @@
 {
   "name": "xml-js",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "description": "A convertor between XML text and Javascript object / JSON text.",
   "main": "index.js",
   "repository": {
@@ -24,17 +24,17 @@
     "json2xml",
     "xml2js",
     "xml2json",
-    "transformation",
-    "transforming",
-    "transformer",
     "transform",
-    "conversion",
-    "converting",
-    "convertor",
+    "transformer",
+    "transforming",
+    "transformation",
     "convert",
-    "parsing",
+    "convertor",
+    "converting",
+    "conversion",
+    "parse",
     "parser",
-    "parse"
+    "parsing"
   ],
   "dependencies": {
     "sax": "^1.2.1"
@@ -61,7 +61,8 @@
   "scripts": {
     "debug": "npm-run-all --parallel debug:*",
     "debug:listener": "node-inspector",
-    "debug:jasmine": "nodemon --watch lib/ --watch test/ --debug-brk test/index.js",
+    "xdebug:jasmine": "nodemon --watch lib/ --watch test/ --debug-brk test/index.js",
+    "debug:cli": "nodemon --watch lib/ --debug-brk index.js -- --help",
     "debug:live": "browser-sync start --port 8080 --server --startPath ?port=5858 --files lib/ test/ --no-open --no-ui --no-online",
     "debug:open": "biased-opener --browser chrome http://localhost:8080/?port=5858",
     "jasmine": "jasmine JASMINE_CONFIG_PATH=./jasmine.json",

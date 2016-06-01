@@ -1,4 +1,6 @@
-![Alt text](http://nashwaan.github.io/xml-js/images/logo.svg)
+![XML ⇔ JS/JSON](http://nashwaan.github.io/xml-js/images/logo.svg)
+
+Convert XML text to Javascript object (and vice versa) or to JSON text (and vice versa):
 
 [![Build Status](https://ci.appveyor.com/api/projects/status/0ky9f115m0f0r0gf?svg=true)](https://ci.appveyor.com/project/nashwaan/xml-js)
 [![Build Status](https://travis-ci.org/nashwaan/xml-js.svg?branch=master)](https://travis-ci.org/nashwaan/xml-js)
@@ -14,9 +16,9 @@
 [![npm](http://img.shields.io/npm/v/xml-js.svg)](https://www.npmjs.com/package/xml-js)
 [![License](https://img.shields.io/npm/l/xml-js.svg)](LICENSE)
 
-Convert XML text to Javascript object (and vice versa) or to JSON text (and vice versa):
+## Synopsis
 
-![Alt text](/synopsis.png?raw=true "Synopsis Diagram")
+![Convert XML ↔ JS/JSON as compact or non-compact](/synopsis.png?raw=true "Synopsis Diagram")
 
 ## Motivation
 
@@ -56,6 +58,18 @@ console.log(result1, '\n', result2);
 
 ### Examples
 
+| XML | JS/JSON compact | JS/JSON non-compact |
+|:----------------------|:--------|:------------|
+| `<?xml?>` | `{"_declaration":{}}` | `{"declaration":{}}` |
+| `<?xml version="1.0" encoding="utf-8"?>` | `{"_declaration":{"_attributes":{"version":"1.0","encoding":"utf-8"}}}` | `{"declaration":{"attributes":{"version":"1.0","encoding":"utf-8"}}}` |
+| `<!--Hello, World!-->` | `{"_comment":"Hello, World!"}` | `{"elements":[{"type":"comment","comment":"Hello, World!"}]}` |
+| `<![CDATA[<foo></bar>]]>` | `{"_cdata":"<foo></bar>"}` | `{"elements":[{"type":"cdata","cdata":"<foo></bar>"}]}` |
+| `<a/>` | `{"a":{}}` | `{"elements":[{"type":"element","name":"a"}]}` |
+| `<a x="1.234" y="It's"/>` | `{"a":{"_attributes":{"x":"1.234","y":"It's"}}}` | `{"elements":[{"type":"element","name":"a","attributes":{"x":"1.234","y":"It's"}}]}` |
+| `<a> Hi </a>` | `{"a":{"_text":" Hi "}}` | `{"elements":[{"type":"element","name":"a","elements":[{"type":"text","text":" Hi "}]}]}` |
+| `<a/><b/>` | `{"a":{},"b":{}}` | `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"}]}` |
+| `<a><b/></a>` | `{"a":{"b":{}}}` | `{"elements":[{"type":"element","name":"a","elements":[{"type":"element","name":"b"}]}]}` |
+
 ## API Reference
 
 ### 1. Convert JS object / JSON → XML
@@ -77,12 +91,12 @@ The below options are applicable for both `js2xml()` and `json2xml()` functions.
 | Option                | Default | Description |
 |:----------------------|:--------|:------------|
 | `ignoreDeclaration`   | `false` | Whether to ignore writing declaration directives of xml. For example, `<?xml?>` will be ignored. |
-| `ignoreAttributes`    | `false` | Whether to ignore writing texts of the elements. For example, `x="1"` in `<a x="1"></a>` will be ignored |
+| `ignoreAttributes`    | `false` | Whether to ignore writing attributes of the elements. For example, `x="1"` in `<a x="1"></a>` will be ignored |
 | `ignoreText`          | `false` | Whether to ignore writing texts of the elements. For example, `hi` text in `<a>hi</a>` will be ignored. |
 | `ignoreComment`       | `false` | Whether to ignore writing comments of the elements. That is, no `<!--  -->` will be generated. |
 | `ignoreCdata`         | `false` | Whether to ignore writing CData of the elements. That is, no `<![CDATA[  ]]>` will be generated. |
 | `spaces`              | `0`     | Number of spaces to be used for indenting XML output. |
-| `fromCompact`         | `false` | whether the source object is in compact form. |
+| `compact`             | `false` | whether the source object is in compact form. |
 | `fullTagEmptyElement` | `false` | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `</a>`. |
 
 ### 3. Convert XML → JS object / JSON
@@ -92,7 +106,7 @@ To convert XML text to JavaScript object, use `xml2js()`. To convert XML text to
 ```js
 var convert = require('xml-js');
 var xml = require('fs').readFileSync('test.xml');
-var options = {ignoreText: true, emptyChildren: true};
+var options = {ignoreText: true, alwaysChildren: true};
 var result = convert.xml2js(xml, options); // or convert.xml2json(xml, options)
 console.log(result);
 ```
@@ -109,7 +123,7 @@ The below options are applicable for both `xml2js()` and `xml2json()` functions.
 | `ignoreComment`     | `false` | Whether to ignore writing comments of the elements. That is, no `comment` will be generated. |
 | `ignoreCdata`       | `false` | Whether to ignore writing CData of the elements. That is, no `cdata` property will be generated. |
 | `compact`           | `false` | Whether to produce detailed object or compact object. |
-| `emptyChildren`     | `false` | Whether to always generate `elements` property even when there are no actual sub elements. |
+| `alwaysChildren`    | `false` | Whether to always generate `elements` property even when there are no actual sub elements. |
 | `addParent`         | `false` | Whether to add `parent` property in each element object that points to parent object. |
 | `trim`              | `false` | Whether to trim white space characters that may exist before and after the text. |
 | `nativeType`        | `false` | whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
@@ -137,18 +151,83 @@ To change default key names in the output object or the default key names assume
 | `nameKey`           | `"name"` | Name of the property key which will be used for the name. For example, if `nameKey: '$name'` then output of `<a></a>` will be `{"elements":[{"type":"element","$name":"a","attributes":{}}]}` *(in non-compact form)* |
 | `elementsKey`       | `"elements"` | Name of the property key which will be used for the elements. For example, if `elementsKey: '$elements'` then output of `<a></a>` will be `{"$elements":[{"type":"element","name":"a","attributes":{}}]}` *(in non-compact form)* |
 
-## Tests
+## As Command Line
+
+Because any good library should support command line usage, this library is no difference.
+
+### Usage
+
+```bash
+npm install -g xml-js       // install this library globally
+xml-js test.json            // this will cause test.json to be converted to test.xml
+xml-js test.xml             // this will cause test.xml to be converted to test.json
+```
+
+Or if you want to use it as script in package.json (can also be helpful in [task automation via npm scripts](http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/))
+
+```bash
+npm install --save xml-js   // no need to install this library globally
+```
+
+```json
+...
+  "dependents": {
+    "xml-js": "latest"
+  },
+  "scripts": {
+     "convert": "xml-js test.json"
+  }
+```
+  
+```bash
+npm run convert             // task 'scripts.convert' will be executed
+```
+
+### Command Line Arguments
+
+```bash
+Usage: xml-js src [options]
+
+  src                  Input file that need to be processed.
+                       Operation type xml->json or json->xml will be inferred from file extension.
+
+Options:
+  --help               Display help content.
+  --out                Output file where result should be written.
+  --spaces             Specifies amount of space indentation in the output.
+  --full-tag           XML elements will always be in <a></a> form.
+  --no-decl            Declaration instruction <?xml ..?> will be ignored.
+  --no-attr            Attributes of elements will be ignored.
+  --no-text            Texts of elements will be ignored.
+  --no-cdata           Cdata of elements will be ignored.
+  --no-comment         Comments of elements will be ignored.
+  --trim               Whitespaces surrounding texts will be trimmed.
+  --compact            JSON is in compact form.
+  --sanitize           Special xml characters will be replaced with entity codes.
+  --native-type        Text will be converted to native type.
+  --always-children    Every element will always contain sub-elements (applicable if --compact is not set).
+  --text-key           To change the default 'text' key.
+  --cdata-key          To change the default 'cdata' key.
+  --comment-key        To change the default 'comment' key.
+  --attributes-key     To change the default 'attributes' key.
+  --declaration-key    To change the default 'declaration' key.
+  --type-key           To change the default 'type' key. (applicable if --compact is not set)
+  --cdata-key          To change the default 'name' key. (applicable if --compact is not set)
+  --elements-key       To change the default 'elements' key. (applicable if --compact is not set)
+```
+
+## Contributions
+
+### Tests
 
 To perform tests on this project:
 
-```
+```bash
 cd node_modules/xml-js
 npm install
 npm test
 ```
 For live testing, use `npm start` instead of `npm test`.
-
-## Contributions
 
 ### Reporting
 

@@ -105,7 +105,7 @@ module.exports = function (options) {
                     el.parent = obj;
                 });
             }
-            if (!options.compact && options.emptyChildren && obj.type === 'element' && !obj.elements) {
+            if (!options.compact && options.alwaysChildren && obj.type === 'element' && !obj.elements) {
                 obj.elements = [];
             }
         }
@@ -126,13 +126,14 @@ module.exports = function (options) {
         tests.push({desc: cases[i].desc, xml: null, js: null});
         //tests[i].xml = options.singleLine ? cases[i].xml.replace(/\r\n|\r|\n|^\s+/gm, '') : cases[i].xml;
         tests[i].xml = cases[i].xml;
-        if (!('spaces' in options) || options.spaces === 0) { tests[i].xml = tests[i].xml.replace(/>\n\v*/gm, '>'); }
-        if ('spaces' in options && options.spaces !== 0) { tests[i].xml = tests[i].xml.replace(/\v/g, Array(options.spaces + 1).join(' ')); }
+        if (!('spaces' in options) || options.spaces === 0 || typeof options.spaces === 'boolean') { tests[i].xml = tests[i].xml.replace(/>\n\v*/gm, '>'); }
+        if ('spaces' in options && options.spaces !== 0 && typeof options.spaces === 'number') { tests[i].xml = tests[i].xml.replace(/\v/g, Array(options.spaces + 1).join(' ')); }
+        if ('spaces' in options && typeof options.spaces === 'string') { tests[i].xml = tests[i].xml.replace(/\v/g, options.spaces); }
         if (options.ignoreText) { tests[i].xml = tests[i].xml.replace(/>([\s\S]*?)</gm, '><'); }
         if (options.ignoreComment) { tests[i].xml = tests[i].xml.replace(/<!--.*?-->/gm, ''); }
         if (options.ignoreCdata) { tests[i].xml = tests[i].xml.replace(/<!\[CDATA\[.*?\]\]>/gm, ''); }
         if (options.fullTagEmptyElement) { tests[i].xml = tests[i].xml.replace('<a/>', '<a></a>').replace('<b/>', '<b></b>').replace('<c/>', '<c></c>').replace('/>', '></a>'); }
-        if ('compact' in options && options.compact || 'fromCompact' in options && options.fromCompact) {
+        if ('compact' in options && options.compact) {
             tests[i].js = applyOptions(JSON.parse(JSON.stringify(cases[i].js1)));
         } else {
             tests[i].js = applyOptions(JSON.parse(JSON.stringify(cases[i].js2)));

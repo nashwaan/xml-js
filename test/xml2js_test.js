@@ -35,7 +35,7 @@ describe('Testing xml2js.js:', function () {
         
         describe('Options set to default values explicitly:', function () {
             
-            var options = {singleLine: false, compact: false, trim: false, sanitize: false, nativeType: false, emptyChildren: false, addParent: false};
+            var options = {singleLine: false, compact: false, trim: false, sanitize: false, nativeType: false, alwaysChildren: false, addParent: false};
             testItems(options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
@@ -88,9 +88,9 @@ describe('Testing xml2js.js:', function () {
             
         });
         
-        describe('options = {compact: false, emptyChildren: true}', function () {
+        describe('options = {compact: false, alwaysChildren: true}', function () {
             
-            var options = {compact: false, emptyChildren: true};
+            var options = {compact: false, alwaysChildren: true};
             testItems(options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
@@ -116,7 +116,7 @@ describe('Testing xml2js.js:', function () {
         
         describe('Options set to default values explicitly:', function () {
             
-            var options = {compact: true, trim: false, sanitize: false, nativeType: false, emptyChildren: false, addParent: false};
+            var options = {compact: true, trim: false, sanitize: false, nativeType: false, alwaysChildren: false, addParent: false};
             testItems(options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
@@ -158,9 +158,9 @@ describe('Testing xml2js.js:', function () {
             
         });
         
-        describe('options = {compact: true, emptyChildren: true}', function () {
+        describe('options = {compact: true, alwaysChildren: true}', function () {
             
-            var options = {compact: true, emptyChildren: true};
+            var options = {compact: true, alwaysChildren: true};
             testItems(options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
