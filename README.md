@@ -171,7 +171,7 @@ npm install --save xml-js   // no need to install this library globally
 
 ```json
 ...
-  "dependents": {
+  "dependencies": {
     "xml-js": "latest"
   },
   "scripts": {

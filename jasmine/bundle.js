@@ -26,9 +26,9 @@ var possibleArguments = [
     {arg: 'comment-key', type: 'string', option:'commentKey', desc: 'To change the default \'comment\' key.'},
     {arg: 'attributes-key', type: 'string', option:'attributesKey', desc: 'To change the default \'attributes\' key.'},
     {arg: 'declaration-key', type: 'string', option:'declarationKey', desc: 'To change the default \'declaration\' key.'},
-    {arg: 'type-key', type: 'string', option:'typeKey', desc: 'To change the default \'type\' key. (applicable if --compact is not set)'},
-    {arg: 'cdata-key', type: 'string', option:'name', desc: 'To change the default \'name\' key. (applicable if --compact is not set)'},
-    {arg: 'elements-key', type: 'string', option:'elements', desc: 'To change the default \'elements\' key. (applicable if --compact is not set)'}
+    {arg: 'type-key', type: 'string', option:'typeKey', desc: 'To change the default \'type\' key (applicable if --compact is not set).'},
+    {arg: 'cdata-key', type: 'string', option:'name', desc: 'To change the default \'name\' key (applicable if --compact is not set).'},
+    {arg: 'elements-key', type: 'string', option:'elements', desc: 'To change the default \'elements\' key (applicable if --compact is not set).'}
 ];
 
 module.exports = function () {
