@@ -211,9 +211,9 @@ Options:
   --comment-key        To change the default 'comment' key.
   --attributes-key     To change the default 'attributes' key.
   --declaration-key    To change the default 'declaration' key.
-  --type-key           To change the default 'type' key. (applicable if --compact is not set)
-  --cdata-key          To change the default 'name' key. (applicable if --compact is not set)
-  --elements-key       To change the default 'elements' key. (applicable if --compact is not set)
+  --type-key           To change the default 'type' key (applicable if --compact is not set).
+  --cdata-key          To change the default 'name' key (applicable if --compact is not set).
+  --elements-key       To change the default 'elements' key (applicable if --compact is not set).
 ```
 
 ## Contributions

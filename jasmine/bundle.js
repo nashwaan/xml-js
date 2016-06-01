@@ -35,7 +35,7 @@ module.exports = function () {
     var output, options = common.mapCommandLineArgs(possibleArguments);
     if (options.help) {
         common.printCommandLineHelp ('xml-js', possibleArguments);
-    } else if (fs.statSync(options.src).isFile()) {
+    } else if ('src' in options && fs.statSync(options.src).isFile()) {
         if (options.src.split('.').pop() === 'xml') {
             output = xml2json(fs.readFileSync(options.src, 'utf8'), options);
         } else if (options.src.split('.').pop() === 'json') {
@@ -114,14 +114,14 @@ module.exports = {
 
 if (process.argv.length > 2) {
     require('./cli')();
-} else {
-    module.exports = {
-        xml2js: require('./xml2js'),
-        xml2json: require('./xml2json'),
-        js2xml: require('./js2xml'),
-        json2xml: require('./json2xml')
-    };
 }
+
+module.exports = {
+    xml2js: require('./xml2js'),
+    xml2json: require('./xml2json'),
+    js2xml: require('./js2xml'),
+    json2xml: require('./json2xml')
+};
 }).call(this,require('_process'))
 },{"./cli":1,"./js2xml":4,"./json2xml":5,"./xml2js":6,"./xml2json":7,"_process":16}],4:[function(require,module,exports){
 /*jslint node:true */
