@@ -1,6 +1,6 @@
 {
   "name": "xml-js",
-  "version": "0.8.5",
+  "version": "0.8.6",
   "description": "A convertor between XML text and Javascript object / JSON text.",
   "main": "index.js",
   "repository": {
@@ -36,6 +36,7 @@
     "parser",
     "parsing"
   ],
+  "bin": "./bin/cli.js",
   "dependencies": {
     "sax": "^1.2.1"
   },

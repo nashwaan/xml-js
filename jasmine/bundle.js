@@ -57,8 +57,8 @@ module.exports = function () {
 module.exports = {
     printCommandLineHelp: function (command, possibleArguments) {
         var output = 'Usage: ' + command + ' src [options]' + '\n\n';
-        output += '  src  ' + Array(20 - 'src'.length).join(' ') + 'Input file that need to be processed.' + '\n';
-        output += '    ' + Array(20).join(' ') + 'Operation type xml->json or json->xml will be inferred from file extension.' + '\n\n';
+        output += '  src  ' + Array(20 - 'src'.length).join(' ') + 'Input file that need to be converted.' + '\n';
+        output += '    ' + Array(20).join(' ') + 'Conversion type xml->json or json->xml will be inferred from file extension.' + '\n\n';
         output += 'Options:' + '\n';
         possibleArguments.forEach(function (argument) {
             if (argument.arg !== 'src') {
@@ -73,6 +73,8 @@ module.exports = {
             j = -1;
             possibleArguments.forEach(function (argument, index) {
                 if (argument.arg === process.argv[i].slice(2)) {
+                    j = index;
+                } else if (argument.alias === process.argv[i].slice(1)) {
                     j = index;
                 }
             });
@@ -200,7 +202,7 @@ function writeCdata (element, options) {
 }
 
 function writeText (element, options) {
-    return options.ignoreText ? '' : element[options.textKey].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    return options.ignoreText ? '' : element[options.textKey].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
 }
 
 function writeElementCompact (element, name, options, depth, firstLine) {
@@ -292,8 +294,7 @@ module.exports = function (json, options) {
 },{"./js2xml.js":4,"buffer":33}],6:[function(require,module,exports){
 /*jslint node:true */
 var sax = require('sax');
-var expat = {};
-//var expat = require('node-expat');
+var expat = {}; // = require('node-expat');
 var common = require('./common');
 
 var options;
@@ -496,7 +497,7 @@ function onError (error) {
 }
 
 function sanitize (text) {
-    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
 }
 
 function nativeType (value) {

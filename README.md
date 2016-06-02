@@ -1,6 +1,6 @@
 ![XML ⇔ JS/JSON](http://nashwaan.github.io/xml-js/images/logo.svg)
 
-Convert XML text to Javascript object (and vice versa) or to JSON text (and vice versa):
+Convert XML text to Javascript object / JSON text (and vice versa).
 
 [![Build Status](https://ci.appveyor.com/api/projects/status/0ky9f115m0f0r0gf?svg=true)](https://ci.appveyor.com/project/nashwaan/xml-js)
 [![Build Status](https://travis-ci.org/nashwaan/xml-js.svg?branch=master)](https://travis-ci.org/nashwaan/xml-js)
@@ -24,13 +24,42 @@ Convert XML text to Javascript object (and vice versa) or to JSON text (and vice
 
 There are many XML to JavaScript/JSON converters out there, but could not satisfy the following requirements:
 
- * **Maintain order of sub-nodes in xml**:
-    I wanted `<a/><b/><a/>` to give output as `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"},{"type":"element","name":"a"}]}` instead of `{a:{},b:{}}`.
- * Fully XML Compliant
- * Portable (this is default behavior: only Javascript code, slower execution)
- * Fast (if required; will compile on VC++)
- * Support streaming
- * Support command line
+* **Maintain Order of Sub-elements**:
+ I wanted `<a/><b/><a/>` to give output as `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"},{"type":"element","name":"a"}]}` instead of `{a:[{},{}],b:{}}`.
+
+* **Fully XML Compliant**:
+ Can parse: Comments, Processing Instructions, XML Declarations, Entity declarations, and CDATA Sections.
+
+* **Reversible**:
+ Whether converting xml→json or json→xml, the result should be convertable to its original form.
+
+* **Chnage Property Key Name**:
+ Usually output of XML attributes are stored in `@attr`, `_atrr`, `$attr`, `$`, or `whatever` in order to avoid conflicting with name of sub-elements. 
+ This library store them in `attributes`, but most importantly, you can change this to whatever you like.
+
+* **Portable Code**:
+ Written purely in JavaScript (this is default behavior, but this can be slow for very large XML text)
+
+* **Fast Code** (if required):
+ With little effort, the underlying [sax engine](https://www.npmjs.com/package/sax) (based on JavaScript) can be sustituted with [node-expat engine](https://github.com/astro/node-expat) (based on VC++).
+
+* **Support Command Line**:
+ To quickly convert xml or json files, use it as [script](https://docs.npmjs.com/misc/scripts) in package.json
+
+* **Support Streaming**:
+ ...
+   
+### Compact vs Non-Compact
+
+Most XML parsers (including online parsers) convert `<a/>` to some compact result like `{"a":{}}` 
+instead of non-compact result like `{"elements":[{"type":"element","name":"a"}]}`.
+While this result might work in most cases, there are cases when different elements are mixed inside a parent element: `<n><a x="1"/><b x="2"/><a x="3"/></n>`.
+In this case, the compact output will be `{n:{a:[{_:{x:"1"}},{_:{x:"3"}}],b:{_:{x:"2"}}}}`, 
+which has merged the second `<a/>` with the first `<a/>` into an array and so the order is not preserved.
+
+Although non-compact output is more accurate representation of original XML than compact version, the non-compact consumes more space on disk.
+This library provides both options. Use `{compact: false}` if you are not sure because it preserves everything; 
+otherwise use `{compact: true}` if you want to save space and you don't care about mixing elements of same type.
 
 ## Usage
 
@@ -56,7 +85,9 @@ var result2 = convert.xml2json(xml, {compact: false, spaces: 4});
 console.log(result1, '\n', result2);
 ```
 
-### Examples
+To see the output of this code, see the picture above in *Synopsis* section.
+
+### Sample Conversions
 
 | XML | JS/JSON compact | JS/JSON non-compact |
 |:----------------------|:--------|:------------|
@@ -90,14 +121,14 @@ The below options are applicable for both `js2xml()` and `json2xml()` functions.
 
 | Option                | Default | Description |
 |:----------------------|:--------|:------------|
+| `spaces`              | `0`     | Number of spaces to be used for indenting XML output. |
+| `compact`             | `false` | Whether the *input* object is in compact form or not. |
+| `fullTagEmptyElement` | `false` | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `</a>`. |
 | `ignoreDeclaration`   | `false` | Whether to ignore writing declaration directives of xml. For example, `<?xml?>` will be ignored. |
 | `ignoreAttributes`    | `false` | Whether to ignore writing attributes of the elements. For example, `x="1"` in `<a x="1"></a>` will be ignored |
-| `ignoreText`          | `false` | Whether to ignore writing texts of the elements. For example, `hi` text in `<a>hi</a>` will be ignored. |
 | `ignoreComment`       | `false` | Whether to ignore writing comments of the elements. That is, no `<!--  -->` will be generated. |
 | `ignoreCdata`         | `false` | Whether to ignore writing CData of the elements. That is, no `<![CDATA[  ]]>` will be generated. |
-| `spaces`              | `0`     | Number of spaces to be used for indenting XML output. |
-| `compact`             | `false` | whether the source object is in compact form. |
-| `fullTagEmptyElement` | `false` | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `</a>`. |
+| `ignoreText`          | `false` | Whether to ignore writing texts of the elements. For example, `hi` text in `<a>hi</a>` will be ignored. |
 
 ### 3. Convert XML → JS object / JSON
 
@@ -117,17 +148,17 @@ The below options are applicable for both `xml2js()` and `xml2json()` functions.
 
 | Option              | Default | Description |
 |:--------------------|:--------|:------------|
+| `compact`           | `false` | Whether to produce detailed object or compact object. |
+| `trim`              | `false` | Whether to trim white space characters that may exist before and after the text. |
+| `sanitize`          | `false` | Whether to replace `&` `<` `>` `"` `'` with `&amp;` `&lt;` `&gt;` `&quot;` `&apos;` respectively in the resultant text. |
+| `nativeType`        | `false` | whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
+| `addParent`         | `false` | Whether to add `parent` property in each element object that points to parent object. |
+| `alwaysChildren`    | `false` | Whether to always generate `elements` property even when there are no actual sub elements. |
 | `ignoreDeclaration` | `false` | Whether to ignore writing declaration property. That is, no `declaration` property will be generated. |
 | `ignoreAttributes`  | `false` | Whether to ignore writing attributes of elements.That is, no `attributes` property will be generated. |
-| `ignoreText`        | `false` | Whether to ignore writing texts of the elements. That is, no `text` property will be generated. |
 | `ignoreComment`     | `false` | Whether to ignore writing comments of the elements. That is, no `comment` will be generated. |
-| `ignoreCdata`       | `false` | Whether to ignore writing CData of the elements. That is, no `cdata` property will be generated. |
-| `compact`           | `false` | Whether to produce detailed object or compact object. |
-| `alwaysChildren`    | `false` | Whether to always generate `elements` property even when there are no actual sub elements. |
-| `addParent`         | `false` | Whether to add `parent` property in each element object that points to parent object. |
-| `trim`              | `false` | Whether to trim white space characters that may exist before and after the text. |
-| `nativeType`        | `false` | whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
-| `sanitize`          | `false` | Whether to replace `&` `<` `>` `"` `'` with `&amp;` `&lt;` `&gt;` `&quot;` `&#039;` respectively in the resultant text. |
+| `ignoreCdata`       | `false` | Whether to ignore writing CData of the elements. That is, no `cdata` will be generated. |
+| `ignoreText`        | `false` | Whether to ignore writing texts of the elements. That is, no `text` will be generated. |
 
 The below option is applicable only for `xml2json()` function.
 
@@ -144,12 +175,15 @@ To change default key names in the output object or the default key names assume
 | `declarationKey`    | `"declaration"` or `"_declaration"` | Name of the property key which will be used for the declaration. For example, if `declarationKey: '$declaration'` then output of `<?xml?>` will be `{"$declaration":{}}` *(in compact form)* |
 | `attributesKey`     | `"attributes"` or `"_attributes"` | Name of the property key which will be used for the attributes. For example, if `attributesKey: '$attributes'` then output of `<a x="hello"/>` will be `{"a":{$attributes:{"x":"hello"}}}` *(in compact form)* |
 | `textKey`           | `"text"` or `"_text"` | Name of the property key which will be used for the text. For example, if `textKey: '$text'` then output of `<a>hi</a>` will be `{"a":{"$text":"Hi"}}` *(in compact form)* |
+| `cdataKey`          | `"cdata"` or `"_cdata"` | Name of the property key which will be used for the cdata. For example, if `cdataKey: '$cdata'` then output of `<![CDATA[1 is < 2]]>` will be `{"$cdata":"1 is < 2"}` *(in compact form)* |
 | `commentKey`        | `"comment"` or `"_comment"` | Name of the property key which will be used for the comment. For example, if `commentKey: '$comment'` then output of `<!--note-->` will be `{"$comment":"note"}` *(in compact form)* |
-| `cdataKey`          | `"cdat"` or `"_cdata"` | Name of the property key which will be used for the cdata. For example, if `cdataKey: '$cdata'` then output of `<![CDATA[1 is < 2]]>` will be `{"$cdata":"1 is < 2"}` *(in compact form)* |
 | `parentKey`         | `"parent"` or `"_parent"` | Name of the property key which will be used for the parent. For example, if `parentKey: '$parent'` then output of `<a></b></a>` will be `{"a":{"b":{$parent:_points_to_a}}}` *(in compact form)* |
 | `typeKey`           | `"type"` | Name of the property key which will be used for the type. For example, if `typeKey: '$type'` then output of `<a></a>` will be `{"elements":[{"$type":"element","name":"a","attributes":{}}]}` *(in non-compact form)* |
 | `nameKey`           | `"name"` | Name of the property key which will be used for the name. For example, if `nameKey: '$name'` then output of `<a></a>` will be `{"elements":[{"type":"element","$name":"a","attributes":{}}]}` *(in non-compact form)* |
 | `elementsKey`       | `"elements"` | Name of the property key which will be used for the elements. For example, if `elementsKey: '$elements'` then output of `<a></a>` will be `{"$elements":[{"type":"element","name":"a","attributes":{}}]}` *(in non-compact form)* |
+
+> Note: You probably want to set `{textKey: 'value', cdataKey: 'value', commentKey: 'value'}` for non-compact output
+> to make it more consistent and easier for your client code to go through the contents of text, cdata, and comment.
 
 ## As Command Line
 
@@ -159,8 +193,8 @@ Because any good library should support command line usage, this library is no d
 
 ```bash
 npm install -g xml-js       // install this library globally
-xml-js test.json            // this will cause test.json to be converted to test.xml
-xml-js test.xml             // this will cause test.xml to be converted to test.json
+xml-js test.json            // test.json will be converted to test.xml
+xml-js test.xml             // test.xml will be converted to test.json
 ```
 
 Or if you want to use it as script in package.json (can also be helpful in [task automation via npm scripts](http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/))
@@ -216,9 +250,20 @@ Options:
   --elements-key       To change the default 'elements' key (applicable if --compact is not set).
 ```
 
-## Contributions
+## Contribution
 
-### Tests
+### Comparison with Other Libraries
+
+[xml2js](https://www.npmjs.com/package/xml2js)
+[xml2json](https://www.npmjs.com/package/xml2json)
+[xml-objects](https://www.npmjs.com/package/xml-objects)
+[xml-js-converter](https://www.npmjs.com/package/xml-js-converter)
+[fast-xml2js](https://www.npmjs.com/package/fast-xml2js)
+[co-xml2js](https://www.npmjs.com/package/co-xml2js)
+[xml-simple](https://www.npmjs.com/package/xml-simple)
+[xml2js-expat](https://www.npmjs.com/package/xml2js-expat)
+
+### Testing
 
 To perform tests on this project:
 
