@@ -1,56 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-/*jslint node:true */
-var fs = require('fs');
-var common = require('./common');
-var xml2json = require('./xml2json');
-var json2xml = require('./json2xml');
-
-var possibleArguments = [
-    {arg: 'help', type: 'flag', option: 'help', desc: 'Display help content.'},
-    {arg: 'src', type: 'file', option: 'src', desc: 'Input file that need to be processed.'},
-    {arg: 'out', type: 'file', option: 'out', desc: 'Output file where result should be written.'},
-    {arg: 'spaces', type: 'number', option:'spaces', desc: 'Specifies amount of space indentation in the output.'},
-    {arg: 'full-tag', type: 'flag', option:'fullTagEmptyElement', desc: 'XML elements will always be in <a></a> form.'},
-    {arg: 'no-decl', type: 'flag', option:'ignoreDeclaration', desc: 'Declaration instruction <?xml ..?> will be ignored.'},
-    {arg: 'no-attr', type: 'flag', option:'ignoreAttributes', desc: 'Attributes of elements will be ignored.'},
-    {arg: 'no-text', type: 'flag', option:'ignoreText', desc: 'Texts of elements will be ignored.'},
-    {arg: 'no-cdata', type: 'flag', option:'ignoreCdata', desc: 'Cdata of elements will be ignored.'},
-    {arg: 'no-comment', type: 'flag', option:'ignoreComment', desc: 'Comments of elements will be ignored.'},
-    {arg: 'trim', type: 'flag', option:'trim', desc: 'Whitespaces surrounding texts will be trimmed.'},
-    {arg: 'compact', type: 'flag', option:'compact', desc: 'Compact JSON form (see www.npmjs.com/package/xml-js).'},
-    {arg: 'sanitize', type: 'flag', option:'sanitize', desc: 'Special xml characters will be replaced with entity codes.'},
-    {arg: 'native-type', type: 'flag', option:'nativeType', desc: 'Text will be converted to native type.'},
-    {arg: 'always-children', type: 'flag', option:'alwaysChildren', desc: 'Every element will always contain sub-elements (applicable if --compact is not set).'},
-    {arg: 'text-key', type: 'string', option:'textKey', desc: 'To change the default \'text\' key.'},
-    {arg: 'cdata-key', type: 'string', option:'cdataKey', desc: 'To change the default \'cdata\' key.'},
-    {arg: 'comment-key', type: 'string', option:'commentKey', desc: 'To change the default \'comment\' key.'},
-    {arg: 'attributes-key', type: 'string', option:'attributesKey', desc: 'To change the default \'attributes\' key.'},
-    {arg: 'declaration-key', type: 'string', option:'declarationKey', desc: 'To change the default \'declaration\' key.'},
-    {arg: 'type-key', type: 'string', option:'typeKey', desc: 'To change the default \'type\' key (applicable if --compact is not set).'},
-    {arg: 'cdata-key', type: 'string', option:'name', desc: 'To change the default \'name\' key (applicable if --compact is not set).'},
-    {arg: 'elements-key', type: 'string', option:'elements', desc: 'To change the default \'elements\' key (applicable if --compact is not set).'}
-];
-
-module.exports = function () {
-    var output, options = common.mapCommandLineArgs(possibleArguments);
-    if (options.help) {
-        common.printCommandLineHelp ('xml-js', possibleArguments);
-    } else if ('src' in options && fs.statSync(options.src).isFile()) {
-        if (options.src.split('.').pop() === 'xml') {
-            output = xml2json(fs.readFileSync(options.src, 'utf8'), options);
-        } else if (options.src.split('.').pop() === 'json') {
-            output = json2xml(fs.readFileSync(options.src, 'utf8'), options);
-        }
-        if (options.out) {
-            fs.writeFileSync(options.out, output, 'utf8');
-        } else {
-            console.log(output);
-        }
-    } else {
-        return -1;
-    }    
-};
-},{"./common":2,"./json2xml":5,"./xml2json":7,"fs":32}],2:[function(require,module,exports){
 (function (process){
 /*jslint node:true */
 
@@ -110,13 +58,8 @@ module.exports = {
     }
 };
 }).call(this,require('_process'))
-},{"_process":16}],3:[function(require,module,exports){
-(function (process){
+},{"_process":15}],2:[function(require,module,exports){
 /*jslint node:true */
-
-if (process.argv.length > 2) {
-    require('./cli')();
-}
 
 module.exports = {
     xml2js: require('./xml2js'),
@@ -124,8 +67,7 @@ module.exports = {
     js2xml: require('./js2xml'),
     json2xml: require('./json2xml')
 };
-}).call(this,require('_process'))
-},{"./cli":1,"./js2xml":4,"./json2xml":5,"./xml2js":6,"./xml2json":7,"_process":16}],4:[function(require,module,exports){
+},{"./js2xml":3,"./json2xml":4,"./xml2js":5,"./xml2json":6}],3:[function(require,module,exports){
 /*jslint node:true */
 
 var common = require('./common');
@@ -268,7 +210,7 @@ function writeElement (element, options, depth) {
     }
     return xml;
 }
-},{"./common":2}],5:[function(require,module,exports){
+},{"./common":1}],4:[function(require,module,exports){
 (function (Buffer){
 /*jslint node:true */
 var js2xml = require('./js2xml.js');
@@ -291,7 +233,7 @@ module.exports = function (json, options) {
     return js2xml(js, options);
 };
 }).call(this,require("buffer").Buffer)
-},{"./js2xml.js":4,"buffer":33}],6:[function(require,module,exports){
+},{"./js2xml.js":3,"buffer":31}],5:[function(require,module,exports){
 /*jslint node:true */
 var sax = require('sax');
 var expat = {}; // = require('node-expat');
@@ -530,7 +472,7 @@ function addField (type, value, options) {
         currentElement[options.elementsKey].push(element);
     }
 }
-},{"./common":2,"sax":27}],7:[function(require,module,exports){
+},{"./common":1,"sax":26}],6:[function(require,module,exports){
 /*jslint node:true */
 var common = require('./common');
 var xml2js = require('./xml2js');
@@ -556,9 +498,9 @@ module.exports = function(xml, userOptions) {
     }
     return json.replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
 };
-},{"./common":2,"./xml2js":6}],8:[function(require,module,exports){
+},{"./common":1,"./xml2js":5}],7:[function(require,module,exports){
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -669,7 +611,7 @@ function objectToString(o) {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":13}],10:[function(require,module,exports){
+},{"../../is-buffer/index.js":12}],9:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -969,7 +911,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -1055,7 +997,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -1080,7 +1022,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /**
  * Determine if an object is Buffer
  *
@@ -1099,14 +1041,14 @@ module.exports = function (obj) {
     ))
 }
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -1153,7 +1095,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 }
 
 }).call(this,require('_process'))
-},{"_process":16}],16:[function(require,module,exports){
+},{"_process":15}],15:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -1249,10 +1191,10 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = require("./lib/_stream_duplex.js")
 
-},{"./lib/_stream_duplex.js":18}],18:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":17}],17:[function(require,module,exports){
 // a duplex stream is just a stream that is both readable and writable.
 // Since JS doesn't have multiple prototypal inheritance, this class
 // prototypally inherits from Readable, and then parasitically from
@@ -1328,7 +1270,7 @@ function forEach(xs, f) {
     f(xs[i], i);
   }
 }
-},{"./_stream_readable":20,"./_stream_writable":22,"core-util-is":9,"inherits":12,"process-nextick-args":15}],19:[function(require,module,exports){
+},{"./_stream_readable":19,"./_stream_writable":21,"core-util-is":8,"inherits":11,"process-nextick-args":14}],18:[function(require,module,exports){
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
@@ -1355,7 +1297,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":21,"core-util-is":9,"inherits":12}],20:[function(require,module,exports){
+},{"./_stream_transform":20,"core-util-is":8,"inherits":11}],19:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -2238,7 +2180,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":18,"_process":16,"buffer":33,"core-util-is":9,"events":10,"inherits":12,"isarray":14,"process-nextick-args":15,"string_decoder/":29,"util":8}],21:[function(require,module,exports){
+},{"./_stream_duplex":17,"_process":15,"buffer":31,"core-util-is":8,"events":9,"inherits":11,"isarray":13,"process-nextick-args":14,"string_decoder/":28,"util":7}],20:[function(require,module,exports){
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -2419,7 +2361,7 @@ function done(stream, er) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":18,"core-util-is":9,"inherits":12}],22:[function(require,module,exports){
+},{"./_stream_duplex":17,"core-util-is":8,"inherits":11}],21:[function(require,module,exports){
 (function (process){
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
@@ -2938,10 +2880,10 @@ function CorkedRequest(state) {
   };
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":18,"_process":16,"buffer":33,"core-util-is":9,"events":10,"inherits":12,"process-nextick-args":15,"util-deprecate":30}],23:[function(require,module,exports){
+},{"./_stream_duplex":17,"_process":15,"buffer":31,"core-util-is":8,"events":9,"inherits":11,"process-nextick-args":14,"util-deprecate":29}],22:[function(require,module,exports){
 module.exports = require("./lib/_stream_passthrough.js")
 
-},{"./lib/_stream_passthrough.js":19}],24:[function(require,module,exports){
+},{"./lib/_stream_passthrough.js":18}],23:[function(require,module,exports){
 var Stream = (function (){
   try {
     return require('st' + 'ream'); // hack to fix a circular dependency issue when used with browserify
@@ -2955,13 +2897,13 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":18,"./lib/_stream_passthrough.js":19,"./lib/_stream_readable.js":20,"./lib/_stream_transform.js":21,"./lib/_stream_writable.js":22}],25:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":17,"./lib/_stream_passthrough.js":18,"./lib/_stream_readable.js":19,"./lib/_stream_transform.js":20,"./lib/_stream_writable.js":21}],24:[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
-},{"./lib/_stream_transform.js":21}],26:[function(require,module,exports){
+},{"./lib/_stream_transform.js":20}],25:[function(require,module,exports){
 module.exports = require("./lib/_stream_writable.js")
 
-},{"./lib/_stream_writable.js":22}],27:[function(require,module,exports){
+},{"./lib/_stream_writable.js":21}],26:[function(require,module,exports){
 (function (Buffer){
 ;(function (sax) { // wrapper for non-node envs
   sax.parser = function (strict, opt) { return new SAXParser(strict, opt) }
@@ -4541,7 +4483,7 @@ module.exports = require("./lib/_stream_writable.js")
 })(typeof exports === 'undefined' ? this.sax = {} : exports)
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":33,"stream":28,"string_decoder":29}],28:[function(require,module,exports){
+},{"buffer":31,"stream":27,"string_decoder":28}],27:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -4670,7 +4612,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":10,"inherits":12,"readable-stream/duplex.js":17,"readable-stream/passthrough.js":23,"readable-stream/readable.js":24,"readable-stream/transform.js":25,"readable-stream/writable.js":26}],29:[function(require,module,exports){
+},{"events":9,"inherits":11,"readable-stream/duplex.js":16,"readable-stream/passthrough.js":22,"readable-stream/readable.js":23,"readable-stream/transform.js":24,"readable-stream/writable.js":25}],28:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -4893,7 +4835,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":33}],30:[function(require,module,exports){
+},{"buffer":31}],29:[function(require,module,exports){
 (function (global){
 
 /**
@@ -4964,7 +4906,7 @@ function config (name) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict'
 
 exports.toByteArray = toByteArray
@@ -5075,9 +5017,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],32:[function(require,module,exports){
-arguments[4][8][0].apply(exports,arguments)
-},{"dup":8}],33:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -6792,7 +6732,7 @@ function isnan (val) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":31,"ieee754":11,"isarray":14}],34:[function(require,module,exports){
+},{"base64-js":30,"ieee754":10,"isarray":13}],32:[function(require,module,exports){
 (function (Buffer){
 /*jslint node:true */
 /*global describe,it,expect,beforeEach*/
@@ -7060,7 +7000,7 @@ describe('Testing js2xml.js:', function () {
     
 });
 }).call(this,require("buffer").Buffer)
-},{"../lib":3,"./test-items":35,"buffer":33}],35:[function(require,module,exports){
+},{"../lib":2,"./test-items":33,"buffer":31}],33:[function(require,module,exports){
 /*jslint node:true */
 
 var cases = [
@@ -7207,7 +7147,7 @@ module.exports = function (options) {
     }
     return tests;
 };
-},{}],36:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 /*jslint node:true */
 /*global describe,it,expect,beforeEach,afterEach*/
 
@@ -7454,4 +7394,4 @@ describe('Testing xml2js.js:', function () {
     });
     
 });
-},{"../lib":3,"./test-items":35}]},{},[34,36]);
+},{"../lib":2,"./test-items":33}]},{},[32,34]);
