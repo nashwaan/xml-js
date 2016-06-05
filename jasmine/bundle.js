@@ -3,40 +3,6 @@
 /*jslint node:true */
 
 module.exports = {
-    printCommandLineHelp: function (command, possibleArguments) {
-        var output = 'Usage: ' + command + ' src [options]' + '\n\n';
-        output += '  src  ' + Array(20 - 'src'.length).join(' ') + 'Input file that need to be converted.' + '\n';
-        output += '    ' + Array(20).join(' ') + 'Conversion type xml->json or json->xml will be inferred from file extension.' + '\n\n';
-        output += 'Options:' + '\n';
-        possibleArguments.forEach(function (argument) {
-            if (argument.arg !== 'src') {
-                output += '  --' + argument.arg + Array(20 - argument.arg.length).join(' ') + argument.desc + '\n';
-            }
-        });
-        console.log(output);
-    },
-    mapCommandLineArgs: function (possibleArguments) {
-        var i, j, options = {};
-        for (i = 2; i < process.argv.length; ++i) {
-            j = -1;
-            possibleArguments.forEach(function (argument, index) {
-                if (argument.arg === process.argv[i].slice(2)) {
-                    j = index;
-                } else if (argument.alias === process.argv[i].slice(1)) {
-                    j = index;
-                }
-            });
-            if (j >= 0) {
-                switch (possibleArguments[j].type) {
-                    case 'file': case 'number': case 'string':
-                        options[possibleArguments[j].option] = options[possibleArguments[++j].option]; break;
-                    case 'flag':
-                        options[possibleArguments[j].option] = true; break;
-                }
-            }
-        }
-        return options;
-    },
     copyOptions: function (options) {
         var key, copy = {};
         for (key in options) {
@@ -46,15 +12,50 @@ module.exports = {
         }
         return copy;
     },
-    checkOptionExist: function (item, options) {
+    ensureFlagExists: function (item, options) {
         if (!(item in options) || typeof options[item] !== 'boolean') {
             options[item] = false;
         }
     },
-    checkKeyExist: function (key, options) {
+    ensureKeyExists: function (key, options) {
         if (!(key + 'Key' in options) || typeof options[key + 'Key'] !== 'string') {
             options[key + 'Key'] = options.compact ? '_' + key : key;
         }
+    },
+    getCommandLineHelp: function (command, requiredArguments, possibleArguments) {
+        var reqArgs = requiredArguments.reduce(function (res, arg) {return res + ' <' + arg.arg + '>';}, '');
+        var output = 'Usage: ' + command + reqArgs + ' [options]' + '\n';
+        requiredArguments.forEach(function (argument) {
+            output += '  <' + argument.arg + '>' + Array(20 - argument.arg.length).join(' ') + argument.desc + '\n';
+        });
+        output += '\nOptions:' + '\n';
+        possibleArguments.forEach(function (argument) {
+            output += '  --' + argument.arg + Array(20 - argument.arg.length).join(' ') + argument.desc + '\n';
+        });
+        return output;
+    },
+    mapCommandLineArgs: function (possibleArguments) {
+        var i, j, options = {};
+        for (i = 2; i < process.argv.length; i += 1) {
+            j = -1;
+            possibleArguments.forEach(function (argument, index) {
+                if (argument.alias === process.argv[i].slice(1) || argument.arg === process.argv[i].slice(2)) {
+                    j = index;
+                }
+            });
+            if (j >= 0) {
+                switch (possibleArguments[j].type) {
+                    case 'file': case 'string': case 'number':
+                        if (i + 1 < process.argv.length) {
+                            options[possibleArguments[j].option] = (possibleArguments[j].type === 'number' ? Number(process.argv[++i]) : process.argv[++i]);
+                        }
+                        break;
+                    case 'flag':
+                        options[possibleArguments[j].option] = true; break;
+                }
+            }
+        }
+        return options;
     }
 };
 }).call(this,require('_process'))
@@ -74,27 +75,27 @@ var common = require('./common');
 
 function validateOptions (userOptions) {
     var options = common.copyOptions(userOptions);
-    common.checkOptionExist('ignoreDeclaration', options);
-    common.checkOptionExist('ignoreAttributes', options);
-    common.checkOptionExist('ignoreText', options);
-    common.checkOptionExist('ignoreComment', options);
-    common.checkOptionExist('ignoreCdata', options);
-    common.checkOptionExist('compact', options);
-    common.checkOptionExist('fullTagEmptyElement', options);
+    common.ensureFlagExists('ignoreDeclaration', options);
+    common.ensureFlagExists('ignoreAttributes', options);
+    common.ensureFlagExists('ignoreText', options);
+    common.ensureFlagExists('ignoreComment', options);
+    common.ensureFlagExists('ignoreCdata', options);
+    common.ensureFlagExists('compact', options);
+    common.ensureFlagExists('fullTagEmptyElement', options);
     if (!('spaces' in options) || (typeof options.spaces !== 'number' && typeof options.spaces !== 'string')) {
         options.spaces = 0;
     }
     if (typeof options.spaces === 'number') {
         options.spaces = Array(options.spaces + 1).join(' ');
     }
-    common.checkKeyExist('declaration', options);
-    common.checkKeyExist('attributes', options);
-    common.checkKeyExist('text', options);
-    common.checkKeyExist('comment', options);
-    common.checkKeyExist('cdata', options);
-    common.checkKeyExist('type', options);
-    common.checkKeyExist('name', options);
-    common.checkKeyExist('elements', options);
+    common.ensureKeyExists('declaration', options);
+    common.ensureKeyExists('attributes', options);
+    common.ensureKeyExists('text', options);
+    common.ensureKeyExists('comment', options);
+    common.ensureKeyExists('cdata', options);
+    common.ensureKeyExists('type', options);
+    common.ensureKeyExists('name', options);
+    common.ensureKeyExists('elements', options);
     return options;
 }
 
@@ -144,7 +145,7 @@ function writeCdata (element, options) {
 }
 
 function writeText (element, options) {
-    return options.ignoreText ? '' : element[options.textKey].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+    return options.ignoreText ? '' : element[options.textKey].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
 function writeElementCompact (element, name, options, depth, firstLine) {
@@ -245,26 +246,26 @@ var currentElement;
 
 function validateOptions (userOptions) {
     options = common.copyOptions(userOptions);
-    common.checkOptionExist('ignoreDeclaration', options);
-    common.checkOptionExist('ignoreAttributes', options);
-    common.checkOptionExist('ignoreText', options);
-    common.checkOptionExist('ignoreComment', options);
-    common.checkOptionExist('ignoreCdata', options);
-    common.checkOptionExist('compact', options);
-    common.checkOptionExist('alwaysChildren', options);
-    common.checkOptionExist('addParent', options);
-    common.checkOptionExist('trim', options);
-    common.checkOptionExist('nativeType', options);
-    common.checkOptionExist('sanitize', options);
-    common.checkKeyExist('declaration', options);
-    common.checkKeyExist('attributes', options);
-    common.checkKeyExist('text', options);
-    common.checkKeyExist('comment', options);
-    common.checkKeyExist('cdata', options);
-    common.checkKeyExist('type', options);
-    common.checkKeyExist('name', options);
-    common.checkKeyExist('elements', options);
-    common.checkKeyExist('parent', options);
+    common.ensureFlagExists('ignoreDeclaration', options);
+    common.ensureFlagExists('ignoreAttributes', options);
+    common.ensureFlagExists('ignoreText', options);
+    common.ensureFlagExists('ignoreComment', options);
+    common.ensureFlagExists('ignoreCdata', options);
+    common.ensureFlagExists('compact', options);
+    common.ensureFlagExists('alwaysChildren', options);
+    common.ensureFlagExists('addParent', options);
+    common.ensureFlagExists('trim', options);
+    common.ensureFlagExists('nativeType', options);
+    common.ensureFlagExists('sanitize', options);
+    common.ensureKeyExists('declaration', options);
+    common.ensureKeyExists('attributes', options);
+    common.ensureKeyExists('text', options);
+    common.ensureKeyExists('comment', options);
+    common.ensureKeyExists('cdata', options);
+    common.ensureKeyExists('type', options);
+    common.ensureKeyExists('name', options);
+    common.ensureKeyExists('elements', options);
+    common.ensureKeyExists('parent', options);
     return options;
 }
 
@@ -439,7 +440,7 @@ function onError (error) {
 }
 
 function sanitize (text) {
-    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
 function nativeType (value) {
@@ -6733,6 +6734,97 @@ function isnan (val) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"base64-js":30,"ieee754":10,"isarray":13}],32:[function(require,module,exports){
+/*jslint node:true*/
+/*global describe,it,expect,beforeEach,afterEach*/
+
+var convert = require('../lib');
+var testItems = require('./test-items');
+
+describe('Testing cli.js:', function () {
+    'use strict';
+    
+    xdescribe('No options supplied (fallback to defaults):', function () {
+        
+        var options = {onlyItem: 6};
+        testItems(options).forEach(function (test) {
+            it(test.desc, function () {
+                expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+            });
+        });
+        
+    });
+    
+});
+},{"../lib":2,"./test-items":35}],33:[function(require,module,exports){
+(function (process){
+/*jslint node:true*/
+/*global describe,it,expect,beforeEach,afterEach*/
+
+var convert = require('../lib/common');
+
+describe('Testing common.js:', function () {
+    'use strict';
+    
+    describe('Options:', function () {
+        
+        it('Copy options', function () {
+            var options = {ignoreText: true, textKey: true};
+            expect(convert.copyOptions(options)).toEqual(options);
+        });
+        
+        it('Ensure flag exists', function () {
+            var options = {};
+            convert.ensureFlagExists('foo', options);
+            expect(options).toEqual({foo: false});
+        });
+        
+        it('Ensure flag exists (not string)', function () {
+            var options = {foo: 123};
+            convert.ensureFlagExists('foo', options);
+            expect(options).toEqual({foo: false});
+        });
+        
+        it('Ensure key exists', function () {
+            var options = {};
+            convert.ensureKeyExists('foo', options);
+            expect(options).toEqual({fooKey: 'foo'});
+        });
+        
+        it('Ensure key exists (not string)', function () {
+            var options = {fooKey: 123};
+            convert.ensureKeyExists('foo', options);
+            expect(options).toEqual({fooKey: 'foo'});
+        });
+        
+        it('Get Command Line Help', function () {
+            var RequiredArgs = [{arg: 'src', type: 'any', option: 'src', desc: 'Input file that need to be converted.'}];
+            var PossibleArgs = [{arg: 'help', alias: 'h', type: 'flag', option: 'help', desc: 'Display help content.'}];
+            var help = 'Usage: foo <src> [options]\n' +
+                       '  <src>                Input file that need to be converted.\n' +
+                       '\nOptions:\n' +
+                       '  --help               Display help content.\n';
+            expect(convert.getCommandLineHelp('foo', RequiredArgs, PossibleArgs)).toEqual(help);
+        });
+        
+        it('Map Command Line Arguments', function () {
+            var args = [{arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version.'}];
+            process.argv.push('-v');
+            expect(convert.mapCommandLineArgs(args)).toEqual({version: true});
+        });
+        
+        it('Map Command Line Arguments', function () {
+            var args = [{arg: 'spaces', type: 'number', option: 'spaces', desc: 'Specify spaces.'}];
+            process.argv.push('--spaces');
+            process.argv.push('5');
+            expect(convert.mapCommandLineArgs(args)).toEqual({spaces: 5});
+        });
+        
+    });
+    
+});
+
+}).call(this,require('_process'))
+},{"../lib/common":1,"_process":15}],34:[function(require,module,exports){
 (function (Buffer){
 /*jslint node:true */
 /*global describe,it,expect,beforeEach*/
@@ -7000,7 +7092,7 @@ describe('Testing js2xml.js:', function () {
     
 });
 }).call(this,require("buffer").Buffer)
-},{"../lib":2,"./test-items":33,"buffer":31}],33:[function(require,module,exports){
+},{"../lib":2,"./test-items":35,"buffer":31}],35:[function(require,module,exports){
 /*jslint node:true */
 
 var cases = [
@@ -7147,7 +7239,7 @@ module.exports = function (options) {
     }
     return tests;
 };
-},{}],34:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 /*jslint node:true */
 /*global describe,it,expect,beforeEach,afterEach*/
 
@@ -7394,4 +7486,4 @@ describe('Testing xml2js.js:', function () {
     });
     
 });
-},{"../lib":2,"./test-items":33}]},{},[32,34]);
+},{"../lib":2,"./test-items":35}]},{},[32,33,34,36]);

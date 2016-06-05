@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/*jslint node:true */
+/*jslint node:true*/
 var fs = require('fs');
 var package = require('../package.json');
 var common = require('../lib/common');
@@ -8,6 +8,9 @@ var json2xml = require('../lib/json2xml');
 var output = '';
 var stream = '';
 var options = {};
+var requiredArguments = [
+    {arg: 'src', type: 'any', option: 'src', desc: 'Input file that need to be converted.'}
+];
 var possibleArguments = [
     {arg: 'help', alias: 'h', type: 'flag', option: 'help', desc: 'Display help content.'},
     {arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version number of this module.'},
@@ -35,12 +38,15 @@ var possibleArguments = [
     {arg: 'elements-key', type: 'string', option:'elements', desc: 'To change the default \'elements\' key (applicable if --compact is not set).'}
 ];
 
-process.stdin.on('data', function (data) {
-	stream += data;
+process.stdin.setEncoding('utf8');
+process.stdin.on('readable', function () {
+    var chunk = process.stdin.read();
+    if (chunk !== null) {
+	    stream += chunk;
+    }
 });
-process.stdin.resume();
 process.stdin.on('end', function () {
-	process.stdout.write(xml2json(stream, {}) + '\n')
+	process.stdout.write(xml2json(stream, {}) + '\n');
 });
 
 options = common.mapCommandLineArgs(possibleArguments);
@@ -49,7 +55,7 @@ if (options.version) {
 	console.log(package.version);
 	process.exit(0);
 } else if (options.help || process.argv.length <= 2) {
-    common.printCommandLineHelp('xml-js', possibleArguments);
+    console.log(common.printCommandLineHelp('xml-js', requiredArguments, possibleArguments));
     process.exit(process.argv.length <= 2 ? 1 : 0);
 } else if ('src' in options && fs.statSync(options.src).isFile()) {
     if (options.src.split('.').pop() === 'xml') {

@@ -10,19 +10,19 @@ Convert XML text to Javascript object / JSON text (and vice versa).
 [![Coverage Status](https://coveralls.io/repos/github/nashwaan/xml-js/badge.svg?branch=master)](https://coveralls.io/github/nashwaan/xml-js?branch=master)
 [![Code Climate](https://codeclimate.com/github/nashwaan/xml-js/badges/gpa.svg)](https://codeclimate.com/github/nashwaan/xml-js)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f6ed5dd79a5b4041bfd2732963c4d09b)](https://www.codacy.com/app/ysf953/xml-js?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=nashwaan/xml-js&amp;utm_campaign=Badge_Grade)
-[![Package Quality](http://npm.packagequality.com/shield/xml-js.svg)](http://packagequality.com/#?package=xml-js)
 
-[![Dependency Status](https://david-dm.org/nashwaan/xml-js.svg)](https://david-dm.org/nashwaan/xml-js)
 [![npm](http://img.shields.io/npm/v/xml-js.svg)](https://www.npmjs.com/package/xml-js)
 [![License](https://img.shields.io/npm/l/xml-js.svg)](LICENSE)
+[![Dependency Status](https://david-dm.org/nashwaan/xml-js.svg)](https://david-dm.org/nashwaan/xml-js)
+[![Package Quality](http://xxxnpm.packagequality.com/shield/xml-js.svg)](http://packagequality.com/#?package=xml-js)
 
-## Synopsis
+# Synopsis
 
 ![Convert XML ↔ JS/JSON as compact or non-compact](/synopsis.png?raw=true "Synopsis Diagram")
 
-## Motivation
+# Motivation
 
-There are many XML to JavaScript/JSON converters out there, but could not satisfy the following requirements:
+There are many XML to JavaScript object / JSON converters out there, but could not satisfy the following requirements:
 
 * **Maintain Order of Sub-elements**:
  I wanted `<a/><b/><a/>` to give output as `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"},{"type":"element","name":"a"}]}` instead of `{a:[{},{}],b:{}}`.
@@ -33,23 +33,23 @@ There are many XML to JavaScript/JSON converters out there, but could not satisf
 * **Reversible**:
  Whether converting xml→json or json→xml, the result should be convertable to its original form.
 
-* **Chnage Property Key Name**:
+* **Change Property Key Name**:
  Usually output of XML attributes are stored in `@attr`, `_atrr`, `$attr`, `$`, or `whatever` in order to avoid conflicting with name of sub-elements. 
  This library store them in `attributes`, but most importantly, you can change this to whatever you like.
 
 * **Portable Code**:
- Written purely in JavaScript (this is default behavior, but this can be slow for very large XML text)
+ Written purely in JavaScript (this is default behavior, but this can be slow for very large XML text).
 
 * **Fast Code** (if required):
  With little effort, the underlying [sax engine](https://www.npmjs.com/package/sax) (based on JavaScript) can be sustituted with [node-expat engine](https://github.com/astro/node-expat) (based on VC++).
 
 * **Support Command Line**:
- To quickly convert xml or json files, use it as [script](https://docs.npmjs.com/misc/scripts) in package.json
+ To quickly convert xml or json files, use it as [script](https://docs.npmjs.com/misc/scripts) in package.json.
 
 * **Support Streaming**:
  ...
    
-### Compact vs Non-Compact
+## Compact vs Non-Compact
 
 Most XML parsers (including online parsers) convert `<a/>` to some compact result like `{"a":{}}` 
 instead of non-compact result like `{"elements":[{"type":"element","name":"a"}]}`.
@@ -61,15 +61,15 @@ Although non-compact output is more accurate representation of original XML than
 This library provides both options. Use `{compact: false}` if you are not sure because it preserves everything; 
 otherwise use `{compact: true}` if you want to save space and you don't care about mixing elements of same type.
 
-## Usage
+# Usage
 
-### Installation
+## Installation
 
 ```bash
 npm install xml-js
 ```
 
-### Quick start
+## Quick start
 
 ```js
 var convert = require('xml-js');
@@ -87,7 +87,7 @@ console.log(result1, '\n', result2);
 
 To see the output of this code, see the picture above in *Synopsis* section.
 
-### Sample Conversions
+## Sample Conversions
 
 | XML | JS/JSON compact | JS/JSON non-compact |
 |:----------------------|:--------|:------------|
@@ -101,9 +101,9 @@ To see the output of this code, see the picture above in *Synopsis* section.
 | `<a/><b/>` | `{"a":{},"b":{}}` | `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"}]}` |
 | `<a><b/></a>` | `{"a":{"b":{}}}` | `{"elements":[{"type":"element","name":"a","elements":[{"type":"element","name":"b"}]}]}` |
 
-## API Reference
+# API Reference
 
-### 1. Convert JS object / JSON → XML
+## 1. Convert JS object / JSON → XML
 
 To convert JavaScript object to XML text, use `js2xml()`. To convert JSON text to XML text, use `json2xml()`.
 
@@ -115,7 +115,7 @@ var result = convert.json2xml(json, options);
 console.log(result);
 ```
 
-### 2. Options for Converting JS object / JSON → XML
+## 2. Options for Converting JS object / JSON → XML
 
 The below options are applicable for both `js2xml()` and `json2xml()` functions.
 
@@ -130,7 +130,7 @@ The below options are applicable for both `js2xml()` and `json2xml()` functions.
 | `ignoreCdata`         | `false` | Whether to ignore writing CData of the elements. That is, no `<![CDATA[  ]]>` will be generated. |
 | `ignoreText`          | `false` | Whether to ignore writing texts of the elements. For example, `hi` text in `<a>hi</a>` will be ignored. |
 
-### 3. Convert XML → JS object / JSON
+## 3. Convert XML → JS object / JSON
 
 To convert XML text to JavaScript object, use `xml2js()`. To convert XML text to JSON text, use `xml2json()`.
 
@@ -142,7 +142,7 @@ var result = convert.xml2js(xml, options); // or convert.xml2json(xml, options)
 console.log(result);
 ```
 
-### 4. Options for Converting XML → JS object / JSON
+## 4. Options for Converting XML → JS object / JSON
 
 The below options are applicable for both `xml2js()` and `xml2json()` functions.
 
@@ -150,7 +150,7 @@ The below options are applicable for both `xml2js()` and `xml2json()` functions.
 |:--------------------|:--------|:------------|
 | `compact`           | `false` | Whether to produce detailed object or compact object. |
 | `trim`              | `false` | Whether to trim white space characters that may exist before and after the text. |
-| `sanitize`          | `false` | Whether to replace `&` `<` `>` `"` `'` with `&amp;` `&lt;` `&gt;` `&quot;` `&apos;` respectively in the resultant text. |
+| `sanitize`          | `false` | Whether to replace `&` `<` `>` `"` `'` with `&amp;` `&lt;` `&gt;` `&quot;` `&#39;` respectively in the resultant text. |
 | `nativeType`        | `false` | whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
 | `addParent`         | `false` | Whether to add `parent` property in each element object that points to parent object. |
 | `alwaysChildren`    | `false` | Whether to always generate `elements` property even when there are no actual sub elements. |
@@ -166,7 +166,7 @@ The below option is applicable only for `xml2json()` function.
 |:--------------------|:--------|:------------|
 | `spaces`            | `0`     | Number of spaces to be used for indenting JSON output. |
 
-### 5. Options for Changing Key Names
+## 5. Options for Changing Key Names
 
 To change default key names in the output object or the default key names assumed in the input JavaScript object / JSON, use the following options:
 
@@ -185,11 +185,11 @@ To change default key names in the output object or the default key names assume
 > Note: You probably want to set `{textKey: 'value', cdataKey: 'value', commentKey: 'value'}` for non-compact output
 > to make it more consistent and easier for your client code to go through the contents of text, cdata, and comment.
 
-## As Command Line
+# Command Line
 
 Because any good library should support command line usage, this library is no difference.
 
-### Usage
+## Usage
 
 ```bash
 npm install -g xml-js       // install this library globally
@@ -217,16 +217,17 @@ npm install --save xml-js   // no need to install this library globally
 npm run convert             // task 'scripts.convert' will be executed
 ```
 
-### Command Line Arguments
+## CLI Arguments
 
 ```bash
 Usage: xml-js src [options]
 
-  src                  Input file that need to be processed.
-                       Operation type xml->json or json->xml will be inferred from file extension.
+  src                  Input file that need to be converted.
+                       Conversion type xml->json or json->xml will be inferred from file extension.
 
 Options:
   --help               Display help content.
+  --version            Display number of this module.
   --out                Output file where result should be written.
   --spaces             Specifies amount of space indentation in the output.
   --full-tag           XML elements will always be in <a></a> form.
@@ -250,9 +251,9 @@ Options:
   --elements-key       To change the default 'elements' key (applicable if --compact is not set).
 ```
 
-## Contribution
+# Contribution
 
-### Comparison with Other Libraries
+## Comparison with Other Libraries
 
 [xml2js](https://www.npmjs.com/package/xml2js)
 [xml2json](https://www.npmjs.com/package/xml2json)
@@ -263,7 +264,7 @@ Options:
 [xml-simple](https://www.npmjs.com/package/xml-simple)
 [xml2js-expat](https://www.npmjs.com/package/xml2js-expat)
 
-### Testing
+## Testing
 
 To perform tests on this project:
 
@@ -274,14 +275,14 @@ npm test
 ```
 For live testing, use `npm start` instead of `npm test`.
 
-### Reporting
+## Reporting
 
 Use [this link](https://github.com/nashwaan/xml-js/issues) to report an issue or bug. Please include a sample code or Jasmine test spec where the code is failing.
 
-### Contributing
+## Contributing
 
 If you want to add a feature or fix a bug, please fork the repository and make the changes in your fork. Add tests to ensure your code is working properly, then submit a pull request.
 
-## License
+# License
 
 [MIT](https://github.com/nashwaan/xml-js/blob/master/LICENSE)
