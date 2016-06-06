@@ -14,7 +14,7 @@ Convert XML text to Javascript object / JSON text (and vice versa).
 [![npm](http://img.shields.io/npm/v/xml-js.svg)](https://www.npmjs.com/package/xml-js)
 [![License](https://img.shields.io/npm/l/xml-js.svg)](LICENSE)
 [![Dependency Status](https://david-dm.org/nashwaan/xml-js.svg)](https://david-dm.org/nashwaan/xml-js)
-[![Package Quality](http://xxxnpm.packagequality.com/shield/xml-js.svg)](http://packagequality.com/#?package=xml-js)
+[![Package Quality](http://xxxnpm.packagequality.com/shield/xml-js.svg)](http://xxxpackagequality.com/#?package=xml-js)
 
 # Synopsis
 

@@ -1,6 +1,6 @@
 {
   "name": "xml-js",
-  "version": "0.8.9",
+  "version": "0.9.0",
   "description": "A convertor between XML text and Javascript object / JSON text.",
   "main": "index.js",
   "repository": {
@@ -56,7 +56,6 @@
     "npm-check-updates": "^2.6.5",
     "npm-run-all": "^2.1.1",
     "rimraf": "^2.5.2",
-    "watchify": "latest",
     "watch": "^0.18.0"
   },
   "scripts": {

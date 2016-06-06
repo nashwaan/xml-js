@@ -312,52 +312,6 @@ function addField (type, value, options) {
     }
 }
 
-module.exports = function(xml, userOptions) {
-    
-    var parser = pureJsParser ? sax.parser(true, {}) : parser = new expat.Parser('UTF-8');
-    var result = {};
-    currentElement = result;
-    
-    options = validateOptions(userOptions);
-    
-    if (pureJsParser) {
-        parser.onopentag = onStartElement;
-        parser.ontext = onText;
-        parser.oncomment = onComment;
-        parser.onclosetag = onEndElement;
-        parser.onerror = onError;
-        parser.oncdata = onCdata;
-        parser.onprocessinginstruction = onDeclaration;
-    } else {
-        parser.on('startElement', onStartElement);
-        parser.on('text', onText);
-        parser.on('comment', onComment);
-        parser.on('endElement', onEndElement);
-        parser.on('error', onError);
-        //parser.on('startCdata', onStartCdata);
-        //parser.on('endCdata', onEndCdata);
-        //parser.on('entityDecl', onEntityDecl);
-    }
-    
-    if (pureJsParser) {
-        parser.write(xml).close();
-    } else {
-        if (!parser.parse(xml)) {
-            throw new Error('XML parsing error: ' + parser.getError());
-        }
-    }
-    
-    if (result[options.elementsKey]) {
-        var temp = result[options.elementsKey];
-        delete result[options.elementsKey];
-        result[options.elementsKey] = temp;
-        delete result.text;
-    }
-    
-    return result;
-
-};
-
 function onDeclaration (declaration) {
     if (options.ignoreDeclaration) {
         return;
@@ -489,6 +443,52 @@ function onCdata (cdata) {
 function onError (error) {
     console.error('error', error);
 }
+
+module.exports = function(xml, userOptions) {
+    
+    var parser = pureJsParser ? sax.parser(true, {}) : parser = new expat.Parser('UTF-8');
+    var result = {};
+    currentElement = result;
+    
+    options = validateOptions(userOptions);
+    
+    if (pureJsParser) {
+        parser.onopentag = onStartElement;
+        parser.ontext = onText;
+        parser.oncomment = onComment;
+        parser.onclosetag = onEndElement;
+        parser.onerror = onError;
+        parser.oncdata = onCdata;
+        parser.onprocessinginstruction = onDeclaration;
+    } else {
+        parser.on('startElement', onStartElement);
+        parser.on('text', onText);
+        parser.on('comment', onComment);
+        parser.on('endElement', onEndElement);
+        parser.on('error', onError);
+        //parser.on('startCdata', onStartCdata);
+        //parser.on('endCdata', onEndCdata);
+        //parser.on('entityDecl', onEntityDecl);
+    }
+    
+    if (pureJsParser) {
+        parser.write(xml).close();
+    } else {
+        if (!parser.parse(xml)) {
+            throw new Error('XML parsing error: ' + parser.getError());
+        }
+    }
+    
+    if (result[options.elementsKey]) {
+        var temp = result[options.elementsKey];
+        delete result[options.elementsKey];
+        result[options.elementsKey] = temp;
+        delete result.text;
+    }
+    
+    return result;
+
+};
 },{"./common":1,"sax":26}],6:[function(require,module,exports){
 /*jslint node:true */
 var common = require('./common');
