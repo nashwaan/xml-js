@@ -4,6 +4,7 @@
         "**/node_modules/**",
         "**/coverage/**",
         "**/jasmine/**",
+        "**/test/**",
         "**/**-min-**",
         "**/**-min.**",
         "**/**.min.**"

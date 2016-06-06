@@ -8,14 +8,15 @@ var json2xml = require('../lib/json2xml');
 var output = '';
 var stream = '';
 var options = {};
-var requiredArguments = [
+var requiredArgs = [
     {arg: 'src', type: 'any', option: 'src', desc: 'Input file that need to be converted.'}
 ];
-var possibleArguments = [
+var optionalArgs = [
     {arg: 'help', alias: 'h', type: 'flag', option: 'help', desc: 'Display help content.'},
     {arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version number of this module.'},
     {arg: 'src', type: 'file', option: 'src', desc: 'Input file that need to be processed.'},
     {arg: 'out', type: 'file', option: 'out', desc: 'Output file where result should be written.'},
+    {arg: 'to-json', type: 'flag', option:'toJason', desc: 'Convert.'},
     {arg: 'compact', type: 'flag', option:'compact', desc: 'Compact JSON form (see www.npmjs.com/package/xml-js).'},
     {arg: 'spaces', type: 'number', option:'spaces', desc: 'Specifies amount of space indentation in the output.'},
     {arg: 'trim', type: 'flag', option:'trim', desc: 'Whitespaces surrounding texts will be trimmed.'},
@@ -49,13 +50,13 @@ process.stdin.on('end', function () {
 	process.stdout.write(xml2json(stream, {}) + '\n');
 });
 
-options = common.mapCommandLineArgs(possibleArguments);
+options = common.mapCommandLineArgs(optionalArgs);
 
 if (options.version) {
 	console.log(package.version);
 	process.exit(0);
 } else if (options.help || process.argv.length <= 2) {
-    console.log(common.printCommandLineHelp('xml-js', requiredArguments, possibleArguments));
+    console.log(common.printCommandLineHelp('xml-js', requiredArgs, optionalArgs));
     process.exit(process.argv.length <= 2 ? 1 : 0);
 } else if ('src' in options && fs.statSync(options.src).isFile()) {
     if (options.src.split('.').pop() === 'xml') {

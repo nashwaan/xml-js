@@ -256,7 +256,9 @@ describe('Testing js2xml.js:', function () {
             
             try {
                 convert.json2xml('{a:', {});
-            } catch (e) {}
+            } catch (e) {
+                console.log('Error: ', e);
+            }
             
         });
         

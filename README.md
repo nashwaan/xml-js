@@ -25,29 +25,29 @@ Convert XML text to Javascript object / JSON text (and vice versa).
 There are many XML to JavaScript object / JSON converters out there, but could not satisfy the following requirements:
 
 * **Maintain Order of Sub-elements**:
- I wanted `<a/><b/><a/>` to give output as `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"},{"type":"element","name":"a"}]}` instead of `{a:[{},{}],b:{}}`.
+I wanted `<a/><b/><a/>` to give output as `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"},{"type":"element","name":"a"}]}` instead of `{a:[{},{}],b:{}}`.
 
 * **Fully XML Compliant**:
- Can parse: Comments, Processing Instructions, XML Declarations, Entity declarations, and CDATA Sections.
+Can parse: Comments, Processing Instructions, XML Declarations, Entity declarations, and CDATA Sections.
 
 * **Reversible**:
- Whether converting xml→json or json→xml, the result should be convertable to its original form.
+Whether converting xml→json or json→xml, the result should be convertable to its original form.
 
 * **Change Property Key Name**:
- Usually output of XML attributes are stored in `@attr`, `_atrr`, `$attr`, `$`, or `whatever` in order to avoid conflicting with name of sub-elements. 
- This library store them in `attributes`, but most importantly, you can change this to whatever you like.
+Usually output of XML attributes are stored in `@attr`, `_atrr`, `$attr`, `$`, or `whatever` in order to avoid conflicting with name of sub-elements. 
+This library store them in `attributes`, but most importantly, you can change this to whatever you like.
 
 * **Portable Code**:
- Written purely in JavaScript (this is default behavior, but this can be slow for very large XML text).
+Written purely in JavaScript (this is default behavior, but this can be slow for very large XML text).
 
 * **Fast Code** (if required):
- With little effort, the underlying [sax engine](https://www.npmjs.com/package/sax) (based on JavaScript) can be sustituted with [node-expat engine](https://github.com/astro/node-expat) (based on VC++).
+With little effort, the underlying [sax engine](https://www.npmjs.com/package/sax) (based on JavaScript) can be sustituted with [node-expat engine](https://github.com/astro/node-expat) (based on VC++).
 
 * **Support Command Line**:
- To quickly convert xml or json files, use it as [script](https://docs.npmjs.com/misc/scripts) in package.json.
+To quickly convert xml or json files, this module can be installed globally or locally (i.e. use it as [script](https://docs.npmjs.com/misc/scripts) in package.json).
 
 * **Support Streaming**:
- ...
+...
    
 ## Compact vs Non-Compact
 
@@ -90,7 +90,7 @@ To see the output of this code, see the picture above in *Synopsis* section.
 ## Sample Conversions
 
 | XML | JS/JSON compact | JS/JSON non-compact |
-|:----------------------|:--------|:------------|
+|:----|:----------------|:--------------------|
 | `<?xml?>` | `{"_declaration":{}}` | `{"declaration":{}}` |
 | `<?xml version="1.0" encoding="utf-8"?>` | `{"_declaration":{"_attributes":{"version":"1.0","encoding":"utf-8"}}}` | `{"declaration":{"attributes":{"version":"1.0","encoding":"utf-8"}}}` |
 | `<!--Hello, World!-->` | `{"_comment":"Hello, World!"}` | `{"elements":[{"type":"comment","comment":"Hello, World!"}]}` |
@@ -103,7 +103,7 @@ To see the output of this code, see the picture above in *Synopsis* section.
 
 # API Reference
 
-## 1. Convert JS object / JSON → XML
+## Convert JS object / JSON → XML
 
 To convert JavaScript object to XML text, use `js2xml()`. To convert JSON text to XML text, use `json2xml()`.
 
@@ -115,7 +115,7 @@ var result = convert.json2xml(json, options);
 console.log(result);
 ```
 
-## 2. Options for Converting JS object / JSON → XML
+### Options for Converting JS object / JSON → XML
 
 The below options are applicable for both `js2xml()` and `json2xml()` functions.
 
@@ -130,7 +130,7 @@ The below options are applicable for both `js2xml()` and `json2xml()` functions.
 | `ignoreCdata`         | `false` | Whether to ignore writing CData of the elements. That is, no `<![CDATA[  ]]>` will be generated. |
 | `ignoreText`          | `false` | Whether to ignore writing texts of the elements. For example, `hi` text in `<a>hi</a>` will be ignored. |
 
-## 3. Convert XML → JS object / JSON
+## Convert XML → JS object / JSON
 
 To convert XML text to JavaScript object, use `xml2js()`. To convert XML text to JSON text, use `xml2json()`.
 
@@ -142,7 +142,7 @@ var result = convert.xml2js(xml, options); // or convert.xml2json(xml, options)
 console.log(result);
 ```
 
-## 4. Options for Converting XML → JS object / JSON
+### Options for Converting XML → JS object / JSON
 
 The below options are applicable for both `xml2js()` and `xml2json()` functions.
 
@@ -166,7 +166,7 @@ The below option is applicable only for `xml2json()` function.
 |:--------------------|:--------|:------------|
 | `spaces`            | `0`     | Number of spaces to be used for indenting JSON output. |
 
-## 5. Options for Changing Key Names
+## Options for Changing Key Names
 
 To change default key names in the output object or the default key names assumed in the input JavaScript object / JSON, use the following options:
 
@@ -189,7 +189,7 @@ To change default key names in the output object or the default key names assume
 
 Because any good library should support command line usage, this library is no difference.
 
-## Usage
+## As Globally Accessible Command
 
 ```bash
 npm install -g xml-js       // install this library globally
@@ -197,12 +197,15 @@ xml-js test.json            // test.json will be converted to test.xml
 xml-js test.xml             // test.xml will be converted to test.json
 ```
 
-Or if you want to use it as script in package.json (can also be helpful in [task automation via npm scripts](http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/))
+## As Locally Accessible Command
+
+If you want to use it as script in package.json (can also be helpful in [task automation via npm scripts](http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/))
 
 ```bash
 npm install --save xml-js   // no need to install this library globally
 ```
 
+In package.json, write a script:
 ```json
 ...
   "dependencies": {
@@ -226,8 +229,8 @@ Usage: xml-js src [options]
                        Conversion type xml->json or json->xml will be inferred from file extension.
 
 Options:
-  --help               Display help content.
-  --version            Display number of this module.
+  --help, -h           Display help content.
+  --version, -v        Display number of this module.
   --out                Output file where result should be written.
   --spaces             Specifies amount of space indentation in the output.
   --full-tag           XML elements will always be in <a></a> form.

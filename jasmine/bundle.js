@@ -3,6 +3,9 @@
 /*jslint node:true */
 
 module.exports = {
+    sanitize: function (text) {
+        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    },
     copyOptions: function (options) {
         var key, copy = {};
         for (key in options) {
@@ -17,41 +20,46 @@ module.exports = {
             options[item] = false;
         }
     },
+    ensureSpacesExists: function (options) {
+        if (!('spaces' in options) || (typeof options.spaces !== 'number' && typeof options.spaces !== 'string')) {
+            options.spaces = 0;
+        }
+    },
     ensureKeyExists: function (key, options) {
         if (!(key + 'Key' in options) || typeof options[key + 'Key'] !== 'string') {
             options[key + 'Key'] = options.compact ? '_' + key : key;
         }
     },
-    getCommandLineHelp: function (command, requiredArguments, possibleArguments) {
-        var reqArgs = requiredArguments.reduce(function (res, arg) {return res + ' <' + arg.arg + '>';}, '');
+    getCommandLineHelp: function (command, requiredArgs, optionalArgs) {
+        var reqArgs = requiredArgs.reduce(function (res, arg) {return res + ' <' + arg.arg + '>';}, '');
         var output = 'Usage: ' + command + reqArgs + ' [options]' + '\n';
-        requiredArguments.forEach(function (argument) {
+        requiredArgs.forEach(function (argument) {
             output += '  <' + argument.arg + '>' + Array(20 - argument.arg.length).join(' ') + argument.desc + '\n';
         });
         output += '\nOptions:' + '\n';
-        possibleArguments.forEach(function (argument) {
+        optionalArgs.forEach(function (argument) {
             output += '  --' + argument.arg + Array(20 - argument.arg.length).join(' ') + argument.desc + '\n';
         });
         return output;
     },
-    mapCommandLineArgs: function (possibleArguments) {
+    mapCommandLineArgs: function (optionalArgs) {
         var i, j, options = {};
         for (i = 2; i < process.argv.length; i += 1) {
             j = -1;
-            possibleArguments.forEach(function (argument, index) {
+            optionalArgs.forEach(function (argument, index) {
                 if (argument.alias === process.argv[i].slice(1) || argument.arg === process.argv[i].slice(2)) {
                     j = index;
                 }
             });
             if (j >= 0) {
-                switch (possibleArguments[j].type) {
+                switch (optionalArgs[j].type) {
                     case 'file': case 'string': case 'number':
                         if (i + 1 < process.argv.length) {
-                            options[possibleArguments[j].option] = (possibleArguments[j].type === 'number' ? Number(process.argv[++i]) : process.argv[++i]);
+                            options[optionalArgs[j].option] = (optionalArgs[j].type === 'number' ? Number(process.argv[++i]) : process.argv[++i]);
                         }
                         break;
                     case 'flag':
-                        options[possibleArguments[j].option] = true; break;
+                        options[optionalArgs[j].option] = true; break;
                 }
             }
         }
@@ -62,11 +70,16 @@ module.exports = {
 },{"_process":15}],2:[function(require,module,exports){
 /*jslint node:true */
 
+var xml2js = require('./xml2js');
+var xml2json = require('./xml2json');
+var js2xml = require('./js2xml');
+var json2xml = require('./json2xml');
+
 module.exports = {
-    xml2js: require('./xml2js'),
-    xml2json: require('./xml2json'),
-    js2xml: require('./js2xml'),
-    json2xml: require('./json2xml')
+    xml2js: xml2js,
+    xml2json: xml2json,
+    js2xml: js2xml,
+    json2xml: json2xml
 };
 },{"./js2xml":3,"./json2xml":4,"./xml2js":5,"./xml2json":6}],3:[function(require,module,exports){
 /*jslint node:true */
@@ -82,9 +95,7 @@ function validateOptions (userOptions) {
     common.ensureFlagExists('ignoreCdata', options);
     common.ensureFlagExists('compact', options);
     common.ensureFlagExists('fullTagEmptyElement', options);
-    if (!('spaces' in options) || (typeof options.spaces !== 'number' && typeof options.spaces !== 'string')) {
-        options.spaces = 0;
-    }
+    common.ensureSpacesExists(options);
     if (typeof options.spaces === 'number') {
         options.spaces = Array(options.spaces + 1).join(' ');
     }
@@ -99,31 +110,8 @@ function validateOptions (userOptions) {
     return options;
 }
 
-module.exports = function (js, options) {
-    'use strict';
-    options = validateOptions(options);
-    var xml = '';
-    if (js[options.declarationKey]) {
-        xml += writeDeclaration(js[options.declarationKey], options);
-    }
-    if (options.compact) {
-        if (xml !== '' && Object.keys(js).length > 1 || xml === '' && Object.keys(js).length) {
-            xml += writeElementCompact(js, null, options, 0, !xml);
-        }
-    } else {
-        if (js[options.elementsKey] && js[options.elementsKey].length) {
-            xml += writeElements(js[options.elementsKey], options, 0, !xml);
-        }
-    }
-    return xml;
-};
-
 function writeIndentation (options, depth, firstLine) {
     return (!firstLine && options.spaces ? '\n' : '') + Array(depth + 1).join(options.spaces);
-}
-
-function writeDeclaration (declaration, options) {
-    return '<?xml' + writeAttributes(declaration[options.attributesKey]) + '?>';
 }
 
 function writeAttributes (attributes) {
@@ -134,6 +122,10 @@ function writeAttributes (attributes) {
         }
     }
     return result;
+}
+
+function writeDeclaration (declaration, options) {
+    return '<?xml' + writeAttributes(declaration[options.attributesKey]) + '?>';
 }
 
 function writeComment (element, options) {
@@ -158,7 +150,8 @@ function writeElementCompact (element, name, options, depth, firstLine) {
         if (options.fullTagEmptyElement || (xml !== '<' + name && Object.keys(element).length > 1 || xml === '<' + name && Object.keys(element).length) || (element[options.attributesKey] && element[options.attributesKey]['xml:space'] === 'preserve')) {
             xml += '>';
         } else {
-            return xml += '/>';
+            xml += '/>';
+            return xml;
         }
     }
     for (key in element) {
@@ -211,6 +204,25 @@ function writeElement (element, options, depth) {
     }
     return xml;
 }
+
+module.exports = function (js, options) {
+    'use strict';
+    options = validateOptions(options);
+    var xml = '';
+    if (js[options.declarationKey]) {
+        xml += writeDeclaration(js[options.declarationKey], options);
+    }
+    if (options.compact) {
+        if (xml !== '' && Object.keys(js).length > 1 || xml === '' && Object.keys(js).length) {
+            xml += writeElementCompact(js, null, options, 0, !xml);
+        }
+    } else {
+        if (js[options.elementsKey] && js[options.elementsKey].length) {
+            xml += writeElements(js[options.elementsKey], options, 0, !xml);
+        }
+    }
+    return xml;
+};
 },{"./common":1}],4:[function(require,module,exports){
 (function (Buffer){
 /*jslint node:true */
@@ -269,6 +281,37 @@ function validateOptions (userOptions) {
     return options;
 }
 
+function nativeType (value) {
+    var nValue = Number(value);
+    if (!isNaN(nValue)) {
+        return nValue;
+    }
+    var bValue = value.toLowerCase();
+    if (bValue === 'true') {
+        return true;
+    } else if (bValue === 'false') {
+        return false;
+    }
+    return value;
+}
+
+function addField (type, value, options) {
+    if (options.compact) {
+        currentElement[options[type + 'Key']] = (currentElement[options[type + 'Key']] ? currentElement[options[type + 'Key']] + '\n' : '') + value;
+    } else {
+        if (!currentElement[options.elementsKey]) {
+            currentElement[options.elementsKey] = [];
+        }
+        var element = {};
+        element[options.typeKey] = type;
+        element[options[type + 'Key']] = value;
+        if (options.addParent) {
+            element[options.parentKey] = currentElement;
+        }
+        currentElement[options.elementsKey].push(element);
+    }
+}
+
 module.exports = function(xml, userOptions) {
     
     var parser = pureJsParser ? sax.parser(true, {}) : parser = new expat.Parser('UTF-8');
@@ -316,7 +359,9 @@ module.exports = function(xml, userOptions) {
 };
 
 function onDeclaration (declaration) {
-    if (options.ignoreDeclaration) return;
+    if (options.ignoreDeclaration) {
+        return;
+    }
     if (currentElement[options.declarationKey]) {
         return;
     }
@@ -392,7 +437,9 @@ function onStartElement (name, attributes) {
 
 function onText (text) {
     //console.log('currentElement:', currentElement);
-    if (options.ignoreText) return;
+    if (options.ignoreText) {
+        return;
+    }
     if (!text.trim()) {
         return;
     }
@@ -403,18 +450,20 @@ function onText (text) {
         text = nativeType(text);
     }
     if (options.sanitize) {
-        text = sanitize(text);
+        text = common.sanitize(text);
     }
     addField('text', text, options);
 }
 
 function onComment (comment) {
-    if (options.ignoreComment) return;
+    if (options.ignoreComment) {
+        return;
+    }
     if (options.trim) {
         comment = comment.trim();
     }
     if (options.sanitize) {
-        comment = sanitize(comment);
+        comment = common.sanitize(comment);
     }
     addField('comment', comment, options);
 }
@@ -428,7 +477,9 @@ function onEndElement (name) {
 }
 
 function onCdata (cdata) {
-    if (options.ignoreCdata) return;
+    if (options.ignoreCdata) {
+        return;
+    }
     if (options.trim) {
         cdata = cdata.trim();
     }
@@ -438,41 +489,6 @@ function onCdata (cdata) {
 function onError (error) {
     console.error('error', error);
 }
-
-function sanitize (text) {
-    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-}
-
-function nativeType (value) {
-    var nValue = Number(value);
-    if (!isNaN(nValue)) {
-        return nValue;
-    }
-    var bValue = value.toLowerCase();
-    if (bValue === 'true') {
-        return true;
-    } else if (bValue === 'false') {
-        return false;
-    }
-    return value;
-}
-
-function addField (type, value, options) {
-    if (options.compact) {
-        currentElement[options[type + 'Key']] = (currentElement[options[type + 'Key']] ? currentElement[options[type + 'Key']] + '\n' : '') + value;
-    } else {
-        if (!currentElement[options.elementsKey]) {
-            currentElement[options.elementsKey] = [];
-        }
-        var element = {};
-        element[options.typeKey] = type;
-        element[options[type + 'Key']] = value;
-        if (options.addParent) {
-            element[options.parentKey] = currentElement;
-        }
-        currentElement[options.elementsKey].push(element);
-    }
-}
 },{"./common":1,"sax":26}],6:[function(require,module,exports){
 /*jslint node:true */
 var common = require('./common');
@@ -480,9 +496,7 @@ var xml2js = require('./xml2js');
 
 function validateOptions (userOptions) {
     var options = common.copyOptions(userOptions);
-    if (!('spaces' in options) || (typeof options.spaces !== 'string' && typeof options.spaces !== 'number')) {
-        options.spaces = 0;
-    }
+    common.ensureSpacesExists(options);
     return options;
 }
 
@@ -6765,60 +6779,125 @@ var convert = require('../lib/common');
 describe('Testing common.js:', function () {
     'use strict';
     
-    describe('Options:', function () {
+    describe('Common:', function () {
         
-        it('Copy options', function () {
-            var options = {ignoreText: true, textKey: true};
-            expect(convert.copyOptions(options)).toEqual(options);
+        describe('Copy Options:', function () {
+
+            it('Copy no provided options', function () {
+                expect(convert.copyOptions()).toEqual({});
+            });
+
+            it('Copy provided options', function () {
+                var options = {ignoreText: true, textKey: true};
+                expect(convert.copyOptions(options)).toEqual(options);
+            });
+
         });
-        
-        it('Ensure flag exists', function () {
-            var options = {};
-            convert.ensureFlagExists('foo', options);
-            expect(options).toEqual({foo: false});
+
+        describe('Ensure Flag Existance:', function () {
+
+            it('New flag', function () {
+                var options = {};
+                convert.ensureFlagExists('foo', options);
+                expect(options).toEqual({foo: false});
+            });
+
+            it('Existing flag, not boolean', function () {
+                var options = {foo: 123};
+                convert.ensureFlagExists('foo', options);
+                expect(options).toEqual({foo: false});
+            });
+
+            it('Existing flag', function () {
+                var options = {foo: true};
+                convert.ensureFlagExists('foo', options);
+                expect(options).toEqual({foo: true});
+            });
+
         });
-        
-        it('Ensure flag exists (not string)', function () {
-            var options = {foo: 123};
-            convert.ensureFlagExists('foo', options);
-            expect(options).toEqual({foo: false});
+
+        describe('Ensure Key Existance:', function () {
+
+            it('New key', function () {
+                var options = {};
+                convert.ensureKeyExists('foo', options);
+                expect(options).toEqual({fooKey: 'foo'});
+            });
+
+            it('Existing key, not string', function () {
+                var options = {fooKey: 123};
+                convert.ensureKeyExists('foo', options);
+                expect(options).toEqual({fooKey: 'foo'});
+            });
+
+            it('Existing key, string', function () {
+                var options = {fooKey: 'baa'};
+                convert.ensureKeyExists('foo', options);
+                expect(options).toEqual({fooKey: 'baa'});
+            });
+
         });
-        
-        it('Ensure key exists', function () {
-            var options = {};
-            convert.ensureKeyExists('foo', options);
-            expect(options).toEqual({fooKey: 'foo'});
+
+        describe('Command Line Help:', function () {
+
+            it('Return help content', function () {
+                var requiredArgs = [{arg: 'src', type: 'any', option: 'src', desc: 'Input file that need to be converted.'}];
+                var possibleArgs = [{arg: 'help', alias: 'h', type: 'flag', option: 'help', desc: 'Display help content.'}];
+                var help = 'Usage: foo <src> [options]\n' +
+                           '  <src>                Input file that need to be converted.\n' +
+                           '\nOptions:\n' +
+                           '  --help               Display help content.\n';
+                expect(convert.getCommandLineHelp('foo', requiredArgs, possibleArgs)).toEqual(help);
+            });
+
         });
-        
-        it('Ensure key exists (not string)', function () {
-            var options = {fooKey: 123};
-            convert.ensureKeyExists('foo', options);
-            expect(options).toEqual({fooKey: 'foo'});
+
+        describe('Map Command Line Argument:', function () {
+
+            it('Flag argument, alias', function () {
+                var possibleArgs = [{arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version.'}];
+                process.argv.push('-v');
+                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({version: true});
+                process.argv.pop();
+            });
+
+            it('Number argument, long form', function () {
+                var possibleArgs = [{arg: 'spaces', type: 'number', option: 'spaces', desc: 'Specify spaces.'}];
+                process.argv.push('--spaces'); process.argv.push('5');
+                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({spaces: 5});
+                process.argv.pop(); process.argv.pop();
+            });
+
+            it('String argument, long form', function () {
+                var possibleArgs = [{arg: 'name', type: 'string', option: 'name', desc: 'Specify name.'}];
+                process.argv.push('--name'); process.argv.push('Foo');
+                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({name: 'Foo'});
+                process.argv.pop(); process.argv.pop();
+            });
+
+            it('File argument, long form', function () {
+                var possibleArgs = [{arg: 'input', type: 'file', option: 'input', desc: 'Specify file.'}];
+                process.argv.push('--input'); process.argv.push('test.txt');
+                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({input: 'test.txt'});
+                process.argv.pop(); process.argv.pop();
+            });
+
+            it('Argument not proceeded with dash', function () {
+                var possibleArgs = [{arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version.'}];
+                process.argv.push('v');
+                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({});
+                process.argv.pop();
+            });
+
+            it('Incomplete compound argument, long form', function () {
+                var possibleArgs = [{arg: 'input', type: 'file', option: 'input', desc: 'Specify file.'}];
+                process.argv.push('--input');
+                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({});
+                process.argv.pop();
+            });
+
         });
-        
-        it('Get Command Line Help', function () {
-            var RequiredArgs = [{arg: 'src', type: 'any', option: 'src', desc: 'Input file that need to be converted.'}];
-            var PossibleArgs = [{arg: 'help', alias: 'h', type: 'flag', option: 'help', desc: 'Display help content.'}];
-            var help = 'Usage: foo <src> [options]\n' +
-                       '  <src>                Input file that need to be converted.\n' +
-                       '\nOptions:\n' +
-                       '  --help               Display help content.\n';
-            expect(convert.getCommandLineHelp('foo', RequiredArgs, PossibleArgs)).toEqual(help);
-        });
-        
-        it('Map Command Line Arguments', function () {
-            var args = [{arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version.'}];
-            process.argv.push('-v');
-            expect(convert.mapCommandLineArgs(args)).toEqual({version: true});
-        });
-        
-        it('Map Command Line Arguments', function () {
-            var args = [{arg: 'spaces', type: 'number', option: 'spaces', desc: 'Specify spaces.'}];
-            process.argv.push('--spaces');
-            process.argv.push('5');
-            expect(convert.mapCommandLineArgs(args)).toEqual({spaces: 5});
-        });
-        
+
     });
     
 });
@@ -7084,7 +7163,9 @@ describe('Testing js2xml.js:', function () {
             
             try {
                 convert.json2xml('{a:', {});
-            } catch (e) {}
+            } catch (e) {
+                console.log('Error: ', e);
+            }
             
         });
         
