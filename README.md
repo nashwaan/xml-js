@@ -25,7 +25,8 @@ Convert XML text to Javascript object / JSON text (and vice versa).
 There are many XML to JavaScript object / JSON converters out there, but could not satisfy the following requirements:
 
 * **Maintain Order of Sub-elements**:
-I wanted `<a/><b/><a/>` to give output as `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"},{"type":"element","name":"a"}]}` instead of `{a:[{},{}],b:{}}`.
+Instead of converting `<a/><b/><a/>` to `{a:[{},{}],b:{}}`, I wanted to preserve order of elements by doing this: 
+`{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"},{"type":"element","name":"a"}]}`.
 
 * **Fully XML Compliant**:
 Can parse: Comments, Processing Instructions, XML Declarations, Entity declarations, and CDATA Sections.
@@ -51,13 +52,14 @@ To quickly convert xml or json files, this module can be installed globally or l
    
 ## Compact vs Non-Compact
 
-Most XML parsers (including online parsers) convert `<a/>` to some compact result like `{"a":{}}` 
-instead of non-compact result like `{"elements":[{"type":"element","name":"a"}]}`.
-While this result might work in most cases, there are cases when different elements are mixed inside a parent element: `<n><a x="1"/><b x="2"/><a x="3"/></n>`.
+Most XML parsers (including online parsers) convert `<a/>` to some compact output like `{"a":{}}` 
+instead of non-compact output like `{"elements":[{"type":"element","name":"a"}]}`.
+
+While compact output might work in most situations, there are cases when different elements are mixed inside a parent element: `<n><a x="1"/><b x="2"/><a x="3"/></n>`.
 In this case, the compact output will be `{n:{a:[{_:{x:"1"}},{_:{x:"3"}}],b:{_:{x:"2"}}}}`, 
 which has merged the second `<a/>` with the first `<a/>` into an array and so the order is not preserved.
 
-Although non-compact output is more accurate representation of original XML than compact version, the non-compact consumes more space on disk.
+Although non-compact output is more accurate representation of original XML than compact version, the non-compact consumes more space.
 This library provides both options. Use `{compact: false}` if you are not sure because it preserves everything; 
 otherwise use `{compact: true}` if you want to save space and you don't care about mixing elements of same type.
 
