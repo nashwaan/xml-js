@@ -43,13 +43,23 @@ module.exports = {
         return output;
     },
     mapCommandLineArgs: function (optionalArgs) {
-        var i, j, options = {};
+        var r, i, j, raw = [], options = {};
         function findIndex (argument, index) {
             if (argument.alias === process.argv[i].slice(1) || argument.arg === process.argv[i].slice(2)) {
                 j = index;
             }
         }
-        for (i = 2; i < process.argv.length; i += 1) {
+        for (r = 2; r < process.argv.length; r += 1) {
+            if (process.argv[r].substr(0, 1) !== '-') {
+                if (!('raw' in options)) {
+                    options.raw = [];
+                }
+                options.raw.push(process.argv[r]);
+            } else {
+                break;
+            }
+        }
+        for (i = r; i < process.argv.length; i += 1) {
             j = -1;
             optionalArgs.forEach(findIndex);
             if (j >= 0) {
@@ -247,10 +257,10 @@ module.exports = function (json, options) {
     return js2xml(js, options);
 };
 }).call(this,require("buffer").Buffer)
-},{"./js2xml.js":3,"buffer":31}],5:[function(require,module,exports){
+},{"./js2xml.js":3,"buffer":32}],5:[function(require,module,exports){
 /*jslint node:true */
 var sax = require('sax');
-var expat = {}; // = require('node-expat');
+var expat = {on: function () {}, parse: function () {}}; // = require('node-expat');
 var common = require('./common');
 
 var options;
@@ -442,10 +452,10 @@ function onCdata (cdata) {
 }
 
 function onError (error) {
-    console.error('error', error);
+    error.note = error; //console.error(error);
 }
 
-module.exports = function(xml, userOptions) {
+module.exports = function (xml, userOptions) {
     
     var parser = pureJsParser ? sax.parser(true, {}) : parser = new expat.Parser('UTF-8');
     var result = {};
@@ -2196,7 +2206,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":17,"_process":15,"buffer":31,"core-util-is":8,"events":9,"inherits":11,"isarray":13,"process-nextick-args":14,"string_decoder/":28,"util":7}],20:[function(require,module,exports){
+},{"./_stream_duplex":17,"_process":15,"buffer":32,"core-util-is":8,"events":9,"inherits":11,"isarray":13,"process-nextick-args":14,"string_decoder/":28,"util":7}],20:[function(require,module,exports){
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -2896,7 +2906,7 @@ function CorkedRequest(state) {
   };
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":17,"_process":15,"buffer":31,"core-util-is":8,"events":9,"inherits":11,"process-nextick-args":14,"util-deprecate":29}],22:[function(require,module,exports){
+},{"./_stream_duplex":17,"_process":15,"buffer":32,"core-util-is":8,"events":9,"inherits":11,"process-nextick-args":14,"util-deprecate":29}],22:[function(require,module,exports){
 module.exports = require("./lib/_stream_passthrough.js")
 
 },{"./lib/_stream_passthrough.js":18}],23:[function(require,module,exports){
@@ -4499,7 +4509,7 @@ module.exports = require("./lib/_stream_writable.js")
 })(typeof exports === 'undefined' ? this.sax = {} : exports)
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":31,"stream":27,"string_decoder":28}],27:[function(require,module,exports){
+},{"buffer":32,"stream":27,"string_decoder":28}],27:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -4851,7 +4861,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":31}],29:[function(require,module,exports){
+},{"buffer":32}],29:[function(require,module,exports){
 (function (global){
 
 /**
@@ -5034,6 +5044,8 @@ function fromByteArray (uint8) {
 }
 
 },{}],31:[function(require,module,exports){
+arguments[4][7][0].apply(exports,arguments)
+},{"dup":7}],32:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -6748,29 +6760,169 @@ function isnan (val) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":30,"ieee754":10,"isarray":13}],32:[function(require,module,exports){
+},{"base64-js":30,"ieee754":10,"isarray":13}],33:[function(require,module,exports){
+module.exports={
+  "name": "xml-js",
+  "version": "0.9.2",
+  "description": "A convertor between XML text and Javascript object / JSON text.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nashwaan/xml-js.git"
+  },
+  "author": "Yousuf Almarzooqi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nashwaan/xml-js/issues"
+  },
+  "homepage": "https://github.com/nashwaan/xml-js#readme",
+  "keywords": [
+    "XML",
+    "xml",
+    "js",
+    "JSON",
+    "json",
+    "Javascript",
+    "js2xml",
+    "json2xml",
+    "xml2js",
+    "xml2json",
+    "transform",
+    "transformer",
+    "transforming",
+    "transformation",
+    "convert",
+    "convertor",
+    "converting",
+    "conversion",
+    "parse",
+    "parser",
+    "parsing"
+  ],
+  "bin": "./bin/cli.js",
+  "dependencies": {
+    "sax": "^1.2.1"
+  },
+  "devDependencies": {
+    "biased-opener": "^0.2.8",
+    "browser-sync": "^2.12.12",
+    "cash-cat": "^0.2.0",
+    "codacy-coverage": "^1.1.3",
+    "codeclimate-test-reporter": "^0.3.1",
+    "coveralls": "^2.11.9",
+    "cross-env": "^1.0.8",
+    "globify": "^1.2.1",
+    "istanbul": "^0.4.3",
+    "jasmine": "^2.4.1",
+    "node-inspector": "^0.12.8",
+    "nodemon": "^1.9.2",
+    "npm-check-updates": "^2.6.5",
+    "npm-run-all": "^2.1.1",
+    "rimraf": "^2.5.2",
+    "watch": "^0.18.0"
+  },
+  "scripts": {
+    "debug": "npm-run-all --parallel debug:*",
+    "debug:listener": "node-inspector",
+    "debug:jasmine": "nodemon --watch lib/ --watch test/ --debug-brk test/index.js",
+    "xdebug:cli": "nodemon --watch lib/ --debug-brk index.js -- --help",
+    "debug:live": "browser-sync start --port 8080 --server --startPath ?port=5858 --files lib/ test/ --no-open --no-ui --no-online",
+    "debug:open": "biased-opener --browser chrome http://localhost:8080/?port=5858",
+    "jasmine": "jasmine JASMINE_CONFIG_PATH=./jasmine.json",
+    "watch:jasmine": "watch \"npm run jasmine\" lib/ test/",
+    "bundle:jasmine": "globify test/*_test.js --watch --verbose --list --outfile jasmine/bundle.js",
+    "live:jasmine": "browser-sync start --port 9991 --server jasmine/ --files jasmine/ --no-open --no-ui --no-online",
+    "open:jasmine": "biased-opener --browser chrome http://localhost:9991",
+    "istanbul": "istanbul cover test/index.js",
+    "watch:istanbul": "watch \"npm run istanbul\" lib/ test/",
+    "live:istanbul": "browser-sync start --port 9992 --server coverage/lcov-report/ --files coverage/lcov-report/ --no-open --no-ui --no-online",
+    "open:istanbul": "biased-opener --browser chrome http://localhost:9992",
+    "live": "npm-run-all --parallel live:* open:*",
+    "start": "npm-run-all --parallel bundle:jasmine watch:istanbul live:* open:*",
+    "git:commit": "git add . && git commit -a -m \"Committed by npm script.\" && git push origin master",
+    "git:push": "git push origin master",
+    "deploy": "npm-run-all --serial istanbul:coveralls git:commit",
+    "coverage": "npm-run-all coverage:*",
+    "coverage:a-step": "npm run istanbul",
+    "coverage:coveralls": "cat ./coverage/lcov.info | coveralls",
+    "coverage:codacy": "cross-env CODACY_PROJECT_TOKEN=0207815122ea49a68241d1aa435f21f1 cat ./coverage/lcov.info | codacy-coverage",
+    "coverage:codeclimate": "cross-env CODECLIMATE_REPO_TOKEN=60848a077f9070acf358b0c7145f0a2698a460ddeca7d8250815e75aa4333f7d codeclimate-test-reporter < coverage\\lcov.info",
+    "update-packages": "npm-check-updates --upgrade --loglevel verbose",
+    "prepublish": "npm run test",
+    "test": "npm run jasmine"
+  }
+}
+},{}],34:[function(require,module,exports){
 /*jslint node:true*/
 /*global describe,it,expect,beforeEach,afterEach*/
 
-var convert = require('../lib');
-var testItems = require('./test-items');
+if (!jasmine.standalone) {
+
+var exec = require('child_process').exec;
+var packageInfo = require('../package.json');
+
+/*exec('node ./bin/cli.js --version', function (error, stdout, stderr) {
+    console.log(stdout, stderr);
+});*/
+//console.log(exec('node ./bin/cli.js --version'), {encoding: 'utf8'});
 
 describe('Testing cli.js:', function () {
     'use strict';
     
-    xdescribe('No options supplied (fallback to defaults):', function () {
+    describe('Getting version and help on usage:', function () {
         
-        var options = {onlyItem: 6};
-        testItems(options).forEach(function (test) {
-            it(test.desc, function () {
-                expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+        it('Get version --version', function (done) {
+            exec('node ./bin/cli --version', function (error, stdout, stderr) {
+                expect(stdout).toEqual(packageInfo.version + '\n');
+                done();
+            });
+        });
+        
+        it('Get version -v', function (done) {
+            exec('node ./bin/cli -v', function (error, stdout, stderr) {
+                expect(stdout).toEqual(packageInfo.version + '\n');
+                done();
+            });
+        });
+        
+        it('Get help --help', function (done) {
+            exec('node ./bin/cli --help', function (error, stdout, stderr) {
+                expect(stdout.substr(0, 13)).toEqual('Usage: xml-js');
+                done();
+            });
+        });
+        
+        it('Get help -h', function (done) {
+            exec('node ./bin/cli -h', function (error, stdout, stderr) {
+                expect(stdout.substr(0, 13)).toEqual('Usage: xml-js');
+                done();
+            });
+        });
+        
+        it('Get help when no arguments supplied', function (done) {
+            exec('node ./bin/cli', function (error, stdout, stderr) {
+                expect(stdout.substr(0, 13)).toEqual('Usage: xml-js');
+                done();
+            });
+        });
+        
+    });
+    
+    describe('Convert XML:', function () {
+        
+        xit('should convert xml file', function (done) {
+            exec('node ./bin/cli note.xml', function (error, stdout, stderr) {
+                expect(stdout).toEqual(packageInfo.version + '\n');
+                done();
             });
         });
         
     });
     
 });
-},{"../lib":2,"./test-items":35}],33:[function(require,module,exports){
+    
+}
+},{"../package.json":33,"child_process":31}],35:[function(require,module,exports){
 (function (process){
 /*jslint node:true*/
 /*global describe,it,expect,beforeEach,afterEach*/
@@ -6855,47 +7007,51 @@ describe('Testing common.js:', function () {
 
         describe('Map Command Line Argument:', function () {
 
-            it('Flag argument, alias', function () {
-                var possibleArgs = [{arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version.'}];
-                process.argv.push('-v');
-                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({version: true});
-                process.argv.pop();
-            });
+            if (!jasmine.standalone) {
+                
+                it('Flag argument, alias', function () {
+                    var possibleArgs = [{arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version.'}];
+                    process.argv.push('-v');
+                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({version: true});
+                    process.argv.pop();
+                });
 
-            it('Number argument, long form', function () {
-                var possibleArgs = [{arg: 'spaces', type: 'number', option: 'spaces', desc: 'Specify spaces.'}];
-                process.argv.push('--spaces'); process.argv.push('5');
-                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({spaces: 5});
-                process.argv.pop(); process.argv.pop();
-            });
+                it('Number argument, long form', function () {
+                    var possibleArgs = [{arg: 'spaces', type: 'number', option: 'spaces', desc: 'Specify spaces.'}];
+                    process.argv.push('--spaces'); process.argv.push('5');
+                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({spaces: 5});
+                    process.argv.pop(); process.argv.pop();
+                });
 
-            it('String argument, long form', function () {
-                var possibleArgs = [{arg: 'name', type: 'string', option: 'name', desc: 'Specify name.'}];
-                process.argv.push('--name'); process.argv.push('Foo');
-                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({name: 'Foo'});
-                process.argv.pop(); process.argv.pop();
-            });
+                it('String argument, long form', function () {
+                    var possibleArgs = [{arg: 'name', type: 'string', option: 'name', desc: 'Specify name.'}];
+                    process.argv.push('--name'); process.argv.push('Foo');
+                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({name: 'Foo'});
+                    process.argv.pop(); process.argv.pop();
+                });
 
-            it('File argument, long form', function () {
-                var possibleArgs = [{arg: 'input', type: 'file', option: 'input', desc: 'Specify file.'}];
-                process.argv.push('--input'); process.argv.push('test.txt');
-                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({input: 'test.txt'});
-                process.argv.pop(); process.argv.pop();
-            });
+                it('File argument, long form', function () {
+                    var possibleArgs = [{arg: 'input', type: 'file', option: 'input', desc: 'Specify file.'}];
+                    process.argv.push('--input'); process.argv.push('test.txt');
+                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({input: 'test.txt'});
+                    process.argv.pop(); process.argv.pop();
+                });
 
-            it('Argument not proceeded with dash', function () {
-                var possibleArgs = [{arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version.'}];
-                process.argv.push('v');
-                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({});
-                process.argv.pop();
-            });
+                it('Argument not proceeded with dash', function () {
+                    var possibleArgs = [{arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version.'}];
+                    process.argv.push('v');
+                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({});
+                    process.argv.pop();
+                });
 
-            it('Incomplete compound argument, long form', function () {
-                var possibleArgs = [{arg: 'input', type: 'file', option: 'input', desc: 'Specify file.'}];
-                process.argv.push('--input');
-                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({});
-                process.argv.pop();
-            });
+                it('Incomplete compound argument, long form', function () {
+                    var possibleArgs = [{arg: 'input', type: 'file', option: 'input', desc: 'Specify file.'}];
+                    process.argv.push('--input');
+                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({});
+                    process.argv.pop();
+                });
+                
+            }
 
         });
 
@@ -6904,7 +7060,7 @@ describe('Testing common.js:', function () {
 });
 
 }).call(this,require('_process'))
-},{"../lib/common":1,"_process":15}],34:[function(require,module,exports){
+},{"../lib/common":1,"_process":15}],36:[function(require,module,exports){
 (function (Buffer){
 /*jslint node:true */
 /*global describe,it,expect,beforeEach*/
@@ -7165,7 +7321,7 @@ describe('Testing js2xml.js:', function () {
             try {
                 convert.json2xml('{a:', {});
             } catch (e) {
-                console.log('Error: ', e);
+                e.note = 'ignore me';
             }
             
         });
@@ -7174,7 +7330,7 @@ describe('Testing js2xml.js:', function () {
     
 });
 }).call(this,require("buffer").Buffer)
-},{"../lib":2,"./test-items":35,"buffer":31}],35:[function(require,module,exports){
+},{"../lib":2,"./test-items":37,"buffer":32}],37:[function(require,module,exports){
 /*jslint node:true */
 
 var cases = [
@@ -7321,7 +7477,7 @@ module.exports = function (options) {
     }
     return tests;
 };
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /*jslint node:true */
 /*global describe,it,expect,beforeEach,afterEach*/
 
@@ -7568,4 +7724,4 @@ describe('Testing xml2js.js:', function () {
     });
     
 });
-},{"../lib":2,"./test-items":35}]},{},[32,33,34,36]);
+},{"../lib":2,"./test-items":37}]},{},[34,35,36,38]);

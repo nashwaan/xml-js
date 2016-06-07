@@ -56,13 +56,13 @@ if (options.version) {
 	console.log(package.version);
 	process.exit(0);
 } else if (options.help || process.argv.length <= 2) {
-    console.log(common.printCommandLineHelp('xml-js', requiredArgs, optionalArgs));
+    console.log(common.getCommandLineHelp('xml-js', requiredArgs, optionalArgs));
     process.exit(process.argv.length <= 2 ? 1 : 0);
-} else if ('src' in options && fs.statSync(options.src).isFile()) {
-    if (options.src.split('.').pop() === 'xml') {
-        output = xml2json(fs.readFileSync(options.src, 'utf8'), options);
-    } else if (options.src.split('.').pop() === 'json') {
-        output = json2xml(fs.readFileSync(options.src, 'utf8'), options);
+} else if ('raw' in options && fs.statSync(options.raw[0]).isFile()) {
+    if (options.raw[0].split('.').pop() === 'xml') {
+        output = xml2json(fs.readFileSync(options.raw[0], 'utf8'), options);
+    } else if (options.raw[0].split('.').pop() === 'json') {
+        output = json2xml(fs.readFileSync(options.raw[0], 'utf8'), options);
     }
     if (options.out) {
         fs.writeFileSync(options.out, output, 'utf8');

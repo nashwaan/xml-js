@@ -81,47 +81,51 @@ describe('Testing common.js:', function () {
 
         describe('Map Command Line Argument:', function () {
 
-            it('Flag argument, alias', function () {
-                var possibleArgs = [{arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version.'}];
-                process.argv.push('-v');
-                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({version: true});
-                process.argv.pop();
-            });
+            if (!jasmine.standalone) {
+                
+                it('Flag argument, alias', function () {
+                    var possibleArgs = [{arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version.'}];
+                    process.argv.push('-v');
+                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({version: true});
+                    process.argv.pop();
+                });
 
-            it('Number argument, long form', function () {
-                var possibleArgs = [{arg: 'spaces', type: 'number', option: 'spaces', desc: 'Specify spaces.'}];
-                process.argv.push('--spaces'); process.argv.push('5');
-                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({spaces: 5});
-                process.argv.pop(); process.argv.pop();
-            });
+                it('Number argument, long form', function () {
+                    var possibleArgs = [{arg: 'spaces', type: 'number', option: 'spaces', desc: 'Specify spaces.'}];
+                    process.argv.push('--spaces'); process.argv.push('5');
+                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({spaces: 5});
+                    process.argv.pop(); process.argv.pop();
+                });
 
-            it('String argument, long form', function () {
-                var possibleArgs = [{arg: 'name', type: 'string', option: 'name', desc: 'Specify name.'}];
-                process.argv.push('--name'); process.argv.push('Foo');
-                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({name: 'Foo'});
-                process.argv.pop(); process.argv.pop();
-            });
+                it('String argument, long form', function () {
+                    var possibleArgs = [{arg: 'name', type: 'string', option: 'name', desc: 'Specify name.'}];
+                    process.argv.push('--name'); process.argv.push('Foo');
+                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({name: 'Foo'});
+                    process.argv.pop(); process.argv.pop();
+                });
 
-            it('File argument, long form', function () {
-                var possibleArgs = [{arg: 'input', type: 'file', option: 'input', desc: 'Specify file.'}];
-                process.argv.push('--input'); process.argv.push('test.txt');
-                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({input: 'test.txt'});
-                process.argv.pop(); process.argv.pop();
-            });
+                it('File argument, long form', function () {
+                    var possibleArgs = [{arg: 'input', type: 'file', option: 'input', desc: 'Specify file.'}];
+                    process.argv.push('--input'); process.argv.push('test.txt');
+                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({input: 'test.txt'});
+                    process.argv.pop(); process.argv.pop();
+                });
 
-            it('Argument not proceeded with dash', function () {
-                var possibleArgs = [{arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version.'}];
-                process.argv.push('v');
-                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({});
-                process.argv.pop();
-            });
+                it('Argument not proceeded with dash', function () {
+                    var possibleArgs = [{arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version.'}];
+                    process.argv.push('v');
+                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({});
+                    process.argv.pop();
+                });
 
-            it('Incomplete compound argument, long form', function () {
-                var possibleArgs = [{arg: 'input', type: 'file', option: 'input', desc: 'Specify file.'}];
-                process.argv.push('--input');
-                expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({});
-                process.argv.pop();
-            });
+                it('Incomplete compound argument, long form', function () {
+                    var possibleArgs = [{arg: 'input', type: 'file', option: 'input', desc: 'Specify file.'}];
+                    process.argv.push('--input');
+                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({});
+                    process.argv.pop();
+                });
+                
+            }
 
         });
 

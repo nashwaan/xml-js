@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addresses xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:noNamespaceSchemaLocation='test.xsd'>
+
+  <address>
+    <name>Joe Tester</name>
+    <street>Baker street 5</street>
+    <wrongExtraField/>
+  </wrongClosingTag>
+
+</addresses>
