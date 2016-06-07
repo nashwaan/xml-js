@@ -50,7 +50,7 @@ module.exports = {
             }
         }
         for (r = 2; r < process.argv.length; r += 1) {
-            if (process.argv[r].substr(0, 1) !== '-') {
+            if (process.argv[r].substr(0, 1) !== '-' && process.argv[r] !== 'JASMINE_CONFIG_PATH=./jasmine.json') {
                 if (!('raw' in options)) {
                     options.raw = [];
                 }
