@@ -71,7 +71,7 @@ otherwise use `{compact: true}` if you want to save space and you don't care abo
 npm install xml-js
 ```
 
-You can also installed it globally to use it as command line convertor.
+You can also installed it globally to use it as a command line convertor.
 
 ```bash
 npm install -g xml-js

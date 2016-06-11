@@ -42,35 +42,31 @@ module.exports = {
         });
         return output;
     },
-    mapCommandLineArgs: function (optionalArgs) {
-        var r, i, j, raw = [], options = {};
-        function findIndex (argument, index) {
-            if (argument.alias === process.argv[i].slice(1) || argument.arg === process.argv[i].slice(2)) {
-                j = index;
-            }
-        }
-        for (r = 2; r < process.argv.length; r += 1) {
-            if (process.argv[r].substr(0, 1) !== '-' && process.argv[r] !== 'JASMINE_CONFIG_PATH=./jasmine.json') {
-                if (!('raw' in options)) {
-                    options.raw = [];
-                }
-                options.raw.push(process.argv[r]);
+    mapCommandLineArgs: function (requiredArgs, optionalArgs) {
+        var options = {}, r, o, a = 2;
+        for (r = 0; r < requiredArgs.length; r += 1) {
+            if (a < process.argv.length && process.argv[a].substr(0, 1) !== '-' && process.argv[a] !== 'JASMINE_CONFIG_PATH=./jasmine.json') {
+                options[requiredArgs[r].option] = process.argv[a++];
             } else {
                 break;
             }
         }
-        for (i = r; i < process.argv.length; i += 1) {
-            j = -1;
-            optionalArgs.forEach(findIndex);
-            if (j >= 0) {
-                switch (optionalArgs[j].type) {
+        for (; a < process.argv.length; a += 1) {
+            for (o = 0; o < optionalArgs.length; o += 1) {
+                if (optionalArgs[o].alias === process.argv[a].slice(1) || optionalArgs[o].arg === process.argv[a].slice(2)) {
+                    break;
+                }
+            }
+            if (o < optionalArgs.length) {
+                switch (optionalArgs[o].type) {
                     case 'file': case 'string': case 'number':
-                        if (i + 1 < process.argv.length) {
-                            options[optionalArgs[j].option] = (optionalArgs[j].type === 'number' ? Number(process.argv[++i]) : process.argv[++i]);
+                        if (a + 1 < process.argv.length) {
+                            a += 1;
+                            options[optionalArgs[o].option] = (optionalArgs[o].type === 'number' ? Number(process.argv[a]) : process.argv[a]);
                         }
                         break;
                     case 'flag':
-                        options[optionalArgs[j].option] = true; break;
+                        options[optionalArgs[o].option] = true; break;
                 }
             }
         }
@@ -6910,9 +6906,16 @@ describe('Testing cli.js:', function () {
     
     describe('Convert XML:', function () {
         
-        xit('should convert xml file', function (done) {
-            exec('node ./bin/cli note.xml', function (error, stdout, stderr) {
-                expect(stdout).toEqual(packageInfo.version + '\n');
+        it('should convert xml file', function (done) {
+            exec('node ./bin/cli ./bin/test.xml', function (error, stdout, stderr) {
+                expect(stdout).toEqual('{"elements":[{"type":"element","name":"a","attributes":{"x":"1"},"elements":[{"type":"element","name":"b","elements":[{"type":"text","text":"bye!"}]}]}]}' + '\n');
+                done();
+            });
+        });
+        
+        it('should convert xml file, --compact', function (done) {
+            exec('node ./bin/cli ./bin/test.xml --compact', function (error, stdout, stderr) {
+                expect(stdout).toEqual('{"a":{"_attributes":{"x":"1"},"b":{"_text":"bye!"}}}' + '\n');
                 done();
             });
         });
@@ -7012,42 +7015,42 @@ describe('Testing common.js:', function () {
                 it('Flag argument, alias', function () {
                     var possibleArgs = [{arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version.'}];
                     process.argv.push('-v');
-                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({version: true});
+                    expect(convert.mapCommandLineArgs({}, possibleArgs)).toEqual({version: true});
                     process.argv.pop();
                 });
 
                 it('Number argument, long form', function () {
                     var possibleArgs = [{arg: 'spaces', type: 'number', option: 'spaces', desc: 'Specify spaces.'}];
                     process.argv.push('--spaces'); process.argv.push('5');
-                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({spaces: 5});
+                    expect(convert.mapCommandLineArgs({}, possibleArgs)).toEqual({spaces: 5});
                     process.argv.pop(); process.argv.pop();
                 });
 
                 it('String argument, long form', function () {
                     var possibleArgs = [{arg: 'name', type: 'string', option: 'name', desc: 'Specify name.'}];
                     process.argv.push('--name'); process.argv.push('Foo');
-                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({name: 'Foo'});
+                    expect(convert.mapCommandLineArgs({}, possibleArgs)).toEqual({name: 'Foo'});
                     process.argv.pop(); process.argv.pop();
                 });
 
                 it('File argument, long form', function () {
                     var possibleArgs = [{arg: 'input', type: 'file', option: 'input', desc: 'Specify file.'}];
                     process.argv.push('--input'); process.argv.push('test.txt');
-                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({input: 'test.txt'});
+                    expect(convert.mapCommandLineArgs({}, possibleArgs)).toEqual({input: 'test.txt'});
                     process.argv.pop(); process.argv.pop();
                 });
 
                 it('Argument not proceeded with dash', function () {
                     var possibleArgs = [{arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version.'}];
                     process.argv.push('v');
-                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({});
+                    expect(convert.mapCommandLineArgs({}, possibleArgs)).not.toEqual({version: true});
                     process.argv.pop();
                 });
 
                 it('Incomplete compound argument, long form', function () {
                     var possibleArgs = [{arg: 'input', type: 'file', option: 'input', desc: 'Specify file.'}];
                     process.argv.push('--input');
-                    expect(convert.mapCommandLineArgs(possibleArgs)).toEqual({});
+                    expect(convert.mapCommandLineArgs({}, possibleArgs)).toEqual({});
                     process.argv.pop();
                 });
                 

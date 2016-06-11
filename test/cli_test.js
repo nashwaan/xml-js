@@ -55,9 +55,16 @@ describe('Testing cli.js:', function () {
     
     describe('Convert XML:', function () {
         
-        xit('should convert xml file', function (done) {
-            exec('node ./bin/cli note.xml', function (error, stdout, stderr) {
-                expect(stdout).toEqual(packageInfo.version + '\n');
+        it('should convert xml file', function (done) {
+            exec('node ./bin/cli ./bin/test.xml', function (error, stdout, stderr) {
+                expect(stdout).toEqual('{"elements":[{"type":"element","name":"a","attributes":{"x":"1"},"elements":[{"type":"element","name":"b","elements":[{"type":"text","text":"bye!"}]}]}]}' + '\n');
+                done();
+            });
+        });
+        
+        it('should convert xml file, --compact', function (done) {
+            exec('node ./bin/cli ./bin/test.xml --compact', function (error, stdout, stderr) {
+                expect(stdout).toEqual('{"a":{"_attributes":{"x":"1"},"b":{"_text":"bye!"}}}' + '\n');
                 done();
             });
         });

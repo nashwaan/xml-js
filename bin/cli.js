@@ -9,12 +9,11 @@ var output = '';
 var stream = '';
 var options = {};
 var requiredArgs = [
-    {arg: 'src', type: 'any', option: 'src', desc: 'Input file that need to be converted.'}
+    {arg: 'src', type: 'file', option: 'src', desc: 'Input file that need to be converted.'}
 ];
 var optionalArgs = [
     {arg: 'help', alias: 'h', type: 'flag', option: 'help', desc: 'Display help content.'},
     {arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version number of this module.'},
-    {arg: 'src', type: 'file', option: 'src', desc: 'Input file that need to be processed.'},
     {arg: 'out', type: 'file', option: 'out', desc: 'Output file where result should be written.'},
     {arg: 'to-json', type: 'flag', option:'toJason', desc: 'Convert.'},
     {arg: 'compact', type: 'flag', option:'compact', desc: 'Compact JSON form (see www.npmjs.com/package/xml-js).'},
@@ -50,7 +49,8 @@ process.stdin.on('end', function () {
 	process.stdout.write(xml2json(stream, {}) + '\n');
 });
 
-options = common.mapCommandLineArgs(optionalArgs);
+options = common.mapCommandLineArgs(requiredArgs, optionalArgs);
+
 
 if (options.version) {
 	console.log(package.version);
@@ -58,18 +58,21 @@ if (options.version) {
 } else if (options.help || process.argv.length <= 2) {
     console.log(common.getCommandLineHelp('xml-js', requiredArgs, optionalArgs));
     process.exit(process.argv.length <= 2 ? 1 : 0);
-} else if ('raw' in options && fs.statSync(options.raw[0]).isFile()) {
-    if (options.raw[0].split('.').pop() === 'xml') {
-        output = xml2json(fs.readFileSync(options.raw[0], 'utf8'), options);
-    } else if (options.raw[0].split('.').pop() === 'json') {
-        output = json2xml(fs.readFileSync(options.raw[0], 'utf8'), options);
+} else if ('src' in options) {
+    //console.log('---------------' + fs.statSync(options.src).isFile());
+    if (fs.statSync(options.src).isFile()) {
+        if (options.src.split('.').pop() === 'xml') {
+            output = xml2json(fs.readFileSync(options.src, 'utf8'), options);
+        } else if (options.src.split('.').pop() === 'json') {
+            output = json2xml(fs.readFileSync(options.src, 'utf8'), options);
+        }
+        if (options.out) {
+            fs.writeFileSync(options.out, output, 'utf8');
+        } else {
+            console.log(output);
+        }
+        process.exit(0);
     }
-    if (options.out) {
-        fs.writeFileSync(options.out, output, 'utf8');
-    } else {
-        console.log(output);
-    }
-	process.exit(0);
 } else {
 	process.exit(1);
 }    
