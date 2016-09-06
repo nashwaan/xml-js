@@ -81,7 +81,7 @@ describe('Testing common.js:', function () {
 
         describe('Map Command Line Argument:', function () {
 
-            if (!jasmine.standalone) {
+            if (typeof jasmineRequire === 'undefined') {
                 
                 it('Flag argument, alias', function () {
                     var possibleArgs = [{arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version.'}];

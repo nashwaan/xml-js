@@ -12,6 +12,16 @@ var cases = [
         js1: {"_declaration":{"_attributes":{"version":"1.0","encoding":"utf-8"}}},
         js2: {"declaration":{"attributes":{"version":"1.0","encoding":"utf-8"}}},
     }, {
+        desc: 'declaration and element',
+        xml: '<?xml?>\n<a/>',
+        js1: {"_declaration":{},"a":{}},
+        js2: {"declaration":{},"elements":[{"type":"element","name":"a"}]},
+    }, {
+        desc: 'declaration and elements',
+        xml: '<?xml?>\n<a>\n\v<b/>\n</a>',
+        js1: {"_declaration":{},"a":{"b":{}}},
+        js2: {"declaration":{},"elements":[{"type":"element","name":"a","elements":[{"type":"element","name":"b"}]}]},
+    }, {
         desc: 'should convert comment',
         xml: '<!-- \t Hello, World! \t -->',
         js1: {"_comment":" \t Hello, World! \t "},

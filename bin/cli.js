@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 /*jslint node:true*/
+
 var fs = require('fs');
 var package = require('../package.json');
 var common = require('../lib/common');
 var xml2json = require('../lib/xml2json');
 var json2xml = require('../lib/json2xml');
+
 var output = '';
 var stream = '';
 var options = {};
@@ -12,15 +14,15 @@ var requiredArgs = [
     {arg: 'src', type: 'file', option: 'src', desc: 'Input file that need to be converted.'}
 ];
 var optionalArgs = [
-    {arg: 'help', alias: 'h', type: 'flag', option: 'help', desc: 'Display help content.'},
+    {arg: 'help', alias: 'h', type: 'flag', option: 'help', desc: 'Display this help content.'},
     {arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version number of this module.'},
-    {arg: 'out', type: 'file', option: 'out', desc: 'Output file where result should be written.'},
+    {arg: 'out', type: 'file', option: 'out', desc: 'Output file where the converted result should be written.'},
     {arg: 'to-json', type: 'flag', option:'toJason', desc: 'Convert.'},
     {arg: 'compact', type: 'flag', option:'compact', desc: 'Compact JSON form (see www.npmjs.com/package/xml-js).'},
     {arg: 'spaces', type: 'number', option:'spaces', desc: 'Specifies amount of space indentation in the output.'},
     {arg: 'trim', type: 'flag', option:'trim', desc: 'Whitespaces surrounding texts will be trimmed.'},
     {arg: 'sanitize', type: 'flag', option:'sanitize', desc: 'Special xml characters will be replaced with entity codes.'},
-    {arg: 'native-type', type: 'flag', option:'nativeType', desc: 'Text will be converted to native type.'},
+    {arg: 'native-type', type: 'flag', option:'nativeType', desc: 'Numbers and boolean will be converted (coreced) to native type instead of text.'},
     {arg: 'always-children', type: 'flag', option:'alwaysChildren', desc: 'Every element will always contain sub-elements (applicable if --compact is not set).'},
     {arg: 'full-tag', type: 'flag', option:'fullTagEmptyElement', desc: 'XML elements will always be in <a></a> form.'},
     {arg: 'no-decl', type: 'flag', option:'ignoreDeclaration', desc: 'Declaration instruction <?xml ..?> will be ignored.'},
@@ -55,7 +57,7 @@ options = common.mapCommandLineArgs(requiredArgs, optionalArgs);
 if (options.version) {
 	console.log(package.version);
 	process.exit(0);
-} else if (options.help || process.argv.length <= 2) {
+} else if (options.help || process.argv.length <= 2 + requiredArgs.length - 1) {
     console.log(common.getCommandLineHelp('xml-js', requiredArgs, optionalArgs));
     process.exit(process.argv.length <= 2 ? 1 : 0);
 } else if ('src' in options) {

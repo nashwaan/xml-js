@@ -264,4 +264,45 @@ describe('Testing js2xml.js:', function () {
         
     });
     
+    describe('User reported issues:', function () {
+        
+        describe('case by Jan T. Sott', function () {
+            
+           var js = {
+                _comment: " Released under The MIT License ",
+                snippet: {
+                    content: {
+                        _cdata: "console.log($1)"
+                    },
+                    tabTrigger: {
+                        _text: "log"
+                    },
+                    scope: {
+                        _text: "source.js"
+                    }
+                }
+            };
+            var xml = 
+                '<!-- Released under The MIT License -->\n' + 
+                '<snippet>\n' + 
+                '\v<content>\n' + 
+                '\v\v<![CDATA[console.log($1)]]>\n' + 
+                '\v</content>\n' + 
+                '\v<tabTrigger>log</tabTrigger>\n' + 
+                '\v<scope>source.js</scope>\n' + 
+                '</snippet>';
+
+            it('should output cdata and text for {spaces: 4} option', function () {
+                expect(convert.js2xml(js, {compact: true})).toEqual(xml.replace(/\n/g, '').replace(/\v/g, ''));
+            });
+
+            it('should output cdata and text for {spaces: 4} option', function () {
+                expect(convert.js2xml(js, {compact: true, spaces: 4})).toEqual(xml.replace(/\v/g, '    '));
+            });
+
+        });
+        
+    });
+    
 });
+

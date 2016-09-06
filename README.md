@@ -67,13 +67,13 @@ otherwise use `{compact: true}` if you want to save space and you don't care abo
 
 ## Installation
 
-```bash
+```shell
 npm install xml-js
 ```
 
 You can also installed it globally to use it as a command line convertor.
 
-```bash
+```shell
 npm install -g xml-js
 ```
 
@@ -117,7 +117,7 @@ To convert JavaScript object to XML text, use `js2xml()`. To convert JSON text t
 
 ```js
 var convert = require('xml-js');
-var json = require('fs').readFileSync('test.json');
+var json = require('fs').readFileSync('test.json', 'utf8');
 var options = {ignoreText: true, spaces: 4};
 var result = convert.json2xml(json, options);
 console.log(result);
@@ -144,7 +144,7 @@ To convert XML text to JavaScript object, use `xml2js()`. To convert XML text to
 
 ```js
 var convert = require('xml-js');
-var xml = require('fs').readFileSync('test.xml');
+var xml = require('fs').readFileSync('test.xml', 'utf8');
 var options = {ignoreText: true, alwaysChildren: true};
 var result = convert.xml2js(xml, options); // or convert.xml2json(xml, options)
 console.log(result);
@@ -199,7 +199,7 @@ Because any good library should support command line usage, this library is no d
 
 ## As Globally Accessible Command
 
-```bash
+```shell
 npm install -g xml-js       // install this library globally
 xml-js test.json            // test.json will be converted to test.xml
 xml-js test.xml             // test.xml will be converted to test.json
@@ -209,7 +209,7 @@ xml-js test.xml             // test.xml will be converted to test.json
 
 If you want to use it as script in package.json (can also be helpful in [task automation via npm scripts](http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/))
 
-```bash
+```shell
 npm install --save xml-js   // no need to install this library globally
 ```
 
@@ -224,20 +224,20 @@ In package.json, write a script:
   }
 ```
   
-```bash
+```shell
 npm run convert             // task 'scripts.convert' will be executed
 ```
 
 ## CLI Arguments
 
-```bash
+```shell
 Usage: xml-js src [options]
 
   src                  Input file that need to be converted.
                        Conversion type xml->json or json->xml will be inferred from file extension.
 
 Options:
-  --help, -h           Display help content.
+  --help, -h           Display this help content.
   --version, -v        Display number of this module.
   --out                Output file where result should be written.
   --spaces             Specifies amount of space indentation in the output.
@@ -250,7 +250,7 @@ Options:
   --trim               Whitespaces surrounding texts will be trimmed.
   --compact            JSON is in compact form.
   --sanitize           Special xml characters will be replaced with entity codes.
-  --native-type        Text will be converted to native type.
+  --native-type        Numbers and boolean will be converted (coreced) to native type instead of text.
   --always-children    Every element will always contain sub-elements (applicable if --compact is not set).
   --text-key           To change the default 'text' key.
   --cdata-key          To change the default 'cdata' key.
@@ -279,7 +279,7 @@ Options:
 
 To perform tests on this project:
 
-```bash
+```shell
 cd node_modules/xml-js
 npm install
 npm test
@@ -289,10 +289,6 @@ For live testing, use `npm start` instead of `npm test`.
 ## Reporting
 
 Use [this link](https://github.com/nashwaan/xml-js/issues) to report an issue or bug. Please include a sample code or Jasmine test spec where the code is failing.
-
-## Contributing
-
-If you want to add a feature or fix a bug, please fork the repository and make the changes in your fork. Add tests to ensure your code is working properly, then submit a pull request.
 
 # License
 

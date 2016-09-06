@@ -22,7 +22,7 @@ describe('Testing xml2js.js:', function () {
     
     describe('No options supplied (fallback to defaults):', function () {
         
-        var options = {onlyItem: 6};
+        var options = {};
         testItems(options).forEach(function (test) {
             it(test.desc, function () {
                 expect(convert.xml2js(test.xml, options)).toEqual(test.js);
@@ -232,7 +232,7 @@ describe('Testing xml2js.js:', function () {
         
         describe('options = {compact: true, addParent: true}:', function () {
             
-            var options = {onlyItem:3, compact: true, addParent: true};
+            var options = {onlyItem: 6, compact: true, addParent: true};
             testItems(options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2json(test.xml, options)).toBe(JSON.stringify(test.js, function (k, v) { return k === '_parent'? '_' : v; }));
