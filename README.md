@@ -18,7 +18,8 @@ Convert XML text to Javascript object / JSON text (and vice versa).
 
 # Synopsis
 
-![Convert XML ↔ JS/JSON as compact or non-compact](/synopsis.png?raw=true "Synopsis Diagram")
+![Convert XML ↔ JS/JSON as compact or non-compact](http://nashwaan.github.io/xml-js/images/synopsis.svg)
+<!---![Convert XML ↔ JS/JSON as compact or non-compact](/synopsis.png?raw=true "Synopsis Diagram")-->
 
 # Motivation
 
