@@ -61,7 +61,7 @@ In this case, the compact output will be something like `{a:[{_:{x:"1"}},{_:{x:"
 which has merged both `<a>` elements into an array. If you try to convert this back to xml, you will get `<a x="1"/><a x="3"/><b x="2"/>` 
 which has not preserved the order of elements! This is an inherit limitation in the compact representation 
 because output like `{a:{_:{x:"1"}},b:{_:{x:"2"}},a:{_:{x:"3"}}}` is illegal. 
-Note that this issue does not occur in the non-compact form.
+Note that this issue does not occur in the non-compact form provided by this library.
 
 Although non-compact output is more accurate representation of original XML than compact version, the non-compact consumes more space. 
 This library provides both options. Use `{compact: false}` if you are not sure because it preserves everything; 
