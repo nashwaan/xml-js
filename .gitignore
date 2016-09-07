@@ -1,5 +1,5 @@
 _playground/
 node_modules/
 test/browse-coverage/
-test/fixtures/
+test/dfixtures/
 .coveralls.yml
