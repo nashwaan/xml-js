@@ -1,4 +1,5 @@
-node_modules/
-coverage/
 _playground/
+node_modules/
+test/browse-coverage/
+test/fixtures/
 .coveralls.yml

@@ -183,6 +183,11 @@ function hasContent (element, options, skipText) {
     for (key in element) {
         if (element.hasOwnProperty(key)) {
             switch (key) {
+                case options.textKey:
+                    if (!skipText) {
+                        return true;
+                    }
+                    break; // skip to next key
                 case options.parentKey:
                 case options.attributesKey:
                     break; // skip to next key
@@ -190,11 +195,6 @@ function hasContent (element, options, skipText) {
                 case options.commentKey:
                 case options.declarationKey:
                     return true;
-                case options.textKey:
-                    if (!skipText) {
-                        return true;
-                    }
-                    break; // skip to next key
                 default:
                     return true;
             }
@@ -7207,6 +7207,8 @@ module.exports={
     "js",
     "JSON",
     "json",
+    "cdata",
+    "CDATA",
     "Javascript",
     "js2xml",
     "json2xml",
@@ -7222,9 +7224,7 @@ module.exports={
     "conversion",
     "parse",
     "parser",
-    "parsing",
-    "cdata",
-    "CDATA"
+    "parsing"
   ],
   "bin": "./bin/cli.js",
   "dependencies": {
@@ -7240,7 +7240,7 @@ module.exports={
     "cross-env": "^2.0.1",
     "globify": "^1.2.2",
     "istanbul": "^0.4.5",
-    "jasmine": "^2.5.0",
+    "jasmine": "^2.4.1",
     "node-inspector": "^0.12.8",
     "nodemon": "^1.10.2",
     "npm-run-all": "^3.1.0",
@@ -7255,12 +7255,12 @@ module.exports={
     "debug:open": "biased-opener --browser chrome http://localhost:8080/?port=5858",
     "jasmine": "jasmine JASMINE_CONFIG_PATH=./test/jasmine.json",
     "watch:jasmine": "watch \"npm run jasmine\" lib/ test/",
-    "bundle:jasmine": "globify test/*_test.js --watch --verbose --list --outfile jasmine/bundle.js",
-    "live:jasmine": "browser-sync start --port 9991 --server jasmine/ --files jasmine/ --no-open --no-ui --no-online",
+    "bundle:jasmine": "globify test/*_test.js --watch --verbose --list --outfile test/browse-jasmine/bundle.js",
+    "live:jasmine": "browser-sync start --port 9991 --server test/browse-jasmine/ --files test/browse-jasmine/ --no-open --no-ui --no-online",
     "open:jasmine": "biased-opener --browser chrome http://localhost:9991",
-    "istanbul": "istanbul cover test/index.js",
-    "watch:istanbul": "watch \"npm run istanbul\" lib/ test/",
-    "live:istanbul": "browser-sync start --port 9992 --server coverage/lcov-report/ --files coverage/lcov-report/ --no-open --no-ui --no-online",
+    "istanbul": "istanbul cover --dir test/browse-coverage -x test/browse-** test/index.js",
+    "watch:istanbul": "watch \"npm run istanbul\" lib/ test/ --ignoreDirectoryPattern=/browse-.+/",
+    "live:istanbul": "browser-sync start --port 9992 --server test/browse-coverage/lcov-report/ --files test/browse-coverage/lcov-report/ --no-open --no-ui --no-online",
     "open:istanbul": "biased-opener --browser chrome http://localhost:9992",
     "live": "npm-run-all --parallel live:* open:*",
     "start": "npm-run-all --parallel bundle:jasmine watch:istanbul live:* open:*",
@@ -7269,11 +7269,11 @@ module.exports={
     "deploy": "npm-run-all --serial istanbul:coveralls git:commit",
     "coverage": "npm-run-all coverage:*",
     "coverage:a-step": "npm run istanbul",
-    "coverage:coveralls": "cat ./coverage/lcov.info | coveralls",
-    "coverage:codacy": "cross-env CODACY_PROJECT_TOKEN=0207815122ea49a68241d1aa435f21f1 cat ./coverage/lcov.info | codacy-coverage",
+    "coverage:coveralls": "cat ./test/browse-coverage/lcov.info | coveralls",
+    "coverage:codacy": "cross-env CODACY_PROJECT_TOKEN=0207815122ea49a68241d1aa435f21f1 cat ./test/browse-coverage/lcov.info | codacy-coverage",
     "coverage:codeclimate": "cross-env CODECLIMATE_REPO_TOKEN=60848a077f9070acf358b0c7145f0a2698a460ddeca7d8250815e75aa4333f7d codeclimate-test-reporter < coverage\\lcov.info",
     "update-packages": "npm-check-updates --upgrade --loglevel verbose",
-    "prepublish": "npm run test",
+    "xprepublish": "npm run test",
     "test": "npm run jasmine"
   }
 }
@@ -7768,8 +7768,8 @@ describe('Testing js2xml.js:', function () {
     describe('User reported issues:', function () {
         
         describe('case by Jan T. Sott', function () {
-            
-           var js = {
+            // see https://github.com/nashwaan/xml-js/issues/2
+            var js = {
                 _comment: " Released under The MIT License ",
                 snippet: {
                     content: {
@@ -7793,11 +7793,11 @@ describe('Testing js2xml.js:', function () {
                 '\v<scope>source.js</scope>\n' + 
                 '</snippet>';
 
-            it('should output cdata and text for {spaces: 4} option', function () {
-                expect(convert.js2xml(js, {compact: true})).toEqual(xml.replace(/\n/g, '').replace(/\v/g, ''));
+            it('should output cdata and text unformatted', function () {
+                expect(convert.js2xml(js, {compact: true})).toEqual(xml.replace(/\v|\n/g, ''));
             });
 
-            it('should output cdata and text for {spaces: 4} option', function () {
+            it('should output cdata and text formatted', function () {
                 expect(convert.js2xml(js, {compact: true, spaces: 4})).toEqual(xml.replace(/\v/g, '    '));
             });
 

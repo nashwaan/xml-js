@@ -14,7 +14,7 @@ Convert XML text to Javascript object / JSON text (and vice versa).
 [![npm](http://img.shields.io/npm/v/xml-js.svg)](https://www.npmjs.com/package/xml-js)
 [![License](https://img.shields.io/npm/l/xml-js.svg)](LICENSE)
 [![Dependency Status](https://david-dm.org/nashwaan/xml-js.svg)](https://david-dm.org/nashwaan/xml-js)
-[![Package Quality](http://xxxnpm.packagequality.com/shield/xml-js.svg)](http://xxxpackagequality.com/#?package=xml-js)
+[![Package Quality](http://npm.packagequality.com/shield/xml-js.svg)](http://packagequality.com/#?package=xml-js)
 
 # Synopsis
 
@@ -53,16 +53,19 @@ To quickly convert xml or json files, this module can be installed globally or l
    
 ## Compact vs Non-Compact
 
-Most XML parsers (including online parsers) convert `<a/>` to some compact output like `{"a":{}}` 
+Most XML to JSON convertors (including online convertors) convert `<a/>` to some compact output like `{"a":{}}` 
 instead of non-compact output like `{"elements":[{"type":"element","name":"a"}]}`.
 
-While compact output might work in most situations, there are cases when different elements are mixed inside a parent element: `<n><a x="1"/><b x="2"/><a x="3"/></n>`.
-In this case, the compact output will be `{n:{a:[{_:{x:"1"}},{_:{x:"3"}}],b:{_:{x:"2"}}}}`, 
-which has merged the second `<a/>` with the first `<a/>` into an array and so the order is not preserved.
+While compact output might work in most situations, there are cases when different elements are mixed inside a parent element: `<a x="1"/><b x="2"/><a x="3"/>`.
+In this case, the compact output will be something like `{a:[{_:{x:"1"}},{_:{x:"3"}}],b:{_:{x:"2"}}}`, 
+which has merged both `<a>` elements into an array. If you try to convert this back to xml, you will get `<a x="1"/><a x="3"/><b x="2"/>` 
+which has not preserved the order of elements! This is an inherit limitation in the compact representation 
+because output like `{a:{_:{x:"1"}},b:{_:{x:"2"}},a:{_:{x:"3"}}}` is illegal. 
+Note that this issue does not occur in the non-compact form.
 
-Although non-compact output is more accurate representation of original XML than compact version, the non-compact consumes more space.
+Although non-compact output is more accurate representation of original XML than compact version, the non-compact consumes more space. 
 This library provides both options. Use `{compact: false}` if you are not sure because it preserves everything; 
-otherwise use `{compact: true}` if you want to save space and you don't care about mixing elements of same type.
+otherwise use `{compact: true}` if you want to save space and you don't care about mixing elements of same type and loosing their order.
 
 # Usage
 
@@ -162,7 +165,7 @@ The below options are applicable for both `xml2js()` and `xml2json()` functions.
 | `sanitize`          | `false` | Whether to replace `&` `<` `>` `"` `'` with `&amp;` `&lt;` `&gt;` `&quot;` `&#39;` respectively in the resultant text. |
 | `nativeType`        | `false` | whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
 | `addParent`         | `false` | Whether to add `parent` property in each element object that points to parent object. |
-| `alwaysChildren`    | `false` | Whether to always generate `elements` property even when there are no actual sub elements. |
+| `alwaysChildren`    | `false` | Whether to always generate `elements` property even when there are no actual sub elements (applicable for non-compact output). |
 | `ignoreDeclaration` | `false` | Whether to ignore writing declaration property. That is, no `declaration` property will be generated. |
 | `ignoreAttributes`  | `false` | Whether to ignore writing attributes of elements.That is, no `attributes` property will be generated. |
 | `ignoreComment`     | `false` | Whether to ignore writing comments of the elements. That is, no `comment` will be generated. |
