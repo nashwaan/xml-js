@@ -94,7 +94,7 @@ var result2 = convert.xml2json(xml, {compact: false, spaces: 4});
 console.log(result1, '\n', result2);
 ```
 
-To see the output of this code, see the picture above in *Synopsis* section.
+To see the result of this code, see the output above in *Synopsis* section.
 
 ## Sample Conversions
 
