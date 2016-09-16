@@ -89,8 +89,6 @@ module.exports = {
     json2xml: json2xml
 };
 },{"./js2xml":3,"./json2xml":4,"./xml2js":5,"./xml2json":6}],3:[function(require,module,exports){
-/*jslint node:true */
-
 var common = require('./common');
 
 function validateOptions (userOptions) {
@@ -260,7 +258,6 @@ module.exports = function (js, options) {
 };
 },{"./common":1}],4:[function(require,module,exports){
 (function (Buffer){
-/*jslint node:true */
 var js2xml = require('./js2xml.js');
 
 module.exports = function (json, options) {
@@ -282,10 +279,8 @@ module.exports = function (json, options) {
 };
 }).call(this,require("buffer").Buffer)
 },{"./js2xml.js":3,"buffer":10}],5:[function(require,module,exports){
-/*jslint node:true */
 var sax = require('sax');
-var expat = {on: function () {}, parse: function () {}};
-//var expat = require('node-expat');
+var expat /*= require('node-expat');*/ = {on: function () {}, parse: function () {}};
 var common = require('./common');
 
 var options;
@@ -526,7 +521,6 @@ module.exports = function (xml, userOptions) {
 
 };
 },{"./common":1,"sax":30}],6:[function(require,module,exports){
-/*jslint node:true */
 var common = require('./common');
 var xml2js = require('./xml2js');
 
@@ -7188,7 +7182,7 @@ function config (name) {
 },{}],34:[function(require,module,exports){
 module.exports={
   "name": "xml-js",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "description": "A convertor between XML text and Javascript object / JSON text.",
   "main": "index.js",
   "repository": {
@@ -7232,7 +7226,7 @@ module.exports={
   },
   "devDependencies": {
     "biased-opener": "^0.2.8",
-    "browser-sync": "^2.14.3",
+    "browser-sync": "^2.15.0",
     "cash-cat": "^0.2.0",
     "codacy-coverage": "^2.0.0",
     "codeclimate-test-reporter": "^0.3.3",
@@ -7240,7 +7234,7 @@ module.exports={
     "cross-env": "^2.0.1",
     "globify": "^1.2.2",
     "istanbul": "^0.4.5",
-    "jasmine": "^2.4.1",
+    "jasmine": "^2.5.1",
     "node-inspector": "^0.12.8",
     "nodemon": "^1.10.2",
     "npm-run-all": "^3.1.0",
@@ -7280,7 +7274,6 @@ module.exports={
 
 },{}],35:[function(require,module,exports){
 (function (__dirname){
-/*jslint node:true*/
 /*global describe,it,expect,beforeEach,afterEach*/
 
 if (typeof jasmineRequire === 'undefined') {
@@ -7362,7 +7355,6 @@ describe('Testing cli.js:', function () {
 }).call(this,"/test")
 },{"../package.json":34,"child_process":8,"path":17}],36:[function(require,module,exports){
 (function (process){
-/*jslint node:true*/
 /*global describe,it,expect,beforeEach,afterEach*/
 
 var convert = require('../lib/common');
@@ -7499,7 +7491,6 @@ describe('Testing common.js:', function () {
 }).call(this,require('_process'))
 },{"../lib/common":1,"_process":19}],37:[function(require,module,exports){
 (function (Buffer){
-/*jslint node:true */
 /*global describe,it,expect,beforeEach*/
 
 var convert = require('../lib');
@@ -7810,8 +7801,6 @@ describe('Testing js2xml.js:', function () {
 
 }).call(this,require("buffer").Buffer)
 },{"../lib":2,"./test-items":38,"buffer":10}],38:[function(require,module,exports){
-/*jslint node:true */
-
 var cases = [
     {
         desc: 'declaration <?xml>',
@@ -7967,7 +7956,6 @@ module.exports = function (options) {
     return tests;
 };
 },{}],39:[function(require,module,exports){
-/*jslint node:true */
 /*global describe,it,expect,beforeEach,afterEach*/
 
 var convert = require('../lib');

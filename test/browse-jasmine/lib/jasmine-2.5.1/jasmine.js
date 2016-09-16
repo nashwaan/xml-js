@@ -1428,7 +1428,7 @@ getJasmineRequireObj().DelayedFunctionScheduler = function() {
     function runScheduledFunctions(endTime, tickDate) {
       tickDate = tickDate || function() {};
       if (scheduledLookup.length === 0 || scheduledLookup[0] > endTime) {
-        tickDate(endTime);
+        tickDate(endTime - currentTime);
         return;
       }
 
@@ -1455,6 +1455,11 @@ getJasmineRequireObj().DelayedFunctionScheduler = function() {
               // scheduled in a funcToRun from forcing an extra iteration
                  currentTime !== endTime  &&
                  scheduledLookup[0] <= endTime);
+
+      // ran out of functions to call, but still time left on the clock
+      if (currentTime !== endTime) {
+        tickDate(endTime - currentTime);
+      }
     }
   }
 
@@ -2088,7 +2093,9 @@ getJasmineRequireObj().SpyRegistry = function(j$) {
         };
       } else {
         restoreStrategy = function() {
-          delete obj[methodName];
+          if (!delete obj[methodName]) {
+            obj[methodName] = originalMethod;
+          }
         };
       }
 
@@ -2984,16 +2991,20 @@ getJasmineRequireObj().matchersUtil = function(j$) {
       }
 
       var extraKeys = [];
-      for (var i in allKeys) {
-        if (!allKeys[i].match(/^[0-9]+$/)) {
-          extraKeys.push(allKeys[i]);
-        }
+      if (allKeys.length === 0) {
+          return allKeys;
+      }
+
+      for (var x = 0; x < allKeys.length; x++) {
+          if (!allKeys[x].match(/^[0-9]+$/)) {
+              extraKeys.push(allKeys[x]);
+          }
       }
 
       return extraKeys;
     }
   }
-  
+
   function has(obj, key) {
     return Object.prototype.hasOwnProperty.call(obj, key);
   }
@@ -3629,5 +3640,5 @@ getJasmineRequireObj().interface = function(jasmine, env) {
 };
 
 getJasmineRequireObj().version = function() {
-  return '2.5.0';
+  return '2.5.1';
 };
