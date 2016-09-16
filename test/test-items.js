@@ -1,5 +1,3 @@
-/*jslint node:true */
-
 var cases = [
     {
         desc: 'declaration <?xml>',

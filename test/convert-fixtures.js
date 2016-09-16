@@ -1,15 +1,14 @@
-/*jslint node:true */
 var fs = require('fs');
 var convertor = require('..');
 
 function getFixtureFiles(type) {
     return fs.readdirSync('fixtures/')
-             .filter(function (file) {
-        return file.slice(-4) === type;})
-             .map(function (file) {
-        return 'fixtures/' + file;})
-             .filter(function (file) {
-        return fs.statSync(file).isFile();});
+        .filter(function (file) {
+            return file.slice(-4) === type;})
+        .map(function (file) {
+            return 'fixtures/' + file;})
+        .filter(function (file) {
+            return fs.statSync(file).isFile();});
 }
 
 getFixtureFiles('.xml').map(function (file) {

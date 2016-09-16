@@ -4,6 +4,7 @@
         "./**/*_[Tt]est.js"
     ],
     "helpers": [
+        "console-reporter.js"
     ],
     "stopSpecOnExpectationFailure": false,
     "random": false

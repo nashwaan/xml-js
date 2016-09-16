@@ -1,5 +1,3 @@
-/*jslint node:true */
-
 var path = require('path');
 var jasmine = new (require('jasmine'))();
 var config = require(__dirname + '/jasmine.json');

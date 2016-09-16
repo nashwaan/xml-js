@@ -1,4 +1,3 @@
-/*jslint node:true */
 /*global describe,it,expect,beforeEach*/
 
 var convert = require('../lib');
