@@ -67,7 +67,7 @@ var getJasmineRequireObj = (function (jasmineGlobal) {
     j$.ReportDispatcher = jRequire.ReportDispatcher();
     j$.Spec = jRequire.Spec(j$);
     j$.SpyRegistry = jRequire.SpyRegistry(j$);
-    j$.SpyStrategy = jRequire.SpyStrategy();
+    j$.SpyStrategy = jRequire.SpyStrategy(j$);
     j$.StringMatching = jRequire.StringMatching(j$);
     j$.Suite = jRequire.Suite(j$);
     j$.Timer = jRequire.Timer();
@@ -145,6 +145,10 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
 
   j$.isNumber_ = function(value) {
     return j$.isA_('Number', value);
+  };
+
+  j$.isFunction_ = function(value) {
+    return j$.isA_('Function', value);
   };
 
   j$.isA_ = function(typeName, value) {
@@ -786,6 +790,10 @@ getJasmineRequireObj().Env = function(j$) {
 
     this.provideFallbackReporter = function(reporterToAdd) {
       reporter.provideFallbackReporter(reporterToAdd);
+    };
+
+    this.clearReporters = function() {
+      reporter.clearReporters();
     };
 
     var spyRegistry = new j$.SpyRegistry({currentSpies: function() {
@@ -2013,11 +2021,14 @@ getJasmineRequireObj().ReportDispatcher = function() {
     this.addReporter = function(reporter) {
       reporters.push(reporter);
     };
-    
+
     this.provideFallbackReporter = function(reporter) {
       fallbackReporter = reporter;
     };
 
+    this.clearReporters = function() {
+      reporters = [];
+    };
 
     return this;
 
@@ -2120,7 +2131,7 @@ getJasmineRequireObj().SpyRegistry = function(j$) {
   return SpyRegistry;
 };
 
-getJasmineRequireObj().SpyStrategy = function() {
+getJasmineRequireObj().SpyStrategy = function(j$) {
 
   function SpyStrategy(options) {
     options = options || {};
@@ -2167,7 +2178,7 @@ getJasmineRequireObj().SpyStrategy = function() {
     };
 
     this.callFake = function(fn) {
-      if(!(fn instanceof Function)) {
+      if(!j$.isFunction_(fn)) {
         throw new Error('Argument passed to callFake should be a function, got ' + fn);
       }
       plan = fn;
@@ -3640,5 +3651,5 @@ getJasmineRequireObj().interface = function(jasmine, env) {
 };
 
 getJasmineRequireObj().version = function() {
-  return '2.5.1';
+  return '2.5.2';
 };
