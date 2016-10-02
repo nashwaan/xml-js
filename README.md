@@ -72,13 +72,13 @@ otherwise use `{compact: true}` if you want to save space and you don't care abo
 ## Installation
 
 ```shell
-npm install xml-js
+npm install --save xml-js
 ```
 
 You can also installed it globally to use it as a command line convertor.
 
 ```shell
-npm install -g xml-js
+npm install --global xml-js
 ```
 
 ## Quick start
@@ -135,7 +135,7 @@ The below options are applicable for both `js2xml()` and `json2xml()` functions.
 |:----------------------|:--------|:------------|
 | `spaces`              | `0`     | Number of spaces to be used for indenting XML output. |
 | `compact`             | `false` | Whether the *input* object is in compact form or not. |
-| `fullTagEmptyElement` | `false` | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `</a>`. |
+| `fullTagEmptyElement` | `false` | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `<a/>`. |
 | `ignoreDeclaration`   | `false` | Whether to ignore writing declaration directives of xml. For example, `<?xml?>` will be ignored. |
 | `ignoreAttributes`    | `false` | Whether to ignore writing attributes of the elements. For example, `x="1"` in `<a x="1"></a>` will be ignored |
 | `ignoreComment`       | `false` | Whether to ignore writing comments of the elements. That is, no `<!--  -->` will be generated. |
@@ -204,9 +204,11 @@ Because any good library should support command line usage, this library is no d
 ## As Globally Accessible Command
 
 ```shell
-npm install -g xml-js       // install this library globally
-xml-js test.json            // test.json will be converted to test.xml
-xml-js test.xml             // test.xml will be converted to test.json
+npm install -g xml-js                      // install this library globally
+xml-js test.json --space 4                 // xml result will be printed on screen
+xml-js test.json --space 4 --out test.xml  // xml result will be saved to test.xml
+xml-js test.xml --space 4                  // json result will be printed on screen
+xml-js test.xml --space 4 --out test.json  // json result will be saved to test.json
 ```
 
 ## As Locally Accessible Command
@@ -224,7 +226,7 @@ In package.json, write a script:
     "xml-js": "latest"
   },
   "scripts": {
-     "convert": "xml-js test.json"
+     "convert": "xml-js test.json --spaces 4"
   }
 ```
   

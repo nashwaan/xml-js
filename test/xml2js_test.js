@@ -242,4 +242,25 @@ describe('Testing xml2js.js:', function () {
         
     });
     
+    describe('User reported issues:', function () {
+        
+        xdescribe('case by Mark Pareja', function () {
+
+            var xml = '<?xml version="1.0" encoding="utf-8"?>' + '\n' +
+                      '<dp:ListServicesReply ReturnCode="0" xmlns:dp="http://www.cisco.com/vtg/diagnosticportal">' + '\n' +
+                      '  <dp:Schema Version="1.0" />' + '\n' +
+                      '  <dp:ServiceList>' + '\n' +
+                      '    <dp:Service Name="Cisco ICM usgd1 LoggerA" Description="Provides Call Logging services for Instance usgd1" Status="Running" StartupType="Auto" LogOnAs="****" />' + '\n' +
+                      '    <dp:Service Name="Cisco ICM Diagnostic Framework" Description="Provides a web-based diagnostic service for Cisco Unified ICM, Contact Center Enterprise application." Status="Running" StartupType="Auto" LogOnAs="LocalSystem" />' + '\n' +
+                      '  </dp:ServiceList>' + '\n' +
+                      '</dp:ListServicesReply>';
+            
+            it('should output ', function () {
+                expect(convert.xml2json(xml, {compact: true, spaces: 4})).toEqual(JSON.stringify({}));
+            });
+
+        });
+        
+    });
+    
 });
