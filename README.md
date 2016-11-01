@@ -30,7 +30,7 @@ Instead of converting `<a/><b/><a/>` to `{a:[{},{}],b:{}}`, I wanted to preserve
 `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"},{"type":"element","name":"a"}]}`.
 
 * **Fully XML Compliant**:
-Can parse: Comments, Processing Instructions, XML Declarations, Entity declarations, and CDATA Sections.
+Can parse: elements, attributes, texts, comments, CData, and XML declarations.
 
 * **Reversible**:
 Whether converting xml→json or json→xml, the result should be convertable to its original form.
@@ -294,7 +294,7 @@ For live testing, use `npm start` instead of `npm test`.
 
 ## Reporting
 
-Use [this link](https://github.com/nashwaan/xml-js/issues) to report an issue or bug. Please include a sample code or Jasmine test spec where the code is failing.
+Use [this link](https://github.com/nashwaan/xml-js/issues) to report an issue or bug. Please include a sample code where the code is failing.
 
 # License
 

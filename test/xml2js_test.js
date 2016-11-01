@@ -244,7 +244,7 @@ describe('Testing xml2js.js:', function () {
     
     describe('User reported issues:', function () {
         
-        xdescribe('case by Mark Pareja', function () {
+        describe('case by Mark Pareja', function () {
 
             var xml = '<?xml version="1.0" encoding="utf-8"?>' + '\n' +
                       '<dp:ListServicesReply ReturnCode="0" xmlns:dp="http://www.cisco.com/vtg/diagnosticportal">' + '\n' +
@@ -254,9 +254,50 @@ describe('Testing xml2js.js:', function () {
                       '    <dp:Service Name="Cisco ICM Diagnostic Framework" Description="Provides a web-based diagnostic service for Cisco Unified ICM, Contact Center Enterprise application." Status="Running" StartupType="Auto" LogOnAs="LocalSystem" />' + '\n' +
                       '  </dp:ServiceList>' + '\n' +
                       '</dp:ListServicesReply>';
+            var json = {
+                "_declaration": {
+                    "_attributes": {
+                        "version": "1.0",
+                        "encoding": "utf-8"
+                    }
+                },
+                "dp:ListServicesReply": {
+                    "_attributes": {
+                        "ReturnCode": "0",
+                        "xmlns:dp": "http://www.cisco.com/vtg/diagnosticportal"
+                    },
+                    "dp:Schema": {
+                        "_attributes": {
+                            "Version": "1.0"
+                        }
+                    },
+                    "dp:ServiceList": {
+                        "dp:Service": [
+                            {
+                                "_attributes": {
+                                    "Name": "Cisco ICM usgd1 LoggerA",
+                                    "Description": "Provides Call Logging services for Instance usgd1",
+                                    "Status": "Running",
+                                    "StartupType": "Auto",
+                                    "LogOnAs": "****"
+                                }
+                            },
+                            {
+                                "_attributes": {
+                                    "Name": "Cisco ICM Diagnostic Framework",
+                                    "Description": "Provides a web-based diagnostic service for Cisco Unified ICM, Contact Center Enterprise application.",
+                                    "Status": "Running",
+                                    "StartupType": "Auto",
+                                    "LogOnAs": "LocalSystem"
+                                }
+                            }
+                        ]
+                    }
+                }
+            };
             
             it('should output ', function () {
-                expect(convert.xml2json(xml, {compact: true, spaces: 4})).toEqual(JSON.stringify({}));
+                expect(convert.xml2json(xml, {compact: true})).toEqual(JSON.stringify(json));
             });
 
         });

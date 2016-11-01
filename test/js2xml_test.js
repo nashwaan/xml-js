@@ -290,13 +290,50 @@ describe('Testing js2xml.js:', function () {
                 '\v<tabTrigger>log</tabTrigger>\n' + 
                 '\v<scope>source.js</scope>\n' + 
                 '</snippet>';
-
+                
             it('should output cdata and text unformatted', function () {
                 expect(convert.js2xml(js, {compact: true})).toEqual(xml.replace(/\v|\n/g, ''));
             });
 
             it('should output cdata and text formatted', function () {
                 expect(convert.js2xml(js, {compact: true, spaces: 4})).toEqual(xml.replace(/\v/g, '    '));
+            });
+
+        });
+        
+        describe('case by Denis Carriere ', function () {
+            // see https://github.com/nashwaan/xml-js/issues/5
+            var js1 = {
+                a: {
+                    b: {
+                        _text: 'foo bar',
+                    }
+                }
+            };
+            var js2 = {
+                elements: [{
+                    type: 'element',
+                    name: 'a',
+                    elements: [{
+                        type: 'element',
+                        name: 'b',
+                        elements: [{
+                            type: 'text',
+                            text: 'foo bar'
+                        }],
+                    }]
+                }]
+            };
+            var xml = '<a>\n' + 
+                '\v<b>foo bar</b>\n' + 
+                '</a>';
+                
+            it('should output xml of compact js input', function () {
+                expect(convert.js2xml(js1, {compact: true, spaces: 4})).toEqual(xml.replace(/\v/g, '    '));
+            });
+
+            it('should output xml of non-compact js input', function () {
+                expect(convert.js2xml(js2, {compact: false, spaces: 4})).toEqual(xml.replace(/\v/g, '    '));
             });
 
         });
