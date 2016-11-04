@@ -296,12 +296,52 @@ describe('Testing xml2js.js:', function () {
                 }
             };
             
-            it('should output ', function () {
+            it('should output as expected json', function () {
                 expect(convert.xml2json(xml, {compact: true})).toEqual(JSON.stringify(json));
             });
 
         });
         
+        describe('case by Félix Dion Robidoux', function () {
+
+            var xml = '<ZohoCreator>' + '\n' +
+                      '    <applicationslist>' + '\n' +
+                      '        <application name="testapp">' + '\n' +
+                      '            <formlist>' + '\n' +
+                      '                <form name="Untitled_Form">' + '\n' +
+                      '                    <add>' + '\n' +
+                      '                        <field name="Subform_Single_Line">' + '\n' +
+                      '                            <value>BEUHBALUGU</value>' + '\n' +
+                      '                        </field>' + '\n' +
+                      '                    </add>' + '\n' +
+                      '                </form>' + '\n' +
+                      '                <form name="Untitled_Form">' + '\n' +
+                      '                    <add>' + '\n' +
+                      '                        <field name="Subform_Single_Line">' + '\n' +
+                      '                            <value>IF YOU CAN SEE THIS YOU DESERVE THE SUCC</value>' + '\n' +
+                      '                        </field>' + '\n' +
+                      '                    </add>' + '\n' +
+                      '                </form>' + '\n' +
+                      '            </formlist>' + '\n' +
+                      '        </application>' + '\n' +
+                      '        <application name="derp">' + '\n' +
+                      '            <formlist></formlist>' + '\n' +
+                      '        </application>' + '\n' +
+                      '    </applicationslist>' + '\n' +
+                      '</ZohoCreator>';
+            /*xml = '<list>' + '\n' +
+                  '    <form name="A"></form>' + '\n' +
+                  '    <form name="B"></form>' + '\n' +
+                  '</list>';*/
+        
+            var json = convert.xml2json(xml, {compact: true, spaces: 4});
+            
+            it('should output json and reverse it back to xml', function () {
+                expect(convert.json2xml(json, {compact: true, spaces: 4, fullTagEmptyElement: true})).toEqual(xml);
+            });
+            
+        });
+
     });
     
 });

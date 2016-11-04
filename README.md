@@ -35,6 +35,9 @@ Can parse: elements, attributes, texts, comments, CData, and XML declarations.
 * **Reversible**:
 Whether converting xml→json or json→xml, the result should be convertable to its original form.
 
+* **Minimal Dependencies**:
+This library depends only on one external npm module.
+
 * **Change Property Key Name**:
 Usually output of XML attributes are stored in `@attr`, `_atrr`, `$attr`, `$`, or `whatever` in order to avoid conflicting with name of sub-elements. 
 This library store them in `attributes`, but most importantly, you can change this to whatever you like.
@@ -43,7 +46,7 @@ This library store them in `attributes`, but most importantly, you can change th
 Written purely in JavaScript (this is default behavior, but this can be slow for very large XML text).
 
 * **Fast Code** (if required):
-With little effort, the underlying [sax engine](https://www.npmjs.com/package/sax) (based on JavaScript) can be sustituted with [node-expat engine](https://github.com/astro/node-expat) (based on VC++).
+With little effort, the underlying [sax engine](https://www.npmjs.com/package/sax) (based on JavaScript) can be substituted with [node-expat engine](https://github.com/astro/node-expat) (based on VC++).
 
 * **Support Command Line**:
 To quickly convert xml or json files, this module can be installed globally or locally (i.e. use it as [script](https://docs.npmjs.com/misc/scripts) in package.json).

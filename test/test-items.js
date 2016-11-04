@@ -45,7 +45,12 @@ var cases = [
         js1: {"a":{}},
         js2: {"elements":[{"type":"element","name":"a"}]},
     }, {
-        desc: 'should convert 2 elements',
+        desc: 'should convert 2 same elements',
+        xml: '<a/><a/>',
+        js1: {"a":[{},{}]},
+        js2: {"elements":[{"type":"element","name":"a"},{"type":"element","name":"a"}]},
+    }, {
+        desc: 'should convert 2 different elements',
         xml: '<a/><b/>',
         js1: {"a":{},"b":{}},
         js2: {"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"}]},
@@ -102,8 +107,12 @@ module.exports = function (options) {
                         obj[key] = transform(obj[key]);
                     }
                 }
-                if (typeof obj[key] === 'object' && !(obj[key] instanceof Array)) {
-                    if (options.compact && options.addParent && key !== '_attributes') {
+                if (options.addParent /*&& key.indexOf('declaration') === -1*/ && key.indexOf('attributes') === -1) {
+                    if (obj[key] instanceof Array) {
+                        obj[key].forEach(function (el) {
+                            if (options.compact) {el._parent = obj;} else {el.parent = obj;}
+                        });
+                    } else if (typeof obj[key] === 'object' && !(obj[key] instanceof Array)) {
                         if (options.compact) {obj[key]._parent = obj;} else {obj[key].parent = obj;}
                     }
                 }
