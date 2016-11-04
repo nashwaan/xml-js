@@ -329,10 +329,6 @@ describe('Testing xml2js.js:', function () {
                       '        </application>' + '\n' +
                       '    </applicationslist>' + '\n' +
                       '</ZohoCreator>';
-            /*xml = '<list>' + '\n' +
-                  '    <form name="A"></form>' + '\n' +
-                  '    <form name="B"></form>' + '\n' +
-                  '</list>';*/
         
             var json = convert.xml2json(xml, {compact: true, spaces: 4});
             
