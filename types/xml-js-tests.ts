@@ -31,7 +31,6 @@ const element4: Element = { elements:[{ type: 'element', name: 'a' }, { type: 'e
 const elementCompact5: ElementCompact = { a: { b: {} }};
 const element5: Element = { elements: [{ type: 'element', name: 'a', elements: [{ type: 'element', name: 'b' }]}]};
 
-// xml2json
 const xml = `
 <?xml version="1.0" encoding="utf-8"?>
 <note importance="high" logged="true">
@@ -39,9 +38,19 @@ const xml = `
     <todo>Work</todo>
     <todo>Play</todo>
 </note>`;
-convert.xml2json(xml, { compact: true, spaces: 4 });
-convert.xml2json(xml, { compact: false });
+
+// xml2js
+let jsResult1: any = convert.xml2js(xml, {compact:true, spaces:4});
+let jsResult2: any = convert.xml2js(xml, {compact:false});
+
+// xml2json
+let jsonResult1: string = convert.xml2json(xml, {compact:true, spaces:4});
+let jsonResult2: string = convert.xml2json(xml, {compact:false});
+
+// js2xml
+let xmlResult1: string = convert.js2xml({a:{}}, { compact:true, spaces:4});
+let xmlResult2: string = convert.js2xml({elements:[{type:'element', name:'a'}]}, {compact:false});
 
 // json2xml
-convert.json2xml({ a: {} }, { compact: true, spaces: 4 });
-convert.json2xml({ elements:[{ type: 'element', name: 'a' }]}, { compact: false });
+let xmlResult3: string = convert.json2xml('{"a":{}}', { compact:true, spaces:4});
+let xmlResult4: string = convert.json2xml('{"elements":[{"type":"element","name":"a"}]}', {compact:false});

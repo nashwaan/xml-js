@@ -1,8 +1,7 @@
 {
   "name": "xml-js",
-  "version": "0.9.7",
+  "version": "1.0.0",
   "description": "A convertor between XML text and Javascript object / JSON text.",
-  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nashwaan/xml-js.git"
@@ -38,30 +37,32 @@
     "parser",
     "parsing"
   ],
+  "main": "lib/index.js",
   "bin": "./bin/cli.js",
   "dependencies": {
     "sax": "^1.2.1"
   },
   "devDependencies": {
     "biased-opener": "^0.2.8",
-    "browser-sync": "^2.17.5",
+    "browser-sync": "^2.18.6",
     "cash-cat": "^0.2.0",
     "codacy-coverage": "^2.0.0",
     "codeclimate-test-reporter": "^0.4.0",
-    "coveralls": "^2.11.14",
-    "cross-env": "^3.1.3",
-    "globify": "^1.2.2",
+    "coveralls": "^2.11.15",
+    "cross-env": "^3.1.4",
+    "globify": "^2.0.0",
     "istanbul": "^0.4.5",
-    "jasmine": "^2.5.2",
+    "jasmine": "^2.5.3",
     "node-inspector": "^0.12.8",
     "nodemon": "^1.11.0",
-    "npm-run-all": "^3.1.1",
-    "typescript": "^2.0.7",
+    "npm-run-all": "^4.0.0",
+    "typescript": "^2.1.5",
     "watch": "^1.0.1"
   },
   "scripts": {
-    "debug": "npm-run-all --parallel debug:*",
-    "debug:listener": "node-inspector",
+    "debug": "nodemon --inspect --watch lib/ --watch test/ --debug-brk test/index.js",
+    "pre-node6.3.1-debug": "npm-run-all --parallel debug:*",
+    "debug:listener": "node-inspect",
     "debug:jasmine": "nodemon --watch lib/ --watch test/ --debug-brk test/index.js",
     "xdebug:cli": "nodemon --watch lib/ --debug-brk index.js -- --help",
     "debug:live": "browser-sync start --port 8080 --server --startPath ?port=5858 --files lib/ test/ --no-open --no-ui --no-online",

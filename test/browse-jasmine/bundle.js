@@ -156,7 +156,7 @@ function writeElement (element, options, depth) {
         if (element[options.elementsKey] && element[options.elementsKey].length) {
             xml += writeElements(element[options.elementsKey], options, depth + 1);
         }
-        xml += (options.spaces && element[options.elementsKey] && element[options.elementsKey].length && (element[options.elementsKey].length > 1 || element[options.elementsKey][0].type !== 'text') ? '\n' : '') + Array(depth + 1).join(options.spaces);
+        xml += (options.spaces && element[options.elementsKey] && element[options.elementsKey].length && (element[options.elementsKey].length > 1 || element[options.elementsKey][0].type !== 'text') ? '\n' + Array(depth + 1).join(options.spaces) : '');
         xml += '</' + element.name + '>';
     } else {
         xml += '/>';
@@ -232,7 +232,14 @@ function writeElementsCompact (element, options, depth, firstLine) {
                 case options.textKey: xml += writeText(element, options); break;
                 case options.cdataKey: xml += writeIndentation(options, depth, firstLine) + writeCdata(element, options); break;
                 case options.commentKey: xml += writeIndentation(options, depth, firstLine) + writeComment(element, options); break;
-                default: xml += writeIndentation(options, depth, firstLine) + writeElementCompact(element[key], key, options, depth, hasContent(element[key], options, true));
+                default:
+                    if (element[key] instanceof Array) {
+                        element[key].forEach(function (el) {
+                            xml += writeIndentation(options, depth, firstLine) + writeElementCompact(el, key, options, depth, hasContent(el, options, true));
+                        });
+                    } else {
+                        xml += writeIndentation(options, depth, firstLine) + writeElementCompact(element[key], key, options, depth, hasContent(element[key], options, true));
+                    }
             }
             firstLine = firstLine && !xml;
         }
@@ -362,10 +369,9 @@ function onDeclaration (declaration) {
         currentElement[options.declarationKey][options.attributesKey][attribute[1]] = attribute[2];
         declaration.body = declaration.body.slice(attribute[0].length); // advance the string
     }
-    if (options.addParent && options.compact) {
+    if (options.addParent) {
         currentElement[options.declarationKey][options.parentKey] = currentElement;
     }
-    //console.error('result[options.declarationKey]', result[options.declarationKey]);
 }
 
 function onStartElement (name, attributes) {
@@ -7182,7 +7188,7 @@ function config (name) {
 },{}],34:[function(require,module,exports){
 module.exports={
   "name": "xml-js",
-  "version": "0.9.5",
+  "version": "0.9.7",
   "description": "A convertor between XML text and Javascript object / JSON text.",
   "main": "index.js",
   "repository": {
@@ -7220,25 +7226,27 @@ module.exports={
     "parser",
     "parsing"
   ],
+  "main": "lib/index.js",
   "bin": "./bin/cli.js",
   "dependencies": {
     "sax": "^1.2.1"
   },
   "devDependencies": {
     "biased-opener": "^0.2.8",
-    "browser-sync": "^2.16.0",
+    "browser-sync": "^2.17.5",
     "cash-cat": "^0.2.0",
     "codacy-coverage": "^2.0.0",
-    "codeclimate-test-reporter": "^0.3.3",
-    "coveralls": "^2.11.13",
-    "cross-env": "^2.0.1",
+    "codeclimate-test-reporter": "^0.4.0",
+    "coveralls": "^2.11.14",
+    "cross-env": "^3.1.3",
     "globify": "^1.2.2",
     "istanbul": "^0.4.5",
     "jasmine": "^2.5.2",
     "node-inspector": "^0.12.8",
-    "nodemon": "^1.10.2",
-    "npm-run-all": "^3.1.0",
-    "watch": "^0.19.2"
+    "nodemon": "^1.11.0",
+    "npm-run-all": "^3.1.1",
+    "typescript": "^2.0.7",
+    "watch": "^1.0.1"
   },
   "scripts": {
     "debug": "npm-run-all --parallel debug:*",
@@ -7260,16 +7268,18 @@ module.exports={
     "start": "npm-run-all --parallel bundle:jasmine watch:istanbul live:* open:*",
     "git:commit": "git add . && git commit -a -m \"Committed by npm script.\" && git push origin master",
     "git:push": "git push origin master",
-    "deploy": "npm-run-all --serial istanbul:coveralls git:commit",
+    "deploy": "npm-run-all --serial coverage git:commit",
     "coverage": "npm-run-all coverage:*",
     "coverage:a-step": "npm run istanbul",
     "coverage:coveralls": "cat ./test/browse-coverage/lcov.info | coveralls",
     "coverage:codacy": "cross-env CODACY_PROJECT_TOKEN=0207815122ea49a68241d1aa435f21f1 cat ./test/browse-coverage/lcov.info | codacy-coverage",
-    "coverage:codeclimate": "cross-env CODECLIMATE_REPO_TOKEN=60848a077f9070acf358b0c7145f0a2698a460ddeca7d8250815e75aa4333f7d codeclimate-test-reporter < coverage\\lcov.info",
+    "coverage:codeclimate": "cross-env CODECLIMATE_REPO_TOKEN=60848a077f9070acf358b0c7145f0a2698a460ddeca7d8250815e75aa4333f7d codeclimate-test-reporter < test\\browse-coverage\\lcov.info",
     "update-packages": "npm-check-updates --upgrade --loglevel verbose",
-    "xprepublish": "npm run test",
-    "test": "npm run jasmine"
-  }
+    "prepublish": "npm run test",
+    "test": "npm run jasmine && npm run test:types",
+    "test:types": "tsc -p ./types"
+  },
+  "types": "./types/index.d.ts"
 }
 
 },{}],35:[function(require,module,exports){
@@ -7783,13 +7793,50 @@ describe('Testing js2xml.js:', function () {
                 '\v<tabTrigger>log</tabTrigger>\n' + 
                 '\v<scope>source.js</scope>\n' + 
                 '</snippet>';
-
+                
             it('should output cdata and text unformatted', function () {
                 expect(convert.js2xml(js, {compact: true})).toEqual(xml.replace(/\v|\n/g, ''));
             });
 
             it('should output cdata and text formatted', function () {
                 expect(convert.js2xml(js, {compact: true, spaces: 4})).toEqual(xml.replace(/\v/g, '    '));
+            });
+
+        });
+        
+        describe('case by Denis Carriere ', function () {
+            // see https://github.com/nashwaan/xml-js/issues/5
+            var js1 = {
+                a: {
+                    b: {
+                        _text: 'foo bar',
+                    }
+                }
+            };
+            var js2 = {
+                elements: [{
+                    type: 'element',
+                    name: 'a',
+                    elements: [{
+                        type: 'element',
+                        name: 'b',
+                        elements: [{
+                            type: 'text',
+                            text: 'foo bar'
+                        }],
+                    }]
+                }]
+            };
+            var xml = '<a>\n' + 
+                '\v<b>foo bar</b>\n' + 
+                '</a>';
+                
+            it('should output xml of compact js input', function () {
+                expect(convert.js2xml(js1, {compact: true, spaces: 4})).toEqual(xml.replace(/\v/g, '    '));
+            });
+
+            it('should output xml of non-compact js input', function () {
+                expect(convert.js2xml(js2, {compact: false, spaces: 4})).toEqual(xml.replace(/\v/g, '    '));
             });
 
         });
@@ -7848,7 +7895,12 @@ var cases = [
         js1: {"a":{}},
         js2: {"elements":[{"type":"element","name":"a"}]},
     }, {
-        desc: 'should convert 2 elements',
+        desc: 'should convert 2 same elements',
+        xml: '<a/><a/>',
+        js1: {"a":[{},{}]},
+        js2: {"elements":[{"type":"element","name":"a"},{"type":"element","name":"a"}]},
+    }, {
+        desc: 'should convert 2 different elements',
         xml: '<a/><b/>',
         js1: {"a":{},"b":{}},
         js2: {"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"}]},
@@ -7905,8 +7957,12 @@ module.exports = function (options) {
                         obj[key] = transform(obj[key]);
                     }
                 }
-                if (typeof obj[key] === 'object' && !(obj[key] instanceof Array)) {
-                    if (options.compact && options.addParent && key !== '_attributes') {
+                if (options.addParent /*&& key.indexOf('declaration') === -1*/ && key.indexOf('attributes') === -1) {
+                    if (obj[key] instanceof Array) {
+                        obj[key].forEach(function (el) {
+                            if (options.compact) {el._parent = obj;} else {el.parent = obj;}
+                        });
+                    } else if (typeof obj[key] === 'object' && !(obj[key] instanceof Array)) {
                         if (options.compact) {obj[key]._parent = obj;} else {obj[key].parent = obj;}
                     }
                 }
@@ -8198,6 +8254,104 @@ describe('Testing xml2js.js:', function () {
             
         });
         
+    });
+    
+    describe('User reported issues:', function () {
+        
+        describe('case by Mark Pareja', function () {
+
+            var xml = '<?xml version="1.0" encoding="utf-8"?>' + '\n' +
+                      '<dp:ListServicesReply ReturnCode="0" xmlns:dp="http://www.cisco.com/vtg/diagnosticportal">' + '\n' +
+                      '  <dp:Schema Version="1.0" />' + '\n' +
+                      '  <dp:ServiceList>' + '\n' +
+                      '    <dp:Service Name="Cisco ICM usgd1 LoggerA" Description="Provides Call Logging services for Instance usgd1" Status="Running" StartupType="Auto" LogOnAs="****" />' + '\n' +
+                      '    <dp:Service Name="Cisco ICM Diagnostic Framework" Description="Provides a web-based diagnostic service for Cisco Unified ICM, Contact Center Enterprise application." Status="Running" StartupType="Auto" LogOnAs="LocalSystem" />' + '\n' +
+                      '  </dp:ServiceList>' + '\n' +
+                      '</dp:ListServicesReply>';
+            var json = {
+                "_declaration": {
+                    "_attributes": {
+                        "version": "1.0",
+                        "encoding": "utf-8"
+                    }
+                },
+                "dp:ListServicesReply": {
+                    "_attributes": {
+                        "ReturnCode": "0",
+                        "xmlns:dp": "http://www.cisco.com/vtg/diagnosticportal"
+                    },
+                    "dp:Schema": {
+                        "_attributes": {
+                            "Version": "1.0"
+                        }
+                    },
+                    "dp:ServiceList": {
+                        "dp:Service": [
+                            {
+                                "_attributes": {
+                                    "Name": "Cisco ICM usgd1 LoggerA",
+                                    "Description": "Provides Call Logging services for Instance usgd1",
+                                    "Status": "Running",
+                                    "StartupType": "Auto",
+                                    "LogOnAs": "****"
+                                }
+                            },
+                            {
+                                "_attributes": {
+                                    "Name": "Cisco ICM Diagnostic Framework",
+                                    "Description": "Provides a web-based diagnostic service for Cisco Unified ICM, Contact Center Enterprise application.",
+                                    "Status": "Running",
+                                    "StartupType": "Auto",
+                                    "LogOnAs": "LocalSystem"
+                                }
+                            }
+                        ]
+                    }
+                }
+            };
+            
+            it('should output as expected json', function () {
+                expect(convert.xml2json(xml, {compact: true})).toEqual(JSON.stringify(json));
+            });
+
+        });
+        
+        describe('case by Félix Dion Robidoux', function () {
+
+            var xml = '<ZohoCreator>' + '\n' +
+                      '    <applicationslist>' + '\n' +
+                      '        <application name="testapp">' + '\n' +
+                      '            <formlist>' + '\n' +
+                      '                <form name="Untitled_Form">' + '\n' +
+                      '                    <add>' + '\n' +
+                      '                        <field name="Subform_Single_Line">' + '\n' +
+                      '                            <value>BEUHBALUGU</value>' + '\n' +
+                      '                        </field>' + '\n' +
+                      '                    </add>' + '\n' +
+                      '                </form>' + '\n' +
+                      '                <form name="Untitled_Form">' + '\n' +
+                      '                    <add>' + '\n' +
+                      '                        <field name="Subform_Single_Line">' + '\n' +
+                      '                            <value>IF YOU CAN SEE THIS YOU DESERVE THE SUCC</value>' + '\n' +
+                      '                        </field>' + '\n' +
+                      '                    </add>' + '\n' +
+                      '                </form>' + '\n' +
+                      '            </formlist>' + '\n' +
+                      '        </application>' + '\n' +
+                      '        <application name="derp">' + '\n' +
+                      '            <formlist></formlist>' + '\n' +
+                      '        </application>' + '\n' +
+                      '    </applicationslist>' + '\n' +
+                      '</ZohoCreator>';
+        
+            var json = convert.xml2json(xml, {compact: true, spaces: 4});
+            
+            it('should output json and reverse it back to xml', function () {
+                expect(convert.json2xml(json, {compact: true, spaces: 4, fullTagEmptyElement: true})).toEqual(xml);
+            });
+            
+        });
+
     });
     
 });

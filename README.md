@@ -43,16 +43,15 @@ Usually output of XML attributes are stored in `@attr`, `_atrr`, `$attr`, `$`, o
 This library store them in `attributes`, but most importantly, you can change this to whatever you like.
 
 * **Portable Code**:
-Written purely in JavaScript (this is default behavior, but this can be slow for very large XML text).
-
-* **Fast Code** (if required):
-With little effort, the underlying [sax engine](https://www.npmjs.com/package/sax) (based on JavaScript) can be substituted with [node-expat engine](https://github.com/astro/node-expat) (based on VC++).
+Written purely in JavaScript which means it can be used in Node environment and **browser** environment (via bundlers like browserify/JSPM/Webpack).
+Note (this is default behavior, but this can be slow for very large XML text).
 
 * **Support Command Line**:
 To quickly convert xml or json files, this module can be installed globally or locally (i.e. use it as [script](https://docs.npmjs.com/misc/scripts) in package.json).
 
-* **Support Streaming**:
-...
+* **Typings Info Included**:
+Support type checking and code suggestion via intellisense.
+Thanks to the wonderful efforts by [DenisCarriere](https://github.com/DenisCarriere)
    
 ## Compact vs Non-Compact
 
@@ -74,13 +73,13 @@ otherwise use `{compact: true}` if you want to save space and you don't care abo
 
 ## Installation
 
-```shell
+```
 npm install --save xml-js
 ```
 
 You can also installed it globally to use it as a command line convertor.
 
-```shell
+```
 npm install --global xml-js
 ```
 
@@ -197,7 +196,7 @@ To change default key names in the output object or the default key names assume
 | `nameKey`           | `"name"` | Name of the property key which will be used for the name. For example, if `nameKey: '$name'` then output of `<a></a>` will be `{"elements":[{"type":"element","$name":"a","attributes":{}}]}` *(in non-compact form)* |
 | `elementsKey`       | `"elements"` | Name of the property key which will be used for the elements. For example, if `elementsKey: '$elements'` then output of `<a></a>` will be `{"$elements":[{"type":"element","name":"a","attributes":{}}]}` *(in non-compact form)* |
 
-> Note: You probably want to set `{textKey: 'value', cdataKey: 'value', commentKey: 'value'}` for non-compact output
+> TIP: You probably want to set `{textKey: 'value', cdataKey: 'value', commentKey: 'value'}` for non-compact output
 > to make it more consistent and easier for your client code to go through the contents of text, cdata, and comment.
 
 # Command Line
@@ -206,7 +205,7 @@ Because any good library should support command line usage, this library is no d
 
 ## As Globally Accessible Command
 
-```shell
+```
 npm install -g xml-js                      // install this library globally
 xml-js test.json --space 4                 // xml result will be printed on screen
 xml-js test.json --space 4 --out test.xml  // xml result will be saved to test.xml
@@ -218,7 +217,7 @@ xml-js test.xml --space 4 --out test.json  // json result will be saved to test.
 
 If you want to use it as script in package.json (can also be helpful in [task automation via npm scripts](http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/))
 
-```shell
+```
 npm install --save xml-js   // no need to install this library globally
 ```
 
@@ -233,13 +232,13 @@ In package.json, write a script:
   }
 ```
   
-```shell
+```
 npm run convert             // task 'scripts.convert' will be executed
 ```
 
 ## CLI Arguments
 
-```shell
+```
 Usage: xml-js src [options]
 
   src                  Input file that need to be converted.
@@ -267,7 +266,7 @@ Options:
   --attributes-key     To change the default 'attributes' key.
   --declaration-key    To change the default 'declaration' key.
   --type-key           To change the default 'type' key (applicable if --compact is not set).
-  --cdata-key          To change the default 'name' key (applicable if --compact is not set).
+  --name-key           To change the default 'name' key (applicable if --compact is not set).
   --elements-key       To change the default 'elements' key (applicable if --compact is not set).
 ```
 
@@ -288,7 +287,7 @@ Options:
 
 To perform tests on this project:
 
-```shell
+```
 cd node_modules/xml-js
 npm install
 npm test

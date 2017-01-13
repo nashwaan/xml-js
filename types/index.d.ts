@@ -1,10 +1,10 @@
 export interface ElementCompact {
     [key: string]: any
     _attributes?: {
-        [key: string]: number | number
+        [key: string]: string | number
     }
-    _cdata?: string | number
-    _comment?: string | number
+    _cdata?: string
+    _comment?: string
     _declaration?: {
         _attributes?: {
             version?: string | number
@@ -18,18 +18,18 @@ export interface Element {
     attributes?: {
         [key: string]: string | number
     }
-    cdata?: string | number
-    comment?: string | number
+    cdata?: string
+    comment?: string
     declaration?: {
         attributes?: {
             version: string | number
             encoding: string | number
         }
     }
+    text?: string | number | boolean
+    type?: string
+    name?: string
     elements?: Array<Element>
-    text?: string | number
-    type?: string | number
-    name?: string | number
 }
 
 declare namespace Options {
@@ -70,7 +70,7 @@ declare namespace Options {
     }
 }
 
-export function js2xml(json: Element | ElementCompact, options?: Options.JS2XML): string;
-export function json2xml(json: Element | ElementCompact, options?: Options.JS2XML): string;
-export function xml2json(xml: string, options?: Options.XML2JS): any;
+export function js2xml(obj: Element | ElementCompact, options?: Options.JS2XML): string;
+export function json2xml(json: string, options?: Options.JS2XML): string;
+export function xml2json(xml: string, options?: Options.XML2JS): string;
 export function xml2js(xml: string, options?: Options.XML2JS): any;

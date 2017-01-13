@@ -36,8 +36,8 @@ var optionalArgs = [
     {arg: 'attributes-key', type: 'string', option:'attributesKey', desc: 'To change the default \'attributes\' key.'},
     {arg: 'declaration-key', type: 'string', option:'declarationKey', desc: 'To change the default \'declaration\' key.'},
     {arg: 'type-key', type: 'string', option:'typeKey', desc: 'To change the default \'type\' key (applicable if --compact is not set).'},
-    {arg: 'cdata-key', type: 'string', option:'name', desc: 'To change the default \'name\' key (applicable if --compact is not set).'},
-    {arg: 'elements-key', type: 'string', option:'elements', desc: 'To change the default \'elements\' key (applicable if --compact is not set).'}
+    {arg: 'name-key', type: 'string', option:'nameKey', desc: 'To change the default \'name\' key (applicable if --compact is not set).'},
+    {arg: 'elements-key', type: 'string', option:'elementsKey', desc: 'To change the default \'elements\' key (applicable if --compact is not set).'}
 ];
 
 process.stdin.setEncoding('utf8');
