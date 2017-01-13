@@ -43,8 +43,8 @@ Usually output of XML attributes are stored in `@attr`, `_atrr`, `$attr`, `$`, o
 This library store them in `attributes`, but most importantly, you can change this to whatever you like.
 
 * **Support Upwards Traversal**:
-By setting `{parent: true}` option, an extra property named `parent` will be generated along each element so that their parents can be referenced easily.
-Therefore, anywhere during the traversal of any element nodes, its children **and** its parent can be easily accessed.
+By setting `{addParent: true}` option, an extra property named `parent` will be generated along each element so that their parents can be referenced easily.
+Therefore, anywhere during the traversal of an element node, its children **and** its parent can be easily accessed.
 
 * **Portable Code**:
 Written purely in JavaScript which means it can be used in Node environment and **browser** environment (via bundlers like browserify/JSPM/Webpack).
@@ -105,7 +105,7 @@ console.log(result1, '\n', result2);
 
 To see the result of this code, see the output above in *Synopsis* section.
 
-Or [run and edit](https://runkit.com/587874e079a2f60013c1f5ac/587874e079a2f60013c1f5ad) this code live in your browser!
+Or [run and edit](https://runkit.com/587874e079a2f60013c1f5ac/587874e079a2f60013c1f5ad) this code live in the browser.
 
 ## Sample Conversions
 
