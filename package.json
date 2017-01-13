@@ -86,7 +86,6 @@
     "coverage:coveralls": "cat ./test/browse-coverage/lcov.info | coveralls",
     "coverage:codacy": "cross-env CODACY_PROJECT_TOKEN=0207815122ea49a68241d1aa435f21f1 cat ./test/browse-coverage/lcov.info | codacy-coverage",
     "coverage:codeclimate": "cross-env CODECLIMATE_REPO_TOKEN=60848a077f9070acf358b0c7145f0a2698a460ddeca7d8250815e75aa4333f7d codeclimate-test-reporter < test\\browse-coverage\\lcov.info",
-    "update-packages": "npm-check-updates --upgrade --loglevel verbose",
     "prepublish": "npm run test",
     "test": "npm run jasmine && npm run test:types",
     "test:types": "tsc -p ./types"
