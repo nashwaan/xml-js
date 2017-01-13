@@ -33,7 +33,7 @@ Instead of converting `<a/><b/><a/>` to `{a:[{},{}],b:{}}`, I wanted to preserve
 Can parse: elements, attributes, texts, comments, CData, and XML declarations.
 
 * **Reversible**:
-Whether converting xml→json or json→xml, the result should be convertable to its original form.
+Whether converting xml→json or json→xml, the result can be converted back to its original form.
 
 * **Minimal Dependencies**:
 This library depends only on one external npm module.
@@ -42,9 +42,12 @@ This library depends only on one external npm module.
 Usually output of XML attributes are stored in `@attr`, `_atrr`, `$attr`, `$`, or `whatever` in order to avoid conflicting with name of sub-elements. 
 This library store them in `attributes`, but most importantly, you can change this to whatever you like.
 
+* **Support Upwards Traversal**:
+By setting `{parent: true}` option, an extra property named `parent` will be generated along each element so that their parents can be referenced easily.
+Therefore, anywhere during the traversal of any element nodes, its children **and** its parent can be easily accessed.
+
 * **Portable Code**:
 Written purely in JavaScript which means it can be used in Node environment and **browser** environment (via bundlers like browserify/JSPM/Webpack).
-Note (this is default behavior, but this can be slow for very large XML text).
 
 * **Support Command Line**:
 To quickly convert xml or json files, this module can be installed globally or locally (i.e. use it as [script](https://docs.npmjs.com/misc/scripts) in package.json).
@@ -59,13 +62,14 @@ Most XML to JSON convertors (including online convertors) convert `<a/>` to some
 instead of non-compact output like `{"elements":[{"type":"element","name":"a"}]}`.
 
 While compact output might work in most situations, there are cases when different elements are mixed inside a parent element: `<a x="1"/><b x="2"/><a x="3"/>`.
-In this case, the compact output will be something like `{a:[{_:{x:"1"}},{_:{x:"3"}}],b:{_:{x:"2"}}}`, 
+In this case, the compact output will be something like `{a:[{_:{x:"1"}},{_:{x:"3"}}], b:{_:{x:"2"}}}`, 
 which has merged both `<a>` elements into an array. If you try to convert this back to xml, you will get `<a x="1"/><a x="3"/><b x="2"/>` 
 which has not preserved the order of elements! This is an inherit limitation in the compact representation 
-because output like `{a:{_:{x:"1"}},b:{_:{x:"2"}},a:{_:{x:"3"}}}` is illegal. 
-Note that this issue does not occur in the non-compact form provided by this library.
+because output like `{a:{_:{x:"1"}}, b:{_:{x:"2"}}, a:{_:{x:"3"}}}` is illegal (cannot make two properties of same name).
 
-Although non-compact output is more accurate representation of original XML than compact version, the non-compact consumes more space. 
+The non-compact output always gurantees the order of the elements as they appeared in the XML file.
+
+Although non-compact output is more accurate representation of original XML than compact version, the non-compact is verbose and consumes more space. 
 This library provides both options. Use `{compact: false}` if you are not sure because it preserves everything; 
 otherwise use `{compact: true}` if you want to save space and you don't care about mixing elements of same type and loosing their order.
 
@@ -100,6 +104,8 @@ console.log(result1, '\n', result2);
 ```
 
 To see the result of this code, see the output above in *Synopsis* section.
+
+Or [run and edit](https://runkit.com/587874e079a2f60013c1f5ac/587874e079a2f60013c1f5ad) this code live in your browser!
 
 ## Sample Conversions
 
@@ -196,7 +202,9 @@ To change default key names in the output object or the default key names assume
 | `nameKey`           | `"name"` | Name of the property key which will be used for the name. For example, if `nameKey: '$name'` then output of `<a></a>` will be `{"elements":[{"type":"element","$name":"a","attributes":{}}]}` *(in non-compact form)* |
 | `elementsKey`       | `"elements"` | Name of the property key which will be used for the elements. For example, if `elementsKey: '$elements'` then output of `<a></a>` will be `{"$elements":[{"type":"element","name":"a","attributes":{}}]}` *(in non-compact form)* |
 
-> TIP: You probably want to set `{textKey: 'value', cdataKey: 'value', commentKey: 'value'}` for non-compact output
+Two default values mean the first is used for *non-compact* output and the second is for *compact* output.
+
+> **TIP**: You probably want to set `{textKey: 'value', cdataKey: 'value', commentKey: 'value'}` for *non-compact* output
 > to make it more consistent and easier for your client code to go through the contents of text, cdata, and comment.
 
 # Command Line
@@ -246,7 +254,7 @@ Usage: xml-js src [options]
 
 Options:
   --help, -h           Display this help content.
-  --version, -v        Display number of this module.
+  --version, -v        Display version number of this module.
   --out                Output file where result should be written.
   --spaces             Specifies amount of space indentation in the output.
   --full-tag           XML elements will always be in <a></a> form.
