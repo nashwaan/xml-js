@@ -57,7 +57,7 @@
     "nodemon": "^1.11.0",
     "npm-run-all": "^4.0.1",
     "typescript": "^2.1.5",
-    "watch": "^1.0.1"
+    "watch": "^1.0.2"
   },
   "scripts": {
     "debug": "nodemon --inspect --watch lib/ --watch test/ --debug-brk test/index.js",
