@@ -1,2 +1,6 @@
 artwork/
 test/
+_playground/
+yarn.lock
+*.log
+*.yml
