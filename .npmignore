@@ -1,6 +1,7 @@
+node_modules/
+_playground/
 artwork/
 test/
-_playground/
 yarn.lock
 *.log
 *.yml
