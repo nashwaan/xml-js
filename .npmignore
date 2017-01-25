@@ -2,5 +2,6 @@ node_modules/
 _playground/
 artwork/
 test/
-npm-debug.log
-.coveralls.yml
+yarn.lock
+*.log
+*.yml
