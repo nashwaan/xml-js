@@ -43,7 +43,7 @@ Usually output of XML attributes are stored in `@attr`, `_atrr`, `$attr`, `$`, o
 This library store them in `attributes`, but most importantly, you can change this to whatever you like.
 
 * **Support Upwards Traversal**:
-By setting `{addParent: true}` option, an extra property named `parent` will be generated along each element so that their parents can be referenced easily.
+By setting `{addParent: true}` option, an extra property named `parent` will be generated along each element so that its parent can be referenced.
 Therefore, anywhere during the traversal of an element node, its children **and** its parent can be easily accessed.
 
 * **Portable Code**:
@@ -215,10 +215,10 @@ Because any good library should support command line usage, this library is no d
 
 ```
 npm install -g xml-js                      // install this library globally
-xml-js test.json --space 4                 // xml result will be printed on screen
-xml-js test.json --space 4 --out test.xml  // xml result will be saved to test.xml
-xml-js test.xml --space 4                  // json result will be printed on screen
-xml-js test.xml --space 4 --out test.json  // json result will be saved to test.json
+xml-js test.json --spaces 4                 // xml result will be printed on screen
+xml-js test.json --spaces 4 --out test.xml  // xml result will be saved to test.xml
+xml-js test.xml --spaces 4                  // json result will be printed on screen
+xml-js test.xml --spaces 4 --out test.json  // json result will be saved to test.json
 ```
 
 ## As Locally Accessible Command
@@ -280,23 +280,12 @@ Options:
 
 # Contribution
 
-## Comparison with Other Libraries
-
-[xml2js](https://www.npmjs.com/package/xml2js)
-[xml2json](https://www.npmjs.com/package/xml2json)
-[xml-objects](https://www.npmjs.com/package/xml-objects)
-[xml-js-converter](https://www.npmjs.com/package/xml-js-converter)
-[fast-xml2js](https://www.npmjs.com/package/fast-xml2js)
-[co-xml2js](https://www.npmjs.com/package/co-xml2js)
-[xml-simple](https://www.npmjs.com/package/xml-simple)
-[xml2js-expat](https://www.npmjs.com/package/xml2js-expat)
-
 ## Testing
 
-To perform tests on this project:
+To perform tests on this project, download the full repository from GitHub (not from npm):
 
 ```
-cd node_modules/xml-js
+cd xml-js
 npm install
 npm test
 ```

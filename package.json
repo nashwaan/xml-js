@@ -1,6 +1,6 @@
 {
   "name": "xml-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A convertor between XML text and Javascript object / JSON text.",
   "repository": {
     "type": "git",
@@ -55,7 +55,7 @@
     "jasmine": "^2.5.3",
     "node-inspector": "^0.12.8",
     "nodemon": "^1.11.0",
-    "npm-run-all": "^4.0.0",
+    "npm-run-all": "^4.0.1",
     "typescript": "^2.1.5",
     "watch": "^1.0.1"
   },
