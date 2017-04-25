@@ -25,12 +25,12 @@ Convert XML text to Javascript object / JSON text (and vice versa).
 
 There are many XML to JavaScript object / JSON converters out there, but could not satisfy the following requirements:
 
-* **Maintain Order of Sub-elements**:
+* **Maintain Order of Elements**:
 Instead of converting `<a/><b/><a/>` to `{a:[{},{}],b:{}}`, I wanted to preserve order of elements by doing this: 
 `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"},{"type":"element","name":"a"}]}`.
 
 * **Fully XML Compliant**:
-Can parse: elements, attributes, texts, comments, CData, and XML declarations.
+Can parse: elements, attributes, texts, comments, CData, DOCTYPE, and XML declarations.
 
 * **Reversible**:
 Whether converting xml→json or json→xml, the result can be converted back to its original form.
@@ -61,15 +61,15 @@ Thanks to the wonderful efforts by [DenisCarriere](https://github.com/DenisCarri
 Most XML to JSON convertors (including online convertors) convert `<a/>` to some compact output like `{"a":{}}` 
 instead of non-compact output like `{"elements":[{"type":"element","name":"a"}]}`.
 
-While compact output might work in most situations, there are cases when different elements are mixed inside a parent element: `<a x="1"/><b x="2"/><a x="3"/>`.
-In this case, the compact output will be something like `{a:[{_:{x:"1"}},{_:{x:"3"}}], b:{_:{x:"2"}}}`, 
-which has merged both `<a>` elements into an array. If you try to convert this back to xml, you will get `<a x="1"/><a x="3"/><b x="2"/>` 
+While compact output might work in most situations, there are cases when elements of different names are mixed inside a parent element. Lets use `<a x="1"/><b x="2"/><a x="3"/>` as an example.
+Most converters will produce compact like `{a:[{_:{x:"1"}},{_:{x:"3"}}], b:{_:{x:"2"}}}`, 
+which has merged both `<a>` elements into an array! If you try to convert this back to xml, you will get `<a x="1"/><a x="3"/><b x="2"/>` 
 which has not preserved the order of elements! This is an inherit limitation in the compact representation 
-because output like `{a:{_:{x:"1"}}, b:{_:{x:"2"}}, a:{_:{x:"3"}}}` is illegal (cannot make two properties of same name).
+because output like `{a:{_:{x:"1"}}, b:{_:{x:"2"}}, a:{_:{x:"3"}}}` is illegal (same property name `a` should not appear twice in an object).
 
-The non-compact output always gurantees the order of the elements as they appeared in the XML file.
+The non-compact output which is supported by this library will produce more information and always gurantees the order of the elements as they appeared in the XML file.
 
-Although non-compact output is more accurate representation of original XML than compact version, the non-compact is verbose and consumes more space. 
+NOTE: Although non-compact output is more accurate representation of original XML than compact version, the non-compact version is verbose and consumes more space. 
 This library provides both options. Use `{compact: false}` if you are not sure because it preserves everything; 
 otherwise use `{compact: true}` if you want to save space and you don't care about mixing elements of same type and loosing their order.
 
@@ -81,7 +81,7 @@ otherwise use `{compact: true}` if you want to save space and you don't care abo
 npm install --save xml-js
 ```
 
-You can also installed it globally to use it as a command line convertor.
+You can also install it globally to use it as a command line convertor (see [Command Line](#command-line)).
 
 ```
 npm install --global xml-js
@@ -111,17 +111,26 @@ Or [run and edit](https://runkit.com/587874e079a2f60013c1f5ac/587874e079a2f60013
 
 | XML | JS/JSON compact | JS/JSON non-compact |
 |:----|:----------------|:--------------------|
+| `<a/>` | `{"a":{}}` | `{"elements":[{"type":"element","name":"a"}]}` |
+| `<a/><b/>` | `{"a":{},"b":{}}` | `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"}]}` |
+| `<a><b/></a>` | `{"a":{"b":{}}}` | `{"elements":[{"type":"element","name":"a","elements":[{"type":"element","name":"b"}]}]}` |
+| `<a> Hi </a>` | `{"a":{"_text":" Hi "}}` | `{"elements":[{"type":"element","name":"a","elements":[{"type":"text","text":" Hi "}]}]}` |
+| `<a x="1.234" y="It's"/>` | `{"a":{"_attributes":{"x":"1.234","y":"It's"}}}` | `{"elements":[{"type":"element","name":"a","attributes":{"x":"1.234","y":"It's"}}]}` |
 | `<?xml?>` | `{"_declaration":{}}` | `{"declaration":{}}` |
 | `<?xml version="1.0" encoding="utf-8"?>` | `{"_declaration":{"_attributes":{"version":"1.0","encoding":"utf-8"}}}` | `{"declaration":{"attributes":{"version":"1.0","encoding":"utf-8"}}}` |
 | `<!--Hello, World!-->` | `{"_comment":"Hello, World!"}` | `{"elements":[{"type":"comment","comment":"Hello, World!"}]}` |
 | `<![CDATA[<foo></bar>]]>` | `{"_cdata":"<foo></bar>"}` | `{"elements":[{"type":"cdata","cdata":"<foo></bar>"}]}` |
-| `<a/>` | `{"a":{}}` | `{"elements":[{"type":"element","name":"a"}]}` |
-| `<a x="1.234" y="It's"/>` | `{"a":{"_attributes":{"x":"1.234","y":"It's"}}}` | `{"elements":[{"type":"element","name":"a","attributes":{"x":"1.234","y":"It's"}}]}` |
-| `<a> Hi </a>` | `{"a":{"_text":" Hi "}}` | `{"elements":[{"type":"element","name":"a","elements":[{"type":"text","text":" Hi "}]}]}` |
-| `<a/><b/>` | `{"a":{},"b":{}}` | `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"}]}` |
-| `<a><b/></a>` | `{"a":{"b":{}}}` | `{"elements":[{"type":"element","name":"a","elements":[{"type":"element","name":"b"}]}]}` |
 
 # API Reference
+
+This library provides 4 functions: `js2xml()`, `json2xml()`, `xml2js()`, and `xml2json()`. Here are the usages for each one (see more details in the following sections):
+```js
+var convert = require('xml-js');
+result = convert.js2xml(js, options);     // to convert javascript object to xml text
+result = convert.json2xml(json, options); // to convert json text to xml text
+result = convert.xml2js(xml, options);    // to convert xml text to javascript object
+result = convert.xml2json(xml, options);  // to convert xml text to json text
+```
 
 ## Convert JS object / JSON → XML
 
@@ -148,6 +157,7 @@ The below options are applicable for both `js2xml()` and `json2xml()` functions.
 | `ignoreAttributes`    | `false` | Whether to ignore writing attributes of the elements. For example, `x="1"` in `<a x="1"></a>` will be ignored |
 | `ignoreComment`       | `false` | Whether to ignore writing comments of the elements. That is, no `<!--  -->` will be generated. |
 | `ignoreCdata`         | `false` | Whether to ignore writing CData of the elements. That is, no `<![CDATA[  ]]>` will be generated. |
+| `ignoreDoctype`         | `false` | Whether to ignore writing Doctype of the elements. That is, no `<!DOCTYPE >` will be generated. |
 | `ignoreText`          | `false` | Whether to ignore writing texts of the elements. For example, `hi` text in `<a>hi</a>` will be ignored. |
 
 ## Convert XML → JS object / JSON
@@ -171,13 +181,14 @@ The below options are applicable for both `xml2js()` and `xml2json()` functions.
 | `compact`           | `false` | Whether to produce detailed object or compact object. |
 | `trim`              | `false` | Whether to trim white space characters that may exist before and after the text. |
 | `sanitize`          | `false` | Whether to replace `&` `<` `>` `"` `'` with `&amp;` `&lt;` `&gt;` `&quot;` `&#39;` respectively in the resultant text. |
-| `nativeType`        | `false` | whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
+| `nativeType`        | `false` | Whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
 | `addParent`         | `false` | Whether to add `parent` property in each element object that points to parent object. |
 | `alwaysChildren`    | `false` | Whether to always generate `elements` property even when there are no actual sub elements (applicable for non-compact output). |
 | `ignoreDeclaration` | `false` | Whether to ignore writing declaration property. That is, no `declaration` property will be generated. |
 | `ignoreAttributes`  | `false` | Whether to ignore writing attributes of elements.That is, no `attributes` property will be generated. |
 | `ignoreComment`     | `false` | Whether to ignore writing comments of the elements. That is, no `comment` will be generated. |
 | `ignoreCdata`       | `false` | Whether to ignore writing CData of the elements. That is, no `cdata` will be generated. |
+| `ignoreDoctype`     | `false` | Whether to ignore writing Doctype of the elements. That is, no `doctype` will be generated. |
 | `ignoreText`        | `false` | Whether to ignore writing texts of the elements. That is, no `text` will be generated. |
 
 The below option is applicable only for `xml2json()` function.
@@ -196,6 +207,7 @@ To change default key names in the output object or the default key names assume
 | `attributesKey`     | `"attributes"` or `"_attributes"` | Name of the property key which will be used for the attributes. For example, if `attributesKey: '$attributes'` then output of `<a x="hello"/>` will be `{"a":{$attributes:{"x":"hello"}}}` *(in compact form)* |
 | `textKey`           | `"text"` or `"_text"` | Name of the property key which will be used for the text. For example, if `textKey: '$text'` then output of `<a>hi</a>` will be `{"a":{"$text":"Hi"}}` *(in compact form)* |
 | `cdataKey`          | `"cdata"` or `"_cdata"` | Name of the property key which will be used for the cdata. For example, if `cdataKey: '$cdata'` then output of `<![CDATA[1 is < 2]]>` will be `{"$cdata":"1 is < 2"}` *(in compact form)* |
+| `doctypeKey`          | `"doctype"` or `"_doctype"` | Name of the property key which will be used for the doctype. For example, if `doctypeKey: '$doctype'` then output of `<!DOCTYPE foo>` will be `{"$doctype":" foo}` *(in compact form)* |
 | `commentKey`        | `"comment"` or `"_comment"` | Name of the property key which will be used for the comment. For example, if `commentKey: '$comment'` then output of `<!--note-->` will be `{"$comment":"note"}` *(in compact form)* |
 | `parentKey`         | `"parent"` or `"_parent"` | Name of the property key which will be used for the parent. For example, if `parentKey: '$parent'` then output of `<a></b></a>` will be `{"a":{"b":{$parent:_points_to_a}}}` *(in compact form)* |
 | `typeKey`           | `"type"` | Name of the property key which will be used for the type. For example, if `typeKey: '$type'` then output of `<a></a>` will be `{"elements":[{"$type":"element","name":"a","attributes":{}}]}` *(in non-compact form)* |
@@ -214,7 +226,7 @@ Because any good library should support command line usage, this library is no d
 ## As Globally Accessible Command
 
 ```
-npm install -g xml-js                      // install this library globally
+npm install -g xml-js                       // install this library globally
 xml-js test.json --spaces 4                 // xml result will be printed on screen
 xml-js test.json --spaces 4 --out test.xml  // xml result will be saved to test.xml
 xml-js test.xml --spaces 4                  // json result will be printed on screen
@@ -262,14 +274,16 @@ Options:
   --no-attr            Attributes of elements will be ignored.
   --no-text            Texts of elements will be ignored.
   --no-cdata           Cdata of elements will be ignored.
+  --no-doctype         Doctype of elements will be ignored.
   --no-comment         Comments of elements will be ignored.
-  --trim               Whitespaces surrounding texts will be trimmed.
+  --trim               Any whitespaces surrounding texts will be trimmed.
   --compact            JSON is in compact form.
   --sanitize           Special xml characters will be replaced with entity codes.
   --native-type        Numbers and boolean will be converted (coreced) to native type instead of text.
   --always-children    Every element will always contain sub-elements (applicable if --compact is not set).
   --text-key           To change the default 'text' key.
   --cdata-key          To change the default 'cdata' key.
+  --doctype-key        To change the default 'doctype' key.
   --comment-key        To change the default 'comment' key.
   --attributes-key     To change the default 'attributes' key.
   --declaration-key    To change the default 'declaration' key.
@@ -282,7 +296,7 @@ Options:
 
 ## Testing
 
-To perform tests on this project, download the full repository from GitHub (not from npm):
+To perform tests on this project, download the full repository from GitHub (not from npm) and then do the following:
 
 ```
 cd xml-js

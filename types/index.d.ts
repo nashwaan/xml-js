@@ -4,6 +4,7 @@ export interface ElementCompact {
         [key: string]: string | number
     }
     _cdata?: string
+    _doctype?: string
     _comment?: string
     _declaration?: {
         _attributes?: {
@@ -19,6 +20,7 @@ export interface Element {
         [key: string]: string | number
     }
     cdata?: string
+    doctype?: string
     comment?: string
     declaration?: {
         attributes?: {
@@ -54,6 +56,7 @@ declare namespace Options {
         ignoreAttributes?: boolean
         ignoreComment?: boolean
         ignoreCdata?: boolean
+        ignoreDoctype?: boolean
         ignoreText?: boolean
     }
 
@@ -62,6 +65,7 @@ declare namespace Options {
         attributesKey?: string
         textKey?: string
         cdataKey?: string
+        doctypeKey?: string
         commentKey?: string
         parentKey?: string
         typeKey?: string

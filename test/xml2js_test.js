@@ -338,6 +338,19 @@ describe('Testing xml2js.js:', function () {
             
         });
 
+        describe('case by misitoth', function () {
+
+            var xml = '<!DOCTYPE svc_init SYSTEM "MLP_SVC_INIT_300.DTD" [<!ENTITY % extension SYSTEM "PIF_EXTENSION_100.DTD">%extension;]>';
+        
+            // var json = {"_doctype" : "scv_init SYSTEM MLP_SVC_INIT_300.DTD"};
+            var json = {"_doctype" : " svc_init SYSTEM \"MLP_SVC_INIT_300.DTD\" [<!ENTITY % extension SYSTEM \"PIF_EXTENSION_100.DTD\">%extension;]"};
+            
+            it('should output as expected json', function () {
+                expect(convert.xml2js(xml, {compact: true})).toEqual(json);
+            });
+            
+        });
+
     });
     
 });
