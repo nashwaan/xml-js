@@ -9,7 +9,7 @@ describe('Testing common.js:', function () {
         
         describe('Copy Options:', function () {
 
-            it('Copy no provided options', function () {
+            it('Copy unprovided options', function () {
                 expect(convert.copyOptions()).toEqual({});
             });
 

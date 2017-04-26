@@ -1,6 +1,6 @@
 {
   "name": "xml-js",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "A convertor between XML text and Javascript object / JSON text.",
   "repository": {
     "type": "git",
@@ -55,7 +55,6 @@
     "globify": "^2.0.0",
     "istanbul": "^0.4.5",
     "jasmine": "^2.5.3",
-    "node-inspector": "^1.0.0",
     "nodemon": "^1.11.0",
     "npm-run-all": "^4.0.1",
     "typescript": "^2.2.2",
@@ -63,12 +62,7 @@
   },
   "scripts": {
     "debug": "nodemon --inspect --watch lib/ --watch test/ --debug-brk test/index.js",
-    "pre-node6.3.1-debug": "npm-run-all --parallel debug:*",
-    "debug:listener": "node-inspector",
-    "debug:jasmine": "nodemon --watch lib/ --watch test/ --debug-brk test/index.js",
-    "xdebug:cli": "nodemon --watch lib/ --debug-brk index.js -- --help",
-    "debug:live": "browser-sync start --port 8080 --server --startPath ?port=5858 --files lib/ test/ --no-open --no-ui --no-online",
-    "debug:open": "biased-opener --browser chrome http://localhost:8080/?port=5858",
+    "debug:cli": "nodemon --inspect --watch lib/ --debug-brk index.js -- --help",
     "jasmine": "jasmine JASMINE_CONFIG_PATH=./test/jasmine.json",
     "watch:jasmine": "watch \"npm run jasmine\" lib/ test/",
     "bundle:jasmine": "globify test/*_test.js --watch --verbose --list --outfile test/browse-jasmine/bundle.js",

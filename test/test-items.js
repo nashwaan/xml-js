@@ -3,17 +3,17 @@ var cases = [
         desc: 'declaration <?xml>',
         xml: '<?xml?>',
         js1: {"_declaration":{}},
-        js2: {"declaration":{}},
+        js2: {"declaration":{}}
     }, {
         desc: 'declaration with attributes',
         xml: '<?xml version="1.0" encoding="utf-8"?>',
         js1: {"_declaration":{"_attributes":{"version":"1.0","encoding":"utf-8"}}},
-        js2: {"declaration":{"attributes":{"version":"1.0","encoding":"utf-8"}}},
+        js2: {"declaration":{"attributes":{"version":"1.0","encoding":"utf-8"}}}
     }, {
         desc: 'declaration and element',
         xml: '<?xml?>\n<a/>',
         js1: {"_declaration":{},"a":{}},
-        js2: {"declaration":{},"elements":[{"type":"element","name":"a"}]},
+        js2: {"declaration":{},"elements":[{"type":"element","name":"a"}]}
     }, {
         desc: 'declaration and elements',
         xml: '<?xml?>\n<a>\n\v<b/>\n</a>',
@@ -23,7 +23,7 @@ var cases = [
         desc: 'should convert comment',
         xml: '<!-- \t Hello, World! \t -->',
         js1: {"_comment":" \t Hello, World! \t "},
-        js2: {"elements":[{"type":"comment","comment":" \t Hello, World! \t "}]},
+        js2: {"elements":[{"type":"comment","comment":" \t Hello, World! \t "}]}
     }, /*{
         desc: 'should convert 2 comments',
         xml: '<!-- \t Hello \t --><!-- \t World \t -->',
@@ -33,57 +33,63 @@ var cases = [
         desc: 'should convert cdata',
         xml: '<![CDATA[ \t <foo></bar> \t ]]>',
         js1: {"_cdata":" \t <foo></bar> \t "},
-        js2: {"elements":[{"type":"cdata","cdata":" \t <foo></bar> \t "}]},
+        js2: {"elements":[{"type":"cdata","cdata":" \t <foo></bar> \t "}]}
     }, /*{
         desc: 'should convert 2 cdata',
         xml: '<![CDATA[ \t data]]><![CDATA[< > " and & \t ]]>',
         js1: {"_cdata":[" \t data\n< > \" and & \t "]},
         js2: {"elements":[{"type":"cdata","cdata":" \t data"},{"type":"cdata","cdata":"< > \" and & \t "}]},
     }, */{
+
+        desc: 'should convert doctype',
+        xml: '<!DOCTYPE note [\n<!ENTITY foo "baa">]>',
+        js1: {"_doctype":" note [\n<!ENTITY foo \"baa\">]"},
+        js2: {"elements":[{"type":"doctype","doctype":" note [\n<!ENTITY foo \"baa\">]"}]}
+    }, {
         desc: 'should convert element',
         xml: '<a/>',
         js1: {"a":{}},
-        js2: {"elements":[{"type":"element","name":"a"}]},
+        js2: {"elements":[{"type":"element","name":"a"}]}
     }, {
         desc: 'should convert 2 same elements',
-        xml: '<a/><a/>',
+        xml: '<a/>\n<a/>',
         js1: {"a":[{},{}]},
-        js2: {"elements":[{"type":"element","name":"a"},{"type":"element","name":"a"}]},
+        js2: {"elements":[{"type":"element","name":"a"},{"type":"element","name":"a"}]}
     }, {
         desc: 'should convert 2 different elements',
-        xml: '<a/><b/>',
+        xml: '<a/>\n<b/>',
         js1: {"a":{},"b":{}},
-        js2: {"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"}]},
+        js2: {"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"}]}
     }, {
         desc: 'should convert attribute',
         xml: '<a x="hello"/>',
         js1: {"a":{_attributes:{"x":"hello"}}},
-        js2: {"elements":[{"type":"element","name":"a","attributes":{"x":"hello"}}]},
+        js2: {"elements":[{"type":"element","name":"a","attributes":{"x":"hello"}}]}
     }, {
         desc: 'should convert 2 attributes',
         xml: '<a x="1.234" y="It\'s"/>',
         js1: {"a":{_attributes:{"x":"1.234","y":"It\'s"}}},
-        js2: {"elements":[{"type":"element","name":"a","attributes":{"x":"1.234","y":"It\'s"}}]},
+        js2: {"elements":[{"type":"element","name":"a","attributes":{"x":"1.234","y":"It\'s"}}]}
     }, {
         desc: 'should convert text in element',
         xml: '<a> \t Hi \t </a>',
         js1: {"a":{"_text":" \t Hi \t "}},
-        js2: {"elements":[{"type":"element","name":"a","elements":[{"type":"text","text":" \t Hi \t "}]}]},
+        js2: {"elements":[{"type":"element","name":"a","elements":[{"type":"text","text":" \t Hi \t "}]}]}
     }, {
         desc: 'should convert multi-line text',
         xml: '<a>  Hi \n There \t </a>',
         js1: {"a":{"_text":"  Hi \n There \t "}},
-        js2: {"elements":[{"type":"element","name":"a","elements":[{"type":"text","text":"  Hi \n There \t "}]}]},
+        js2: {"elements":[{"type":"element","name":"a","elements":[{"type":"text","text":"  Hi \n There \t "}]}]}
     }, {
         desc: 'should convert nested elements',
         xml: '<a>\n\v<b/>\n</a>',
         js1: {"a":{"b":{}}},
-        js2: {"elements":[{"type":"element","name":"a","elements":[{"type":"element","name":"b"}]}]},
+        js2: {"elements":[{"type":"element","name":"a","elements":[{"type":"element","name":"b"}]}]}
     }, {
         desc: 'should convert 3 nested elements',
         xml: '<a>\n\v<b>\n\v\v<c/>\n\v</b>\n</a>',
         js1: {"a":{"b":{"c":{}}}},
-        js2: {"elements":[{"type":"element","name":"a","elements":[{"type":"element","name":"b","elements":[{"type":"element","name":"c"}]}]}]},
+        js2: {"elements":[{"type":"element","name":"a","elements":[{"type":"element","name":"b","elements":[{"type":"element","name":"c"}]}]}]}
     }
 ];
     

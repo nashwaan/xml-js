@@ -44,7 +44,7 @@ This library store them in `attributes`, but most importantly, you can change th
 
 * **Support Upwards Traversal**:
 By setting `{addParent: true}` option, an extra property named `parent` will be generated along each element so that its parent can be referenced.
-Therefore, anywhere during the traversal of an element node, its children **and** its parent can be easily accessed.
+Therefore, anywhere during the traversal of an element, its children **and** its parent can be easily accessed.
 
 * **Portable Code**:
 Written purely in JavaScript which means it can be used in Node environment and **browser** environment (via bundlers like browserify/JSPM/Webpack).
@@ -67,7 +67,9 @@ which has merged both `<a>` elements into an array! If you try to convert this b
 which has not preserved the order of elements! This is an inherit limitation in the compact representation 
 because output like `{a:{_:{x:"1"}}, b:{_:{x:"2"}}, a:{_:{x:"3"}}}` is illegal (same property name `a` should not appear twice in an object).
 
-The non-compact output which is supported by this library will produce more information and always gurantees the order of the elements as they appeared in the XML file.
+The non-compact output, which is supported by this library, will produce more information and always gurantees the order of the elements as they appeared in the XML file.
+
+Another drawback of compact output is the resultant element can be an object or an array and therefore makes the client code a little awkwards in terms of extra check of object type before processing.
 
 NOTE: Although non-compact output is more accurate representation of original XML than compact version, the non-compact version is verbose and consumes more space. 
 This library provides both options. Use `{compact: false}` if you are not sure because it preserves everything; 
@@ -150,14 +152,15 @@ The below options are applicable for both `js2xml()` and `json2xml()` functions.
 
 | Option                | Default | Description |
 |:----------------------|:--------|:------------|
-| `spaces`              | `0`     | Number of spaces to be used for indenting XML output. |
+| `spaces`              | `0`     | Number of spaces to be used for indenting XML output. Passing characters like `'` &nbsp;&nbsp;&nbsp; `'` or `'\t'` are also accpeted. |
 | `compact`             | `false` | Whether the *input* object is in compact form or not. |
 | `fullTagEmptyElement` | `false` | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `<a/>`. |
+| `indentCdata` | `false` | Whether to write CData in a new line and indent it. Will generate `<a>\n <![CDATA[foo]]></a>` instead of `<a><![CDATA[foo]]></a>`. |
 | `ignoreDeclaration`   | `false` | Whether to ignore writing declaration directives of xml. For example, `<?xml?>` will be ignored. |
 | `ignoreAttributes`    | `false` | Whether to ignore writing attributes of the elements. For example, `x="1"` in `<a x="1"></a>` will be ignored |
 | `ignoreComment`       | `false` | Whether to ignore writing comments of the elements. That is, no `<!--  -->` will be generated. |
 | `ignoreCdata`         | `false` | Whether to ignore writing CData of the elements. That is, no `<![CDATA[  ]]>` will be generated. |
-| `ignoreDoctype`         | `false` | Whether to ignore writing Doctype of the elements. That is, no `<!DOCTYPE >` will be generated. |
+| `ignoreDoctype`         | `false` | Whether to ignore writing Doctype of the elements. That is, no `<!DOCTYPE ]>` will be generated. |
 | `ignoreText`          | `false` | Whether to ignore writing texts of the elements. For example, `hi` text in `<a>hi</a>` will be ignored. |
 
 ## Convert XML → JS object / JSON
@@ -195,7 +198,7 @@ The below option is applicable only for `xml2json()` function.
 
 | Option              | Default | Description |
 |:--------------------|:--------|:------------|
-| `spaces`            | `0`     | Number of spaces to be used for indenting JSON output. |
+| `spaces`            | `0`     | Number of spaces to be used for indenting JSON output. Passing characters like `'` &nbsp;&nbsp;&nbsp; `'` or `'\t'` are also accpeted. |
 
 ## Options for Changing Key Names
 
