@@ -58,22 +58,25 @@ Thanks to the wonderful efforts by [DenisCarriere](https://github.com/DenisCarri
 
 ## Compact vs Non-Compact
 
-Most XML to JSON convertors (including online convertors) convert `<a/>` to some compact output like `{"a":{}}`
+Most XML to JSON converters (including online converters) convert `<a/>` to some compact output like `{"a":{}}`
 instead of non-compact output like `{"elements":[{"type":"element","name":"a"}]}`.
 
 While compact output might work in most situations, there are cases when elements of different names are mixed inside a parent element. Lets use `<a x="1"/><b x="2"/><a x="3"/>` as an example.
 Most converters will produce compact like `{a:[{_:{x:"1"}},{_:{x:"3"}}], b:{_:{x:"2"}}}`,
 which has merged both `<a>` elements into an array! If you try to convert this back to xml, you will get `<a x="1"/><a x="3"/><b x="2"/>`
-which has not preserved the order of elements! This is an inherit limitation in the compact representation
+which has not preserved the order of elements! This is an inherent limitation in the compact representation
 because output like `{a:{_:{x:"1"}}, b:{_:{x:"2"}}, a:{_:{x:"3"}}}` is illegal (same property name `a` should not appear twice in an object).
 
-The non-compact output, which is supported by this library, will produce more information and always gurantees the order of the elements as they appeared in the XML file.
+The non-compact output, which is supported by this library, will produce more information and always guarantees the order of the elements as they appeared in the XML file.
 
 Another drawback of compact output is the resultant element can be an object or an array and therefore makes the client code a little awkwards in terms of the extra check needed on object type before processing.
 
 NOTE: Although non-compact output is more accurate representation of original XML than compact version, the non-compact version is verbose and consumes more space.
 This library provides both options. Use `{compact: false}` if you are not sure because it preserves everything;
-otherwise use `{compact: true}` if you want to save space and you don't care about mixing elements of same type and loosing their order.
+otherwise use `{compact: true}` if you want to save space and you don't care about mixing elements of same type and losing their order.
+
+
+
 
 # Usage
 
@@ -182,7 +185,7 @@ The below options are applicable for both `xml2js()` and `xml2json()` functions.
 | Option              | Default | Description |
 |:--------------------|:--------|:------------|
 | `compact`           | `false` | Whether to produce detailed object or compact object. |
-| `trim`              | `false` | Whether to trim white space characters that may exist before and after the text. |
+| `trim`              | `false` | Whether to trim whitespace characters that may exist before and after the text. |
 | `sanitize`          | `false` | Whether to replace `&` `<` `>` `"` `'` with `&amp;` `&lt;` `&gt;` `&quot;` `&#39;` respectively in the resultant text. |
 | `nativeType`        | `false` | Whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
 | `addParent`         | `false` | Whether to add `parent` property in each element object that points to parent object. |
@@ -199,7 +202,7 @@ The below option is applicable only for `xml2json()` function.
 
 | Option              | Default | Description |
 |:--------------------|:--------|:------------|
-| `spaces`            | `0`     | Number of spaces to be used for indenting JSON output. Passing characters like `' '` or `'\t'` are also accpeted. |
+| `spaces`            | `0`     | Number of spaces to be used for indenting JSON output. Passing characters like `' '` or `'\t'` are also accepted. |
 
 ## Options for Changing Key Names
 
