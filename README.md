@@ -69,7 +69,7 @@ because output like `{a:{_:{x:"1"}}, b:{_:{x:"2"}}, a:{_:{x:"3"}}}` is illegal (
 
 The non-compact output, which is supported by this library, will produce more information and always gurantees the order of the elements as they appeared in the XML file.
 
-Another drawback of compact output is the resultant element can be an object or an array and therefore makes the client code a little awkwards in terms of extra check of object type before processing.
+Another drawback of compact output is the resultant element can be an object or an array and therefore makes the client code a little awkwards in terms of the extra check needed on object type before processing.
 
 NOTE: Although non-compact output is more accurate representation of original XML than compact version, the non-compact version is verbose and consumes more space.
 This library provides both options. Use `{compact: false}` if you are not sure because it preserves everything;
