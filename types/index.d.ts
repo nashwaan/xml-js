@@ -42,12 +42,15 @@ declare namespace Options {
         sanitize?: boolean
         nativeType?: boolean
         addParent?: boolean
+        alwaysArray?: boolean
         alwaysChildren?: boolean
     }
 
     interface JS2XML extends ChangingKeyNames, IgnoreOptions {
         spaces?: number | string
         compact?: boolean
+        indentText?: boolean
+        indentCdata?: boolean
         fullTagEmptyElement?: boolean
     }
 

@@ -2,7 +2,7 @@
 /*jslint node:true*/
 
 var fs = require('fs');
-var package = require('../package.json');
+var project = require('../package.json');
 var common = require('../lib/common');
 var xml2json = require('../lib/xml2json');
 var json2xml = require('../lib/json2xml');
@@ -18,7 +18,7 @@ var optionalArgs = [
     {arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version number of this module.'},
     {arg: 'out', type: 'file', option: 'out', desc: 'Output file where the converted result should be written.'},
     {arg: 'to-json', type: 'flag', option:'toJason', desc: 'Convert.'},
-    {arg: 'compact', type: 'flag', option:'compact', desc: 'Compact JSON form (see www.npmjs.com/package/xml-js).'},
+    {arg: 'compact', type: 'flag', option:'compact', desc: 'Compact JSON form (see explanation in www.npmjs.com/package/xml-js).'},
     {arg: 'spaces', type: 'number', option:'spaces', desc: 'Specifies amount of space indentation in the output.'},
     {arg: 'trim', type: 'flag', option:'trim', desc: 'Any whitespaces surrounding texts will be trimmed.'},
     {arg: 'sanitize', type: 'flag', option:'sanitize', desc: 'Special xml characters will be replaced with entity codes.'},
@@ -29,8 +29,8 @@ var optionalArgs = [
     {arg: 'no-decl', type: 'flag', option:'ignoreDeclaration', desc: 'Declaration instruction <?xml ..?> will be ignored.'},
     {arg: 'no-attr', type: 'flag', option:'ignoreAttributes', desc: 'Attributes of elements will be ignored.'},
     {arg: 'no-text', type: 'flag', option:'ignoreText', desc: 'Texts of elements will be ignored.'},
-    {arg: 'no-cdata', type: 'flag', option:'ignoreCdata', desc: 'Cdata of elements will be ignored.'},
-    {arg: 'no-doctype', type: 'flag', option:'ignoreDoctype', desc: 'Doctype of elements will be ignored.'},
+    {arg: 'no-cdata', type: 'flag', option:'ignoreCdata', desc: 'CData of elements will be ignored.'},
+    {arg: 'no-doctype', type: 'flag', option:'ignoreDoctype', desc: 'DOCTYPE of elements will be ignored.'},
     {arg: 'no-comment', type: 'flag', option:'ignoreComment', desc: 'Comments of elements will be ignored.'},
     {arg: 'text-key', type: 'string', option:'textKey', desc: 'To change the default \'text\' key.'},
     {arg: 'cdata-key', type: 'string', option:'cdataKey', desc: 'To change the default \'cdata\' key.'},
@@ -50,7 +50,7 @@ process.stdin.on('readable', function () {
 	    stream += chunk;
     }
 });
-process.stdin.on('end', function () {
+process.stdin.on('end', function () {
 	process.stdout.write(xml2json(stream, {}) + '\n');
 });
 
@@ -58,13 +58,12 @@ options = common.mapCommandLineArgs(requiredArgs, optionalArgs);
 
 
 if (options.version) {
-	console.log(package.version);
-	process.exit(0);
+	console.log(project.version);
+    process.exit(0);
 } else if (options.help || process.argv.length <= 2 + requiredArgs.length - 1) {
     console.log(common.getCommandLineHelp('xml-js', requiredArgs, optionalArgs));
     process.exit(process.argv.length <= 2 ? 1 : 0);
 } else if ('src' in options) {
-    //console.log('---------------' + fs.statSync(options.src).isFile());
     if (fs.statSync(options.src).isFile()) {
         if (options.src.split('.').pop() === 'xml') {
             output = xml2json(fs.readFileSync(options.src, 'utf8'), options);
@@ -80,4 +79,4 @@ if (options.version) {
     }
 } else {
 	process.exit(1);
-}    
+}

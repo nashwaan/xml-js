@@ -26,7 +26,7 @@ Convert XML text to Javascript object / JSON text (and vice versa).
 There are many XML to JavaScript object / JSON converters out there, but could not satisfy the following requirements:
 
 * **Maintain Order of Elements**:
-Instead of converting `<a/><b/><a/>` to `{a:[{},{}],b:{}}`, I wanted to preserve order of elements by doing this: 
+Instead of converting `<a/><b/><a/>` to `{a:[{},{}],b:{}}`, I wanted to preserve order of elements by doing this:
 `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"},{"type":"element","name":"a"}]}`.
 
 * **Fully XML Compliant**:
@@ -39,7 +39,7 @@ Whether converting xml→json or json→xml, the result can be converted back to
 This library depends only on one external npm module.
 
 * **Change Property Key Name**:
-Usually output of XML attributes are stored in `@attr`, `_atrr`, `$attr`, `$`, or `whatever` in order to avoid conflicting with name of sub-elements. 
+Usually output of XML attributes are stored in `@attr`, `_atrr`, `$attr`, `$`, or `whatever` in order to avoid conflicting with name of sub-elements.
 This library store them in `attributes`, but most importantly, you can change this to whatever you like.
 
 * **Support Upwards Traversal**:
@@ -55,24 +55,24 @@ To quickly convert xml or json files, this module can be installed globally or l
 * **Typings Info Included**:
 Support type checking and code suggestion via intellisense.
 Thanks to the wonderful efforts by [DenisCarriere](https://github.com/DenisCarriere)
-   
+
 ## Compact vs Non-Compact
 
-Most XML to JSON convertors (including online convertors) convert `<a/>` to some compact output like `{"a":{}}` 
+Most XML to JSON convertors (including online convertors) convert `<a/>` to some compact output like `{"a":{}}`
 instead of non-compact output like `{"elements":[{"type":"element","name":"a"}]}`.
 
 While compact output might work in most situations, there are cases when elements of different names are mixed inside a parent element. Lets use `<a x="1"/><b x="2"/><a x="3"/>` as an example.
-Most converters will produce compact like `{a:[{_:{x:"1"}},{_:{x:"3"}}], b:{_:{x:"2"}}}`, 
-which has merged both `<a>` elements into an array! If you try to convert this back to xml, you will get `<a x="1"/><a x="3"/><b x="2"/>` 
-which has not preserved the order of elements! This is an inherit limitation in the compact representation 
+Most converters will produce compact like `{a:[{_:{x:"1"}},{_:{x:"3"}}], b:{_:{x:"2"}}}`,
+which has merged both `<a>` elements into an array! If you try to convert this back to xml, you will get `<a x="1"/><a x="3"/><b x="2"/>`
+which has not preserved the order of elements! This is an inherit limitation in the compact representation
 because output like `{a:{_:{x:"1"}}, b:{_:{x:"2"}}, a:{_:{x:"3"}}}` is illegal (same property name `a` should not appear twice in an object).
 
 The non-compact output, which is supported by this library, will produce more information and always gurantees the order of the elements as they appeared in the XML file.
 
 Another drawback of compact output is the resultant element can be an object or an array and therefore makes the client code a little awkwards in terms of extra check of object type before processing.
 
-NOTE: Although non-compact output is more accurate representation of original XML than compact version, the non-compact version is verbose and consumes more space. 
-This library provides both options. Use `{compact: false}` if you are not sure because it preserves everything; 
+NOTE: Although non-compact output is more accurate representation of original XML than compact version, the non-compact version is verbose and consumes more space.
+This library provides both options. Use `{compact: false}` if you are not sure because it preserves everything;
 otherwise use `{compact: true}` if you want to save space and you don't care about mixing elements of same type and loosing their order.
 
 # Usage
@@ -93,7 +93,7 @@ npm install --global xml-js
 
 ```js
 var convert = require('xml-js');
-var xml = 
+var xml =
 '<?xml version="1.0" encoding="utf-8"?>' +
 '<note importance="high" logged="true">' +
 '    <title>Happy</title>' +
@@ -152,15 +152,15 @@ The below options are applicable for both `js2xml()` and `json2xml()` functions.
 
 | Option                | Default | Description |
 |:----------------------|:--------|:------------|
-| `spaces`              | `0`     | Number of spaces to be used for indenting XML output. Passing characters like `'` &nbsp;&nbsp;&nbsp; `'` or `'\t'` are also accpeted. |
+| `spaces`              | `0`     | Number of spaces to be used for indenting XML output. Passing characters like `' '` or `'\t'` are also accpeted. |
 | `compact`             | `false` | Whether the *input* object is in compact form or not. |
 | `fullTagEmptyElement` | `false` | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `<a/>`. |
-| `indentCdata` | `false` | Whether to write CData in a new line and indent it. Will generate `<a>\n <![CDATA[foo]]></a>` instead of `<a><![CDATA[foo]]></a>`. |
+| `indentCdata`         | `false` | Whether to write CData in a new line and indent it. Will generate `<a>\n <![CDATA[foo]]></a>` instead of `<a><![CDATA[foo]]></a>`. See [discussion](https://github.com/nashwaan/xml-js/issues/14) |
 | `ignoreDeclaration`   | `false` | Whether to ignore writing declaration directives of xml. For example, `<?xml?>` will be ignored. |
 | `ignoreAttributes`    | `false` | Whether to ignore writing attributes of the elements. For example, `x="1"` in `<a x="1"></a>` will be ignored |
 | `ignoreComment`       | `false` | Whether to ignore writing comments of the elements. That is, no `<!--  -->` will be generated. |
-| `ignoreCdata`         | `false` | Whether to ignore writing CData of the elements. That is, no `<![CDATA[  ]]>` will be generated. |
-| `ignoreDoctype`         | `false` | Whether to ignore writing Doctype of the elements. That is, no `<!DOCTYPE ]>` will be generated. |
+| `ignoreCdata`         | `false` | Whether to ignore writing CData of the elements. That is, no `<![CDATA[ ]]>` will be generated. |
+| `ignoreDoctype`       | `false` | Whether to ignore writing Doctype of the elements. That is, no `<!DOCTYPE >` will be generated. |
 | `ignoreText`          | `false` | Whether to ignore writing texts of the elements. For example, `hi` text in `<a>hi</a>` will be ignored. |
 
 ## Convert XML → JS object / JSON
@@ -198,7 +198,7 @@ The below option is applicable only for `xml2json()` function.
 
 | Option              | Default | Description |
 |:--------------------|:--------|:------------|
-| `spaces`            | `0`     | Number of spaces to be used for indenting JSON output. Passing characters like `'` &nbsp;&nbsp;&nbsp; `'` or `'\t'` are also accpeted. |
+| `spaces`            | `0`     | Number of spaces to be used for indenting JSON output. Passing characters like `' '` or `'\t'` are also accpeted. |
 
 ## Options for Changing Key Names
 
@@ -210,7 +210,7 @@ To change default key names in the output object or the default key names assume
 | `attributesKey`     | `"attributes"` or `"_attributes"` | Name of the property key which will be used for the attributes. For example, if `attributesKey: '$attributes'` then output of `<a x="hello"/>` will be `{"a":{$attributes:{"x":"hello"}}}` *(in compact form)* |
 | `textKey`           | `"text"` or `"_text"` | Name of the property key which will be used for the text. For example, if `textKey: '$text'` then output of `<a>hi</a>` will be `{"a":{"$text":"Hi"}}` *(in compact form)* |
 | `cdataKey`          | `"cdata"` or `"_cdata"` | Name of the property key which will be used for the cdata. For example, if `cdataKey: '$cdata'` then output of `<![CDATA[1 is < 2]]>` will be `{"$cdata":"1 is < 2"}` *(in compact form)* |
-| `doctypeKey`          | `"doctype"` or `"_doctype"` | Name of the property key which will be used for the doctype. For example, if `doctypeKey: '$doctype'` then output of `<!DOCTYPE foo>` will be `{"$doctype":" foo}` *(in compact form)* |
+| `doctypeKey`        | `"doctype"` or `"_doctype"` | Name of the property key which will be used for the doctype. For example, if `doctypeKey: '$doctype'` then output of `<!DOCTYPE foo>` will be `{"$doctype":" foo}` *(in compact form)* |
 | `commentKey`        | `"comment"` or `"_comment"` | Name of the property key which will be used for the comment. For example, if `commentKey: '$comment'` then output of `<!--note-->` will be `{"$comment":"note"}` *(in compact form)* |
 | `parentKey`         | `"parent"` or `"_parent"` | Name of the property key which will be used for the parent. For example, if `parentKey: '$parent'` then output of `<a></b></a>` will be `{"a":{"b":{$parent:_points_to_a}}}` *(in compact form)* |
 | `typeKey`           | `"type"` | Name of the property key which will be used for the type. For example, if `typeKey: '$type'` then output of `<a></a>` will be `{"elements":[{"$type":"element","name":"a","attributes":{}}]}` *(in non-compact form)* |
@@ -254,7 +254,7 @@ In package.json, write a script:
      "convert": "xml-js test.json --spaces 4"
   }
 ```
-  
+
 ```
 npm run convert             // task 'scripts.convert' will be executed
 ```
@@ -276,13 +276,14 @@ Options:
   --no-decl            Declaration instruction <?xml ..?> will be ignored.
   --no-attr            Attributes of elements will be ignored.
   --no-text            Texts of elements will be ignored.
-  --no-cdata           Cdata of elements will be ignored.
-  --no-doctype         Doctype of elements will be ignored.
+  --no-cdata           CData of elements will be ignored.
+  --no-doctype         DOCTYPE of elements will be ignored.
   --no-comment         Comments of elements will be ignored.
   --trim               Any whitespaces surrounding texts will be trimmed.
   --compact            JSON is in compact form.
   --sanitize           Special xml characters will be replaced with entity codes.
   --native-type        Numbers and boolean will be converted (coreced) to native type instead of text.
+  --always-array       Every element will always be an array type (applicable if --compact is set).
   --always-children    Every element will always contain sub-elements (applicable if --compact is not set).
   --text-key           To change the default 'text' key.
   --cdata-key          To change the default 'cdata' key.

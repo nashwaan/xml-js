@@ -4,9 +4,9 @@ var convert = require('../lib/common');
 
 describe('Testing common.js:', function () {
     'use strict';
-    
+
     describe('Common:', function () {
-        
+
         describe('Copy Options:', function () {
 
             it('Copy unprovided options', function () {
@@ -81,7 +81,7 @@ describe('Testing common.js:', function () {
         describe('Map Command Line Argument:', function () {
 
             if (typeof jasmineRequire === 'undefined') {
-                
+
                 it('Flag argument, alias', function () {
                     var possibleArgs = [{arg: 'version', alias: 'v', type: 'flag', option: 'version', desc: 'Display version.'}];
                     process.argv.push('-v');
@@ -123,11 +123,11 @@ describe('Testing common.js:', function () {
                     expect(convert.mapCommandLineArgs({}, possibleArgs)).toEqual({});
                     process.argv.pop();
                 });
-                
+
             }
 
         });
 
     });
-    
+
 });
