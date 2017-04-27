@@ -141,7 +141,7 @@ To convert JavaScript object to XML text, use `js2xml()`. To convert JSON text t
 ```js
 var convert = require('xml-js');
 var json = require('fs').readFileSync('test.json', 'utf8');
-var options = {ignoreText: true, spaces: 4};
+var options = {ignoreComment: true, spaces: 4};
 var result = convert.json2xml(json, options);
 console.log(result);
 ```
@@ -170,7 +170,7 @@ To convert XML text to JavaScript object, use `xml2js()`. To convert XML text to
 ```js
 var convert = require('xml-js');
 var xml = require('fs').readFileSync('test.xml', 'utf8');
-var options = {ignoreText: true, alwaysChildren: true};
+var options = {ignoreComment: true, alwaysChildren: true};
 var result = convert.xml2js(xml, options); // or convert.xml2json(xml, options)
 console.log(result);
 ```
@@ -186,6 +186,7 @@ The below options are applicable for both `xml2js()` and `xml2json()` functions.
 | `sanitize`          | `false` | Whether to replace `&` `<` `>` `"` `'` with `&amp;` `&lt;` `&gt;` `&quot;` `&#39;` respectively in the resultant text. |
 | `nativeType`        | `false` | Whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
 | `addParent`         | `false` | Whether to add `parent` property in each element object that points to parent object. |
+| `alwaysArray`       | `false` | Whether to always put sub element, even if it is one only, as an item inside an array. `<a><b/></a>` will be `a:[{b:[{}]}]` rather than `a:{b:{}}` (applicable for compact output only). |
 | `alwaysChildren`    | `false` | Whether to always generate `elements` property even when there are no actual sub elements (applicable for non-compact output). |
 | `ignoreDeclaration` | `false` | Whether to ignore writing declaration property. That is, no `declaration` property will be generated. |
 | `ignoreAttributes`  | `false` | Whether to ignore writing attributes of elements.That is, no `attributes` property will be generated. |
