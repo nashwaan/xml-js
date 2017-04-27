@@ -7463,7 +7463,7 @@ function isnan (val) {
 },{"base64-js":33,"ieee754":11}],36:[function(require,module,exports){
 module.exports={
   "name": "xml-js",
-  "version": "1.1.0",
+  "version": "1.2.1",
   "description": "A convertor between XML text and Javascript object / JSON text.",
   "repository": {
     "type": "git",

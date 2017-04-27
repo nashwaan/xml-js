@@ -187,7 +187,7 @@ The below options are applicable for both `xml2js()` and `xml2json()` functions.
 | `nativeType`        | `false` | Whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
 | `addParent`         | `false` | Whether to add `parent` property in each element object that points to parent object. |
 | `alwaysArray`       | `false` | Whether to always put sub element, even if it is one only, as an item inside an array. `<a><b/></a>` will be `a:[{b:[{}]}]` rather than `a:{b:{}}` (applicable for compact output only). |
-| `alwaysChildren`    | `false` | Whether to always generate `elements` property even when there are no actual sub elements (applicable for non-compact output). |
+| `alwaysChildren`    | `false` | Whether to always generate `elements` property even when there are no actual sub elements. `<a></a>` will be `{"elements":[{"type":"element","name":"a","elements":[]}]}` rather than `{"elements":[{"type":"element","name":"a"}]}` (applicable for non-compact output). |
 | `ignoreDeclaration` | `false` | Whether to ignore writing declaration property. That is, no `declaration` property will be generated. |
 | `ignoreAttributes`  | `false` | Whether to ignore writing attributes of elements.That is, no `attributes` property will be generated. |
 | `ignoreComment`     | `false` | Whether to ignore writing comments of the elements. That is, no `comment` will be generated. |
@@ -214,9 +214,9 @@ To change default key names in the output object or the default key names assume
 | `doctypeKey`        | `"doctype"` or `"_doctype"` | Name of the property key which will be used for the doctype. For example, if `doctypeKey: '$doctype'` then output of `<!DOCTYPE foo>` will be `{"$doctype":" foo}` *(in compact form)* |
 | `commentKey`        | `"comment"` or `"_comment"` | Name of the property key which will be used for the comment. For example, if `commentKey: '$comment'` then output of `<!--note-->` will be `{"$comment":"note"}` *(in compact form)* |
 | `parentKey`         | `"parent"` or `"_parent"` | Name of the property key which will be used for the parent. For example, if `parentKey: '$parent'` then output of `<a></b></a>` will be `{"a":{"b":{$parent:_points_to_a}}}` *(in compact form)* |
-| `typeKey`           | `"type"` | Name of the property key which will be used for the type. For example, if `typeKey: '$type'` then output of `<a></a>` will be `{"elements":[{"$type":"element","name":"a","attributes":{}}]}` *(in non-compact form)* |
-| `nameKey`           | `"name"` | Name of the property key which will be used for the name. For example, if `nameKey: '$name'` then output of `<a></a>` will be `{"elements":[{"type":"element","$name":"a","attributes":{}}]}` *(in non-compact form)* |
-| `elementsKey`       | `"elements"` | Name of the property key which will be used for the elements. For example, if `elementsKey: '$elements'` then output of `<a></a>` will be `{"$elements":[{"type":"element","name":"a","attributes":{}}]}` *(in non-compact form)* |
+| `typeKey`           | `"type"` | Name of the property key which will be used for the type. For example, if `typeKey: '$type'` then output of `<a></a>` will be `{"elements":[{"$type":"element","name":"a"}]}` *(in non-compact form)* |
+| `nameKey`           | `"name"` | Name of the property key which will be used for the name. For example, if `nameKey: '$name'` then output of `<a></a>` will be `{"elements":[{"type":"element","$name":"a"}]}` *(in non-compact form)* |
+| `elementsKey`       | `"elements"` | Name of the property key which will be used for the elements. For example, if `elementsKey: '$elements'` then output of `<a></a>` will be `{"$elements":[{"type":"element","name":"a"}]}` *(in non-compact form)* |
 
 Two default values mean the first is used for *non-compact* output and the second is for *compact* output.
 
