@@ -1,6 +1,6 @@
 {
   "name": "xml-js",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "description": "A convertor between XML text and Javascript object / JSON text.",
   "repository": {
     "type": "git",
@@ -41,25 +41,7 @@
   ],
   "main": "lib/index.js",
   "bin": "./bin/cli.js",
-  "dependencies": {
-    "sax": "^1.2.1"
-  },
-  "devDependencies": {
-    "biased-opener": "^0.2.8",
-    "browser-sync": "^2.18.6",
-    "cash-cat": "^0.2.0",
-    "codacy-coverage": "^2.0.2",
-    "codeclimate-test-reporter": "^0.4.0",
-    "coveralls": "^2.13.0",
-    "cross-env": "^4.0.0",
-    "globify": "^2.0.0",
-    "istanbul": "^0.4.5",
-    "jasmine": "^2.6.0",
-    "nodemon": "^1.11.0",
-    "npm-run-all": "^4.0.1",
-    "typescript": "^2.2.2",
-    "watch": "^1.0.1"
-  },
+  "types": "./types/index.d.ts",
   "scripts": {
     "debug": "nodemon --inspect --watch lib/ --watch test/ --debug-brk test/index.js",
     "debug:cli": "nodemon --inspect --watch lib/ --debug-brk index.js -- --help",
@@ -86,5 +68,23 @@
     "test": "npm run jasmine && npm run test:types",
     "test:types": "tsc -p ./types"
   },
-  "types": "./types/index.d.ts"
+  "dependencies": {
+    "sax": "^1.2.1"
+  },
+  "devDependencies": {
+    "biased-opener": "^0.2.8",
+    "browser-sync": "^2.18.6",
+    "cash-cat": "^0.2.0",
+    "codacy-coverage": "^2.0.2",
+    "codeclimate-test-reporter": "^0.4.0",
+    "coveralls": "^2.13.0",
+    "cross-env": "^4.0.0",
+    "globify": "^2.0.0",
+    "istanbul": "^0.4.5",
+    "jasmine": "^2.6.0",
+    "nodemon": "^1.11.0",
+    "npm-run-all": "^4.0.1",
+    "typescript": "^2.2.2",
+    "watch": "^1.0.1"
+  }
 }

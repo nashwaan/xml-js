@@ -3,7 +3,7 @@
 var convert = require('../lib');
 var testItems = require('./test-items');
 
-describe('Testing xml2js.js:', function () {
+fdescribe('Testing xml2js.js:', function () {
     'use strict';
 
     //var books = require('fs').readFileSync('test/fixtures/books.xml');

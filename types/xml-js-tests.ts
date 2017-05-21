@@ -7,6 +7,10 @@ const declarationCompact2: ElementCompact = { _declaration: { _attributes: { ver
 const declaration1: Element = { declaration: { }};
 const declaration2: Element = { declaration: { attributes: { version: '1.0', encoding: 'utf-8' }}};
 
+// Processing Instruction
+const instructionCompact: ElementCompact = { _instruction: { go: 'there' }};
+const instruction: Element = { elements:[{ type: 'instruction', name: 'go', instruction: 'there' }]};
+
 // Comment
 const commentCompact: ElementCompact = { _comment : 'Hello, World!' };
 const comment: Element = { elements: [{ type: 'comment', comment: 'Hello, World!' }]};

@@ -1,33 +1,37 @@
 export interface ElementCompact {
     [key: string]: any
-    _attributes?: {
-        [key: string]: string | number
-    }
-    _cdata?: string
-    _doctype?: string
-    _comment?: string
     _declaration?: {
         _attributes?: {
             version?: string | number
             encoding?: string | number
         }
     }
+    _instruction?: {
+        [key: string]: string
+    }
+    _attributes?: {
+        [key: string]: string | number
+    }
+    _cdata?: string
+    _doctype?: string
+    _comment?: string
     _text?: string | number
 }
 
 export interface Element {
-    attributes?: {
-        [key: string]: string | number
-    }
-    cdata?: string
-    doctype?: string
-    comment?: string
     declaration?: {
         attributes?: {
             version: string | number
             encoding: string | number
         }
     }
+    instruction?: string
+    attributes?: {
+        [key: string]: string | number
+    }
+    cdata?: string
+    doctype?: string
+    comment?: string
     text?: string | number | boolean
     type?: string
     name?: string
@@ -51,11 +55,13 @@ declare namespace Options {
         compact?: boolean
         indentText?: boolean
         indentCdata?: boolean
+        indentInstruction?: boolean
         fullTagEmptyElement?: boolean
     }
 
     interface IgnoreOptions {
         ignoreDeclaration?: boolean
+        ignoreInstruction?: boolean
         ignoreAttributes?: boolean
         ignoreComment?: boolean
         ignoreCdata?: boolean
@@ -65,6 +71,7 @@ declare namespace Options {
 
     interface ChangingKeyNames {
         declarationKey?: string
+        instructionKey?: string
         attributesKey?: string
         textKey?: string
         cdataKey?: string

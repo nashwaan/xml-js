@@ -20,6 +20,11 @@ var cases = [
         js1: {"_declaration":{},"a":{"b":{}}},
         js2: {"declaration":{},"elements":[{"type":"element","name":"a","elements":[{"type":"element","name":"b"}]}]}
     }, {
+    //     desc: 'processing instruction <?go there>',
+    //     xml: '<?go there?>',
+    //     js1: {"_instruction":{"go": "there"}},
+    //     js2: {"elements":[{"type":"instruction","name":"go","instruction":"there"}]}
+    // }, {
         desc: 'should convert comment',
         xml: '<!-- \t Hello, World! \t -->',
         js1: {"_comment":" \t Hello, World! \t "},

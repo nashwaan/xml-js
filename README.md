@@ -30,7 +30,7 @@ Instead of converting `<a/><b/><a/>` to `{a:[{},{}],b:{}}`, I wanted to preserve
 `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"},{"type":"element","name":"a"}]}`.
 
 * **Fully XML Compliant**:
-Can parse: elements, attributes, texts, comments, CData, DOCTYPE, and XML declarations.
+Can parse: elements, attributes, texts, comments, CData, DOCTYPE, XML declarations, and Processing Instructions.
 
 * **Reversible**:
 Whether converting xml→json or json→xml, the result can be converted back to its original form.
@@ -122,6 +122,7 @@ Or [run and edit](https://runkit.com/587874e079a2f60013c1f5ac/587874e079a2f60013
 | `<a> Hi </a>` | `{"a":{"_text":" Hi "}}` | `{"elements":[{"type":"element","name":"a","elements":[{"type":"text","text":" Hi "}]}]}` |
 | `<a x="1.234" y="It's"/>` | `{"a":{"_attributes":{"x":"1.234","y":"It's"}}}` | `{"elements":[{"type":"element","name":"a","attributes":{"x":"1.234","y":"It's"}}]}` |
 | `<?xml?>` | `{"_declaration":{}}` | `{"declaration":{}}` |
+| `<?go there?>` | `{"_instruction":{"go":"there"}}` | `{"elements":[{"type":"instruction","name":"go","instruction":"there"}]}` |
 | `<?xml version="1.0" encoding="utf-8"?>` | `{"_declaration":{"_attributes":{"version":"1.0","encoding":"utf-8"}}}` | `{"declaration":{"attributes":{"version":"1.0","encoding":"utf-8"}}}` |
 | `<!--Hello, World!-->` | `{"_comment":"Hello, World!"}` | `{"elements":[{"type":"comment","comment":"Hello, World!"}]}` |
 | `<![CDATA[<foo></bar>]]>` | `{"_cdata":"<foo></bar>"}` | `{"elements":[{"type":"cdata","cdata":"<foo></bar>"}]}` |
@@ -160,6 +161,7 @@ The below options are applicable for both `js2xml()` and `json2xml()` functions.
 | `fullTagEmptyElement` | `false` | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `<a/>`. |
 | `indentCdata`         | `false` | Whether to write CData in a new line and indent it. Will generate `<a>\n <![CDATA[foo]]></a>` instead of `<a><![CDATA[foo]]></a>`. See [discussion](https://github.com/nashwaan/xml-js/issues/14) |
 | `ignoreDeclaration`   | `false` | Whether to ignore writing declaration directives of xml. For example, `<?xml?>` will be ignored. |
+| `ignoreInstruction`   | `false` | Whether to ignore writing processing instruction of xml. For example, `<?go there?>` will be ignored. |
 | `ignoreAttributes`    | `false` | Whether to ignore writing attributes of the elements. For example, `x="1"` in `<a x="1"></a>` will be ignored |
 | `ignoreComment`       | `false` | Whether to ignore writing comments of the elements. That is, no `<!--  -->` will be generated. |
 | `ignoreCdata`         | `false` | Whether to ignore writing CData of the elements. That is, no `<![CDATA[ ]]>` will be generated. |
@@ -192,6 +194,7 @@ The below options are applicable for both `xml2js()` and `xml2json()` functions.
 | `alwaysArray`       | `false` | Whether to always put sub element, even if it is one only, as an item inside an array. `<a><b/></a>` will be `a:[{b:[{}]}]` rather than `a:{b:{}}` (applicable for compact output only). |
 | `alwaysChildren`    | `false` | Whether to always generate `elements` property even when there are no actual sub elements. `<a></a>` will be `{"elements":[{"type":"element","name":"a","elements":[]}]}` rather than `{"elements":[{"type":"element","name":"a"}]}` (applicable for non-compact output). |
 | `ignoreDeclaration` | `false` | Whether to ignore writing declaration property. That is, no `declaration` property will be generated. |
+| `ignoreInstruction` | `false` | Whether to ignore writing processing instruction property. That is, no `instruction` property will be generated. |
 | `ignoreAttributes`  | `false` | Whether to ignore writing attributes of elements.That is, no `attributes` property will be generated. |
 | `ignoreComment`     | `false` | Whether to ignore writing comments of the elements. That is, no `comment` will be generated. |
 | `ignoreCdata`       | `false` | Whether to ignore writing CData of the elements. That is, no `cdata` will be generated. |
@@ -211,6 +214,7 @@ To change default key names in the output object or the default key names assume
 | Option              | Default | Description |
 |:--------------------|:--------|:------------|
 | `declarationKey`    | `"declaration"` or `"_declaration"` | Name of the property key which will be used for the declaration. For example, if `declarationKey: '$declaration'` then output of `<?xml?>` will be `{"$declaration":{}}` *(in compact form)* |
+| `instructionKey`    | `"instruction"` or `"_instruction"` | Name of the property key which will be used for the processing instruction. For example, if `instructionKey: '$instruction'` then output of `<?go there?>` will be `{"$instruction":{"go":"there"}}` *(in compact form)* |
 | `attributesKey`     | `"attributes"` or `"_attributes"` | Name of the property key which will be used for the attributes. For example, if `attributesKey: '$attributes'` then output of `<a x="hello"/>` will be `{"a":{$attributes:{"x":"hello"}}}` *(in compact form)* |
 | `textKey`           | `"text"` or `"_text"` | Name of the property key which will be used for the text. For example, if `textKey: '$text'` then output of `<a>hi</a>` will be `{"a":{"$text":"Hi"}}` *(in compact form)* |
 | `cdataKey`          | `"cdata"` or `"_cdata"` | Name of the property key which will be used for the cdata. For example, if `cdataKey: '$cdata'` then output of `<![CDATA[1 is < 2]]>` will be `{"$cdata":"1 is < 2"}` *(in compact form)* |
@@ -277,7 +281,8 @@ Options:
   --out                Output file where result should be written.
   --spaces             Specifies amount of space indentation in the output.
   --full-tag           XML elements will always be in <a></a> form.
-  --no-decl            Declaration instruction <?xml ..?> will be ignored.
+  --no-decl            Declaration directive <?xml?> will be ignored.
+  --no-inst            Processing instruction <?...?> will be ignored.
   --no-attr            Attributes of elements will be ignored.
   --no-text            Texts of elements will be ignored.
   --no-cdata           CData of elements will be ignored.
@@ -295,6 +300,7 @@ Options:
   --comment-key        To change the default 'comment' key.
   --attributes-key     To change the default 'attributes' key.
   --declaration-key    To change the default 'declaration' key.
+  --instruction-key    To change the default 'processing instruction' key.
   --type-key           To change the default 'type' key (applicable if --compact is not set).
   --name-key           To change the default 'name' key (applicable if --compact is not set).
   --elements-key       To change the default 'elements' key (applicable if --compact is not set).
