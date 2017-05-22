@@ -21,7 +21,7 @@
     "cdata",
     "CDATA",
     "doctype",
-    "DOCTYPE",
+    "processing instruction",
     "Javascript",
     "js2xml",
     "json2xml",
@@ -73,18 +73,18 @@
   },
   "devDependencies": {
     "biased-opener": "^0.2.8",
-    "browser-sync": "^2.18.6",
+    "browser-sync": "^2.18.12",
     "cash-cat": "^0.2.0",
     "codacy-coverage": "^2.0.2",
     "codeclimate-test-reporter": "^0.4.0",
-    "coveralls": "^2.13.0",
-    "cross-env": "^4.0.0",
+    "coveralls": "^2.13.1",
+    "cross-env": "^5.0.0",
     "globify": "^2.0.0",
     "istanbul": "^0.4.5",
     "jasmine": "^2.6.0",
     "nodemon": "^1.11.0",
     "npm-run-all": "^4.0.1",
-    "typescript": "^2.2.2",
+    "typescript": "^2.3.2",
     "watch": "^1.0.1"
   }
 }

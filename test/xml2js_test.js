@@ -3,21 +3,10 @@
 var convert = require('../lib');
 var testItems = require('./test-items');
 
-fdescribe('Testing xml2js.js:', function () {
+describe('Testing xml2js.js:', function () {
     'use strict';
 
-    //var books = require('fs').readFileSync('test/fixtures/books.xml');
-
-    /*describe('No options supplied (fallback to defaults):', function () {
-
-        var options = {};
-        testItems(options).forEach(function (test) {
-            it(test.desc, function () {
-                expect(convert.xml2js(test.xml, options)).toEqual(test.js);
-            });
-        });
-
-    });*/
+    //var books = require('fs').readFileSync('test/fixtures/books.xml', 'utf8');
 
     describe('No options supplied (fallback to defaults):', function () {
 
