@@ -91,9 +91,10 @@ module.exports = {
 },{"./js2xml":3,"./json2xml":4,"./xml2js":5,"./xml2json":6}],3:[function(require,module,exports){
 var common = require('./common');
 
-function validateOptions (userOptions) {
+function validateOptions(userOptions) {
     var options = common.copyOptions(userOptions);
     common.ensureFlagExists('ignoreDeclaration', options);
+    common.ensureFlagExists('ignoreInstruction', options);
     common.ensureFlagExists('ignoreAttributes', options);
     common.ensureFlagExists('ignoreText', options);
     common.ensureFlagExists('ignoreComment', options);
@@ -102,12 +103,14 @@ function validateOptions (userOptions) {
     common.ensureFlagExists('compact', options);
     common.ensureFlagExists('indentText', options);
     common.ensureFlagExists('indentCdata', options);
+    common.ensureFlagExists('indentInstruction', options);
     common.ensureFlagExists('fullTagEmptyElement', options);
     common.ensureSpacesExists(options);
     if (typeof options.spaces === 'number') {
         options.spaces = Array(options.spaces + 1).join(' ');
     }
     common.ensureKeyExists('declaration', options);
+    common.ensureKeyExists('instruction', options);
     common.ensureKeyExists('attributes', options);
     common.ensureKeyExists('text', options);
     common.ensureKeyExists('comment', options);
@@ -119,11 +122,14 @@ function validateOptions (userOptions) {
     return options;
 }
 
-function writeIndentation (options, depth, firstLine) {
+function writeIndentation(options, depth, firstLine) {
     return (!firstLine && options.spaces ? '\n' : '') + Array(depth + 1).join(options.spaces);
 }
 
-function writeAttributes (attributes) {
+function writeAttributes(attributes, options) {
+    if (options.ignoreAttributes) {
+        return '';
+    }
     var key, result = '';
     for (key in attributes) {
         if (attributes.hasOwnProperty(key)) {
@@ -133,27 +139,40 @@ function writeAttributes (attributes) {
     return result;
 }
 
-function writeDeclaration (declaration, options) {
-    return '<?xml' + writeAttributes(declaration[options.attributesKey]) + '?>';
+function writeDeclaration(declaration, options) {
+    return options.ignoreDeclaration ? '' :  '<?xml' + writeAttributes(declaration[options.attributesKey], options) + '?>';
 }
 
-function writeComment (comment, options) {
+function writeInstruction(instruction, options) {
+    if (options.ignoreInstruction) {
+        return '';
+    }
+    var key;
+    for (key in instruction) {
+        if (instruction.hasOwnProperty(key)) {
+            break;
+        }
+    }
+    return '<?' + key + (instruction[key] ? ' ' + instruction[key] : '') + '?>';
+}
+
+function writeComment(comment, options) {
     return options.ignoreComment ? '' : '<!--' + comment + '-->';
 }
 
-function writeCdata (cdata, options) {
+function writeCdata(cdata, options) {
     return options.ignoreCdata ? '' : '<![CDATA[' + cdata + ']]>';
 }
 
-function writeDoctype (doctype, options) {
+function writeDoctype(doctype, options) {
     return options.ignoreDoctype ? '' : '<!DOCTYPE ' + doctype + '>';
 }
 
-function writeText (text, options) {
+function writeText(text, options) {
     return options.ignoreText ? '' : text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
-function hasContent (element, options) {
+function hasContent(element, options) {
     var i;
     if (element.elements && element.elements.length) {
         for (i = 0; i < element.elements.length; ++i) {
@@ -165,6 +184,11 @@ function hasContent (element, options) {
                     break; // skip to next key
                 case 'cdata':
                     if (options.indentCdata) {
+                        return true;
+                    }
+                    break; // skip to next key
+                case 'instruction':
+                    if (options.indentInstruction) {
                         return true;
                     }
                     break; // skip to next key
@@ -180,11 +204,11 @@ function hasContent (element, options) {
     return false;
 }
 
-function writeElement (element, options, depth) {
+function writeElement(element, options, depth) {
     var xml = '';
     xml += '<' + element.name;
     if (element[options.attributesKey]) {
-        xml += writeAttributes(element[options.attributesKey]);
+        xml += writeAttributes(element[options.attributesKey], options);
     }
     if (options.fullTagEmptyElement || (element[options.elementsKey] && element[options.elementsKey].length) || (element[options.attributesKey] && element[options.attributesKey]['xml:space'] === 'preserve')) {
         xml += '>';
@@ -199,7 +223,7 @@ function writeElement (element, options, depth) {
     return xml;
 }
 
-function writeElements (elements, options, depth, firstLine) {
+function writeElements(elements, options, depth, firstLine) {
     return elements.reduce(function (xml, element) {
         var indent = writeIndentation(options, depth, firstLine && !xml);
         switch (element.type) {
@@ -208,11 +232,15 @@ function writeElements (elements, options, depth, firstLine) {
             case 'doctype': return xml + indent + writeDoctype(element[options.doctypeKey], options);
             case 'cdata': return xml + (options.indentCdata ? indent : '') + writeCdata(element[options.cdataKey], options);
             case 'text': return xml + (options.indentText ? indent : '') + writeText(element[options.textKey], options);
+            case 'instruction':
+                var instruction = {};
+                instruction[element[options.nameKey]] = element[options.instructionKey];
+                return xml + (options.indentInstruction ? indent : '') + writeInstruction(instruction, options);
         }
     }, '');
 }
 
-function hasContentCompact (element, options, anyContent) {
+function hasContentCompact(element, options, anyContent) {
     var key;
     for (key in element) {
         if (element.hasOwnProperty(key)) {
@@ -230,9 +258,13 @@ function hasContentCompact (element, options, anyContent) {
                         return true;
                     }
                     break; // skip to next key
+                case options.instructionKey:
+                    if (options.indentInstruction || anyContent) {
+                        return true;
+                    }
+                    break; // skip to next key
                 case options.doctypeKey:
                 case options.commentKey:
-                case options.declarationKey:
                     return true;
                 default:
                     return true;
@@ -242,12 +274,12 @@ function hasContentCompact (element, options, anyContent) {
     return false;
 }
 
-function writeElementCompact (element, name, options, depth, indent) {
+function writeElementCompact(element, name, options, depth, indent) {
     var xml = '';
     if (name) {
         xml += '<' + name;
         if (element[options.attributesKey]) {
-            xml += writeAttributes(element[options.attributesKey]);
+            xml += writeAttributes(element[options.attributesKey], options);
         }
         if (options.fullTagEmptyElement || hasContentCompact(element, options, true) || element[options.attributesKey] && element[options.attributesKey]['xml:space'] === 'preserve') {
             xml += '>';
@@ -263,7 +295,7 @@ function writeElementCompact (element, name, options, depth, indent) {
     return xml;
 }
 
-function writeElementsCompact (element, options, depth, firstLine) {
+function writeElementsCompact(element, options, depth, firstLine) {
     var i, key, nodes, xml = '';
     for (key in element) {
         if (element.hasOwnProperty(key)) {
@@ -271,6 +303,7 @@ function writeElementsCompact (element, options, depth, firstLine) {
             for (i = 0; i < nodes.length; ++i) {
                 switch (key) {
                     case options.declarationKey: xml += writeDeclaration(nodes[i], options); break;
+                    case options.instructionKey: xml += (options.indentInstruction ? writeIndentation(options, depth, firstLine) : '') + writeInstruction(nodes[i], options); break;
                     case options.attributesKey: case options.parentKey: break; // skip
                     case options.textKey: xml += (options.indentText ? writeIndentation(options, depth, firstLine) : '') + writeText(nodes[i], options); break;
                     case options.cdataKey: xml += (options.indentCdata ? writeIndentation(options, depth, firstLine) : '') + writeCdata(nodes[i], options); break;
@@ -326,16 +359,17 @@ module.exports = function (json, options) {
 }).call(this,require("buffer").Buffer)
 },{"./js2xml.js":3,"buffer":35}],5:[function(require,module,exports){
 var sax = require('sax');
-var expat /*= require('node-expat');*/ = {on: function () {}, parse: function () {}};
+var expat /*= require('node-expat');*/ = { on: function () { }, parse: function () { } };
 var common = require('./common');
 
 var options;
-var pureJsParser = 1; //true;
+var pureJsParser = true;
 var currentElement;
 
-function validateOptions (userOptions) {
+function validateOptions(userOptions) {
     options = common.copyOptions(userOptions);
     common.ensureFlagExists('ignoreDeclaration', options);
+    common.ensureFlagExists('ignoreInstruction', options);
     common.ensureFlagExists('ignoreAttributes', options);
     common.ensureFlagExists('ignoreText', options);
     common.ensureFlagExists('ignoreComment', options);
@@ -349,6 +383,7 @@ function validateOptions (userOptions) {
     common.ensureFlagExists('nativeType', options);
     common.ensureFlagExists('sanitize', options);
     common.ensureKeyExists('declaration', options);
+    common.ensureKeyExists('instruction', options);
     common.ensureKeyExists('attributes', options);
     common.ensureKeyExists('text', options);
     common.ensureKeyExists('comment', options);
@@ -361,7 +396,7 @@ function validateOptions (userOptions) {
     return options;
 }
 
-function nativeType (value) {
+function nativeType(value) {
     var nValue = Number(value);
     if (!isNaN(nValue)) {
         return nValue;
@@ -375,7 +410,7 @@ function nativeType (value) {
     return value;
 }
 
-function addField (type, value, options) {
+function addField(type, value, options) {
     if (options.compact) {
         if (!currentElement[options[type + 'Key']] && options.alwaysArray) {
             currentElement[options[type + 'Key']] = [];
@@ -392,9 +427,19 @@ function addField (type, value, options) {
         if (!currentElement[options.elementsKey]) {
             currentElement[options.elementsKey] = [];
         }
-        var element = {};
+        var key, element = {};
         element[options.typeKey] = type;
-        element[options[type + 'Key']] = value;
+        if (typeof value === 'object') {
+            for (key in value) {
+                if (value.hasOwnProperty(key)) {
+                    element[options.nameKey] = key;
+                    element[options[type + 'Key']] = value[key];
+                    break;
+                }
+            }
+        } else {
+            element[options[type + 'Key']] = value;
+        }
         if (options.addParent) {
             element[options.parentKey] = currentElement;
         }
@@ -402,31 +447,43 @@ function addField (type, value, options) {
     }
 }
 
-function onDeclaration (declaration) {
-    if (options.ignoreDeclaration) {
-        return;
-    }
-    if (currentElement[options.declarationKey]) {
-        return;
-    }
-    currentElement[options.declarationKey] = {};
-    while (declaration.body) {
-        var attribute = declaration.body.match(/([\w:-]+)\s*=\s*"([^"]*)"|'([^']*)'|(\w+)\s*/);
-        if (!attribute) {
-            break;
+function onInstruction(instruction) {
+    if (instruction.name.toLowerCase() === 'xml') {
+        if (options.ignoreDeclaration) {
+            return;
         }
-        if (!currentElement[options.declarationKey][options.attributesKey]) {
-            currentElement[options.declarationKey][options.attributesKey] = {};
+        currentElement[options.declarationKey] = {};
+        while (instruction.body) {
+            var attribute = instruction.body.match(/([\w:-]+)\s*=\s*"([^"]*)"|'([^']*)'|(\w+)\s*/);
+            if (!attribute) {
+                break;
+            }
+            if (!currentElement[options.declarationKey][options.attributesKey]) {
+                currentElement[options.declarationKey][options.attributesKey] = {};
+            }
+            currentElement[options.declarationKey][options.attributesKey][attribute[1]] = attribute[2];
+            instruction.body = instruction.body.slice(attribute[0].length); // advance the string
         }
-        currentElement[options.declarationKey][options.attributesKey][attribute[1]] = attribute[2];
-        declaration.body = declaration.body.slice(attribute[0].length); // advance the string
-    }
-    if (options.addParent) {
-        currentElement[options.declarationKey][options.parentKey] = currentElement;
+        if (options.addParent) {
+            currentElement[options.declarationKey][options.parentKey] = currentElement;
+        }
+    } else {
+        if (options.ignoreInstruction) {
+            return;
+        }
+        if (options.trim) {
+            instruction.body = instruction.body.trim();
+        }
+        if (options.sanitize) {
+            instruction.body = common.sanitize(instruction.body);
+        }
+        var value = {};
+        value[instruction.name] = instruction.body;
+        addField('instruction', value, options);
     }
 }
 
-function onStartElement (name, attributes) {
+function onStartElement(name, attributes) {
     var key, element;
     if (typeof name === 'object') {
         attributes = name.attributes;
@@ -449,7 +506,6 @@ function onStartElement (name, attributes) {
                 }
             }
         }
-        element[options.parentKey] = currentElement;
         if (!(name in currentElement) && options.alwaysArray) {
             currentElement[name] = [];
         }
@@ -471,16 +527,18 @@ function onStartElement (name, attributes) {
         if (!options.ignoreAttributes && attributes && Object.keys(attributes).length) {
             element[options.attributesKey] = attributes;
         }
-        element[options.parentKey] = currentElement;
         if (options.alwaysChildren) {
             element[options.elementsKey] = [];
         }
         currentElement[options.elementsKey].push(element);
     }
+    // if (options.addParent) {
+        element[options.parentKey] = currentElement;
+    // }
     currentElement = element;
 }
 
-function onText (text) {
+function onText(text) {
     if (options.ignoreText) {
         return;
     }
@@ -499,7 +557,7 @@ function onText (text) {
     addField('text', text, options);
 }
 
-function onComment (comment) {
+function onComment(comment) {
     if (options.ignoreComment) {
         return;
     }
@@ -512,7 +570,7 @@ function onComment (comment) {
     addField('comment', comment, options);
 }
 
-function onEndElement (name) {
+function onEndElement(name) {
     var parentElement = currentElement[options.parentKey];
     if (!options.addParent) {
         delete currentElement[options.parentKey];
@@ -520,7 +578,7 @@ function onEndElement (name) {
     currentElement = parentElement;
 }
 
-function onCdata (cdata) {
+function onCdata(cdata) {
     if (options.ignoreCdata) {
         return;
     }
@@ -530,7 +588,7 @@ function onCdata (cdata) {
     addField('cdata', cdata, options);
 }
 
-function onDoctype (doctype) {
+function onDoctype(doctype) {
     if (options.ignoreDoctype) {
         return;
     }
@@ -541,7 +599,7 @@ function onDoctype (doctype) {
     addField('doctype', doctype, options);
 }
 
-function onError (error) {
+function onError(error) {
     error.note = error; //console.error(error);
 }
 
@@ -561,7 +619,7 @@ module.exports = function (xml, userOptions) {
         parser.onerror = onError;
         parser.oncdata = onCdata;
         parser.ondoctype = onDoctype;
-        parser.onprocessinginstruction = onDeclaration;
+        parser.onprocessinginstruction = onInstruction;
     } else {
         parser.on('startElement', onStartElement);
         parser.on('text', onText);
@@ -608,6 +666,7 @@ module.exports = function(xml, userOptions) {
     options = validateOptions(userOptions);
     js = xml2js(xml, options);
     parentKey = 'compact' in options && options.compact ? '_parent' : 'parent';
+    // parentKey = ptions.compact ? '_parent' : 'parent'; // consider this
     if ('addParent' in options && options.addParent) {
         json = JSON.stringify(js, function (k, v) { return k === parentKey? '_' : v; }, options.spaces);
     } else {
@@ -615,6 +674,7 @@ module.exports = function(xml, userOptions) {
     }
     return json.replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
 };
+
 },{"./common":1,"./xml2js":5}],7:[function(require,module,exports){
 
 },{}],8:[function(require,module,exports){
@@ -7463,13 +7523,13 @@ function isnan (val) {
 },{"base64-js":33,"ieee754":11}],36:[function(require,module,exports){
 module.exports={
   "name": "xml-js",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "A convertor between XML text and Javascript object / JSON text.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nashwaan/xml-js.git"
   },
-  "author": "Yousuf Almarzooqi",
+  "author": "Yousuf Almarzooqi <ysf953@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/nashwaan/xml-js/issues"
@@ -7484,7 +7544,7 @@ module.exports={
     "cdata",
     "CDATA",
     "doctype",
-    "DOCTYPE",
+    "processing instruction",
     "Javascript",
     "js2xml",
     "json2xml",
@@ -7504,25 +7564,7 @@ module.exports={
   ],
   "main": "lib/index.js",
   "bin": "./bin/cli.js",
-  "dependencies": {
-    "sax": "^1.2.1"
-  },
-  "devDependencies": {
-    "biased-opener": "^0.2.8",
-    "browser-sync": "^2.18.6",
-    "cash-cat": "^0.2.0",
-    "codacy-coverage": "^2.0.2",
-    "codeclimate-test-reporter": "^0.4.0",
-    "coveralls": "^2.13.0",
-    "cross-env": "^4.0.0",
-    "globify": "^2.0.0",
-    "istanbul": "^0.4.5",
-    "jasmine": "^2.6.0",
-    "nodemon": "^1.11.0",
-    "npm-run-all": "^4.0.1",
-    "typescript": "^2.2.2",
-    "watch": "^1.0.1"
-  },
+  "types": "./types/index.d.ts",
   "scripts": {
     "debug": "nodemon --inspect --watch lib/ --watch test/ --debug-brk test/index.js",
     "debug:cli": "nodemon --inspect --watch lib/ --debug-brk index.js -- --help",
@@ -7549,7 +7591,25 @@ module.exports={
     "test": "npm run jasmine && npm run test:types",
     "test:types": "tsc -p ./types"
   },
-  "types": "./types/index.d.ts"
+  "dependencies": {
+    "sax": "^1.2.1"
+  },
+  "devDependencies": {
+    "biased-opener": "^0.2.8",
+    "browser-sync": "^2.18.12",
+    "cash-cat": "^0.2.0",
+    "codacy-coverage": "^2.0.2",
+    "codeclimate-test-reporter": "^0.4.0",
+    "coveralls": "^2.13.1",
+    "cross-env": "^5.0.0",
+    "globify": "^2.0.0",
+    "istanbul": "^0.4.5",
+    "jasmine": "^2.6.0",
+    "nodemon": "^1.11.0",
+    "npm-run-all": "^4.0.1",
+    "typescript": "^2.3.2",
+    "watch": "^1.0.1"
+  }
 }
 
 },{}],37:[function(require,module,exports){
@@ -7783,102 +7843,10 @@ describe('Testing js2xml.js:', function () {
     describe('No options supplied (fallback to defaults):', function () {
 
         var options = {};
-        testItems(options).forEach(function (test) {
+        testItems('js2xml', options).forEach(function (test) {
             it(test.desc, function () {
                 expect(convert.js2xml(test.js, options)).toEqual(test.xml);
             });
-        });
-
-    });
-
-    describe('options = {compact: true}', function () {
-
-        describe('Options set to default values explicitly:', function () {
-
-            var options = {compact: true, spaces: 0, ignoreText: false, ignoreComment: false, ignoreCdata: false, fullTagEmptyElement: false};
-            testItems(options).forEach(function (test) {
-                it(test.desc, function () {
-                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
-                });
-            });
-
-        });
-
-        describe('options = {spaces: 4}', function () {
-
-            var options = {compact: true, spaces: 4};
-            testItems(options).forEach(function (test) {
-                it(test.desc, function () {
-                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
-                });
-            });
-
-        });
-
-        describe('options = {spaces: 0}', function () {
-
-            var options = {compact: true, spaces: 0};
-            testItems(options).forEach(function (test) {
-                it(test.desc, function () {
-                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
-                });
-            });
-
-        });
-
-        describe('options = {spaces: 0, ignoreText: true}', function () {
-
-            var options = {compact: true, spaces: 0, ignoreText: true};
-            testItems(options).forEach(function (test) {
-                it(test.desc, function () {
-                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
-                });
-            });
-
-        });
-
-        describe('options = {spaces: 0, ignoreComment: true}', function () {
-
-            var options = {compact: true, spaces: 0, ignoreComment: true};
-            testItems(options).forEach(function (test) {
-                it(test.desc, function () {
-                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
-                });
-            });
-
-        });
-
-        describe('options = {spaces: 0, ignoreCdata: true}', function () {
-
-            var options = {compact: true, spaces: 0, ignoreCdata: true};
-            testItems(options).forEach(function (test) {
-                it(test.desc, function () {
-                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
-                });
-            });
-
-        });
-
-        describe('options = {spaces: 0, ignoreDoctype: true}', function () {
-
-            var options = {compact: true, spaces: 0, ignoreDoctype: true};
-            testItems(options).forEach(function (test) {
-                it(test.desc, function () {
-                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
-                });
-            });
-
-        });
-
-        describe('options = {spaces: 0, fullTagEmptyElement: true}', function () {
-
-            var options = {compact: true, spaces: 0, fullTagEmptyElement: true};
-            testItems(options).forEach(function (test) {
-                it(test.desc, function () {
-                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
-                });
-            });
-
         });
 
     });
@@ -7888,7 +7856,7 @@ describe('Testing js2xml.js:', function () {
         describe('Options set to default values explicitly:', function () {
 
             var options = {compact: false, spaces: 0, ignoreText: false, ignoreComment: false, ignoreCdata: false, fullTagEmptyElement: false};
-            testItems(options).forEach(function (test) {
+            testItems('js2xml', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
                 });
@@ -7899,7 +7867,7 @@ describe('Testing js2xml.js:', function () {
         describe('options = {spaces: 4}', function () {
 
             var options = {spaces: 4, onlyItem: 8};
-            testItems(options).forEach(function (test) {
+            testItems('js2xml', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
                 });
@@ -7910,7 +7878,7 @@ describe('Testing js2xml.js:', function () {
         describe('options = {spaces: 0}', function () {
 
             var options = {spaces: 0};
-            testItems(options).forEach(function (test) {
+            testItems('js2xml', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
                 });
@@ -7921,7 +7889,7 @@ describe('Testing js2xml.js:', function () {
         describe('options = {spaces: 0, ignoreText: true}', function () {
 
             var options = {spaces: 0, ignoreText: true};
-            testItems(options).forEach(function (test) {
+            testItems('js2xml', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
                 });
@@ -7932,7 +7900,7 @@ describe('Testing js2xml.js:', function () {
         describe('options = {spaces: 0, ignoreComment: true}', function () {
 
             var options = {spaces: 0, ignoreComment: true};
-            testItems(options).forEach(function (test) {
+            testItems('js2xml', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
                 });
@@ -7943,7 +7911,7 @@ describe('Testing js2xml.js:', function () {
         describe('options = {spaces: 0, ignoreCdata: true}', function () {
 
             var options = {spaces: 0, ignoreCdata: true};
-            testItems(options).forEach(function (test) {
+            testItems('js2xml', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
                 });
@@ -7954,7 +7922,29 @@ describe('Testing js2xml.js:', function () {
         describe('options = {spaces: 0, ignoreDoctype: true}', function () {
 
             var options = {spaces: 0, ignoreDoctype: true};
-            testItems(options).forEach(function (test) {
+            testItems('js2xml', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+
+        });
+
+        describe('options = {spaces: 0, ignoreDeclaration: true}', function () {
+
+            var options = {spaces: 0, ignoreDeclaration: true};
+            testItems('js2xml', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+
+        });
+
+        describe('options = {spaces: 0, ignoreInstruction: true}', function () {
+
+            var options = {spaces: 0, ignoreInstruction: true};
+            testItems('js2xml', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
                 });
@@ -7965,7 +7955,121 @@ describe('Testing js2xml.js:', function () {
         describe('options = {spaces: 0, fullTagEmptyElement: true}', function () {
 
             var options = {spaces: 0, fullTagEmptyElement: true};
-            testItems(options).forEach(function (test) {
+            testItems('js2xml', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+
+        });
+
+    });
+
+    describe('options = {compact: true}', function () {
+
+        describe('Options set to default values explicitly:', function () {
+
+            var options = {compact: true, spaces: 0, ignoreText: false, ignoreComment: false, ignoreCdata: false, fullTagEmptyElement: false};
+            testItems('js2xml', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+
+        });
+
+        describe('options = {spaces: 4}', function () {
+
+            var options = {compact: true, spaces: 4};
+            testItems('js2xml', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+
+        });
+
+        describe('options = {spaces: 0}', function () {
+
+            var options = {compact: true, spaces: 0};
+            testItems('js2xml', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+
+        });
+
+        describe('options = {spaces: 0, ignoreText: true}', function () {
+
+            var options = {compact: true, spaces: 0, ignoreText: true};
+            testItems('js2xml', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+
+        });
+
+        describe('options = {spaces: 0, ignoreComment: true}', function () {
+
+            var options = {compact: true, spaces: 0, ignoreComment: true};
+            testItems('js2xml', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+
+        });
+
+        describe('options = {spaces: 0, ignoreCdata: true}', function () {
+
+            var options = {compact: true, spaces: 0, ignoreCdata: true};
+            testItems('js2xml', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+
+        });
+
+        describe('options = {spaces: 0, ignoreDoctype: true}', function () {
+
+            var options = {compact: true, spaces: 0, ignoreDoctype: true};
+            testItems('js2xml', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+
+        });
+
+        describe('options = {spaces: 0, ignoreDeclaration: true}', function () {
+
+            var options = {compact: true, spaces: 0, ignoreDeclaration: true};
+            testItems('js2xml', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+
+        });
+
+        describe('options = {spaces: 0, ignoreInstruction: true}', function () {
+
+            var options = {compact: true, spaces: 0, ignoreInstruction: true};
+            testItems('js2xml', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.js2xml(test.js, options)).toEqual(test.xml);
+                });
+            });
+
+        });
+
+        describe('options = {spaces: 0, fullTagEmptyElement: true}', function () {
+
+            var options = {compact: true, spaces: 0, fullTagEmptyElement: true};
+            testItems('js2xml', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
                 });
@@ -7980,7 +8084,7 @@ describe('Testing js2xml.js:', function () {
         describe('options = {}', function () {
 
             var options = {};
-            testItems(options).forEach(function (test) {
+            testItems('js2xml', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
                 });
@@ -7991,7 +8095,7 @@ describe('Testing js2xml.js:', function () {
         describe('options = {spaces: true}', function () {
 
             var options = {spaces: true};
-            testItems(options).forEach(function (test) {
+            testItems('js2xml', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
                 });
@@ -8002,7 +8106,7 @@ describe('Testing js2xml.js:', function () {
         describe('options = {spaces: 2}', function () {
 
             var options = {spaces: 2};
-            testItems(options).forEach(function (test) {
+            testItems('js2xml', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
                 });
@@ -8013,7 +8117,7 @@ describe('Testing js2xml.js:', function () {
         describe('options = {spaces: 4}', function () {
 
             var options = {spaces: 4};
-            testItems(options).forEach(function (test) {
+            testItems('js2xml', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
                 });
@@ -8024,7 +8128,7 @@ describe('Testing js2xml.js:', function () {
         describe('options = {spaces: \'  \'}', function () {
 
             var options = {spaces: '  '};
-            testItems(options).forEach(function (test) {
+            testItems('js2xml', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
                 });
@@ -8035,7 +8139,7 @@ describe('Testing js2xml.js:', function () {
         describe('options = {spaces: \\t}', function () {
 
             var options = {spaces: '\t'};
-            testItems(options).forEach(function (test) {
+            testItems('js2xml', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.js2xml(test.js, options)).toEqual(test.xml);
                 });
@@ -8050,7 +8154,7 @@ describe('Testing js2xml.js:', function () {
         describe('using default options', function () {
 
             var options = {};
-            testItems(options).forEach(function (test) {
+            testItems('js2xml', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.json2xml(JSON.stringify(test.js), options)).toEqual(test.xml);
                 });
@@ -8061,7 +8165,7 @@ describe('Testing js2xml.js:', function () {
         describe('submitting json as javascript object', function () {
 
             var options = {};
-            testItems(options).forEach(function (test) {
+            testItems('js2xml', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.json2xml(test.js, options)).toEqual(test.xml);
                 });
@@ -8072,7 +8176,7 @@ describe('Testing js2xml.js:', function () {
         describe('using buffer', function () {
 
             var options = {};
-            testItems(options).forEach(function (test) {
+            testItems('js2xml', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.json2xml(new Buffer(JSON.stringify(test.js)), options)).toEqual(test.xml);
                 });
@@ -8293,6 +8397,11 @@ var cases = [
         js1: {"_declaration":{},"a":{"b":{}}},
         js2: {"declaration":{},"elements":[{"type":"element","name":"a","elements":[{"type":"element","name":"b"}]}]}
     }, {
+        desc: 'processing instruction <?go there>',
+        xml: '<?go there?>',
+        js1: {"_instruction":{"go": "there"}},
+        js2: {"elements":[{"type":"instruction","name":"go","instruction":"there"}]}
+    }, {
         desc: 'should convert comment',
         xml: '<!-- \t Hello, World! \t -->',
         js1: {"_comment":" \t Hello, World! \t "},
@@ -8366,19 +8475,22 @@ var cases = [
     }
 ];
 
-module.exports = function (options) {
+module.exports = function (direction, options) {
     var i, tests = [];
     options = options || {};
     function applyOptions (obj, fullKey) {
         var key;
         if (obj instanceof Array) {
-            obj.map(function (el) {
+            obj = obj.filter(function (el) {
+                return !(options.ignoreText && el.type === 'text' || options.ignoreComment && el.type === 'comment' || options.ignoreCdata && el.type === 'cdata'
+                || options.ignoreDoctype && el.type === 'doctype' || options.ignoreDeclaration && el.type === 'declaration' || options.ignoreInstruction && el.type === 'instruction');
+            }).map(function (el) {
                 return transform(el, fullKey);
             });
         } else if (typeof obj === 'object') {
             for (key in obj) {
                 fullKey = (fullKey? fullKey + '.' : '') + key;
-                if (options.compact && options.alwaysArray && !(obj[key] instanceof Array) && key !== '_declaration' && fullKey.indexOf('_attributes') < 0) {
+                if (options.compact && options.alwaysArray && !(obj[key] instanceof Array) && key !== '_declaration' && fullKey.indexOf('_instruction') < 0 && fullKey.indexOf('_attributes') < 0) {
                     obj[key] = [obj[key]];
                 }
                 if (key.indexOf('_') === 0 && obj[key] instanceof Array) {
@@ -8388,6 +8500,9 @@ module.exports = function (options) {
                 } else {
                     if (key !== 'parent' && key !== '_parent') {
                         obj[key] = transform(obj[key], fullKey);
+                        if (obj[key] instanceof Array && obj[key].length === 0) {
+                            delete obj[key];
+                        }
                     }
                 }
                 if (options.addParent /*&& key.indexOf('declaration') === -1*/ && key.indexOf('attributes') === -1) {
@@ -8399,6 +8514,10 @@ module.exports = function (options) {
                         if (options.compact) {obj[key]._parent = obj;} else {obj[key].parent = obj;}
                     }
                 }
+                if (options.ignoreText && key === '_text' || options.ignoreComment && key === '_comment' || options.ignoreCdata && key === '_cdata'
+                || options.ignoreDoctype && key === '_doctype' || options.ignoreDeclaration && (key === '_declaration' || key === 'declaration') || options.ignoreInstruction && key === '_instruction') {
+                    delete obj[key];
+                }
             }
             if (!options.compact && options.addParent && obj.elements) {
                 obj.elements.forEach(function (el) {
@@ -8408,6 +8527,9 @@ module.exports = function (options) {
             if (!options.compact && options.alwaysChildren && obj.type === 'element' && !obj.elements) {
                 obj.elements = [];
             }
+            // if (!options.compact && options.trim && obj.type in obj) {
+            //     obj[obj.type] = obj[obj.type].trim();
+            // }
         }
         return obj;
         function transform (x, key) {
@@ -8424,16 +8546,23 @@ module.exports = function (options) {
     }
     for (i = 0; i < cases.length; ++i) {
         tests.push({desc: cases[i].desc, xml: null, js: null});
-        tests[i].js = applyOptions(JSON.parse(JSON.stringify(options.compact ? cases[i].js1 : cases[i].js2)));
+        tests[i].js = options.compact ? cases[i].js1 : cases[i].js2;
+        if (direction === 'xml2js') {
+            tests[i].js = applyOptions(JSON.parse(JSON.stringify(tests[i].js)));
+        }
         tests[i].xml = cases[i].xml;
-        if (!('spaces' in options) || options.spaces === 0 || typeof options.spaces === 'boolean') { tests[i].xml = tests[i].xml.replace(/>\n\v*/gm, '>'); }
-        if ('spaces' in options && options.spaces !== 0 && typeof options.spaces === 'number') { tests[i].xml = tests[i].xml.replace(/\v/g, Array(options.spaces + 1).join(' ')); }
-        if ('spaces' in options && typeof options.spaces === 'string') { tests[i].xml = tests[i].xml.replace(/\v/g, options.spaces); }
-        if (options.ignoreText) { tests[i].xml = tests[i].xml.replace(/>([\s\S]*?)</gm, '><'); }
-        if (options.ignoreComment) { tests[i].xml = tests[i].xml.replace(/<!--.*?-->/gm, ''); }
-        if (options.ignoreCdata) { tests[i].xml = tests[i].xml.replace(/<!\[CDATA\[.*?\]\]>/gm, ''); }
-        if (options.ignoreDoctype) { tests[i].xml = tests[i].xml.replace(/<!DOCTYPE[\s\S]*>/gm, ''); }
-        if (options.fullTagEmptyElement) { tests[i].xml = tests[i].xml.replace('<a/>', '<a></a>').replace('<b/>', '<b></b>').replace('<c/>', '<c></c>').replace('/>', '></a>'); }
+        if (direction === 'js2xml') {
+            if (!('spaces' in options) || options.spaces === 0 || typeof options.spaces === 'boolean') { tests[i].xml = tests[i].xml.replace(/>\n\v*/gm, '>'); }
+            if ('spaces' in options && options.spaces !== 0 && typeof options.spaces === 'number') { tests[i].xml = tests[i].xml.replace(/\v/g, Array(options.spaces + 1).join(' ')); }
+            if ('spaces' in options && typeof options.spaces === 'string') { tests[i].xml = tests[i].xml.replace(/\v/g, options.spaces); }
+            if (options.ignoreText) { tests[i].xml = tests[i].xml.replace(/>([\s\S]*?)</gm, '><'); }
+            if (options.ignoreComment) { tests[i].xml = tests[i].xml.replace(/<!--.*?-->/gm, ''); }
+            if (options.ignoreCdata) { tests[i].xml = tests[i].xml.replace(/<!\[CDATA\[.*?\]\]>/gm, ''); }
+            if (options.ignoreDoctype) { tests[i].xml = tests[i].xml.replace(/<!DOCTYPE[\s\S]*>/gm, ''); }
+            if (options.ignoreDeclaration) { tests[i].xml = tests[i].xml.replace(/<\?xml[\s\S]*\?>/gm, ''); }
+            if (options.ignoreInstruction) { tests[i].xml = tests[i].xml.replace(/<\?(?!xml)[\s\S]*\?>/gm, ''); }
+            if (options.fullTagEmptyElement) { tests[i].xml = tests[i].xml.replace('<a/>', '<a></a>').replace('<b/>', '<b></b>').replace('<c/>', '<c></c>').replace('/>', '></a>'); }
+        }
     }
     if ('onlyItem' in options) {
         tests = [tests[options.onlyItem]];
@@ -8450,23 +8579,12 @@ var testItems = require('./test-items');
 describe('Testing xml2js.js:', function () {
     'use strict';
 
-    //var books = require('fs').readFileSync('test/fixtures/books.xml');
-
-    /*describe('No options supplied (fallback to defaults):', function () {
-
-        var options = {};
-        testItems(options).forEach(function (test) {
-            it(test.desc, function () {
-                expect(convert.xml2js(test.xml, options)).toEqual(test.js);
-            });
-        });
-
-    });*/
+    //var books = require('fs').readFileSync('test/fixtures/books.xml', 'utf8');
 
     describe('No options supplied (fallback to defaults):', function () {
 
         var options = {};
-        testItems(options).forEach(function (test) {
+        testItems('xml2js', options).forEach(function (test) {
             it(test.desc, function () {
                 expect(convert.xml2js(test.xml, options)).toEqual(test.js);
             });
@@ -8479,7 +8597,7 @@ describe('Testing xml2js.js:', function () {
         describe('Options set to default values explicitly:', function () {
 
             var options = {singleLine: false, compact: false, trim: false, sanitize: false, nativeType: false, alwaysChildren: false, addParent: false};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8490,7 +8608,7 @@ describe('Testing xml2js.js:', function () {
         describe('options = {compact: false}', function () {
 
             var options = {compact: false};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8498,10 +8616,10 @@ describe('Testing xml2js.js:', function () {
 
         });
 
-        describe('options = {compact: false, trim: true}', function () {
+        describe('options = {trim: true}', function () {
 
             var options = {compact: false, trim: true};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8509,10 +8627,10 @@ describe('Testing xml2js.js:', function () {
 
         });
 
-        describe('options = {compact: false, sanitize: true}', function () {
+        describe('options = {sanitize: true}', function () {
 
             var options = {compact: false, sanitize: true};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8520,10 +8638,10 @@ describe('Testing xml2js.js:', function () {
 
         });
 
-        describe('options = {compact: false, nativeType: true}', function () {
+        describe('options = {nativeType: true}', function () {
 
             var options = {compact: false, nativeType: true};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8531,10 +8649,10 @@ describe('Testing xml2js.js:', function () {
 
         });
 
-        describe('options = {compact: false, alwaysChildren: true}', function () {
+        describe('options = {alwaysChildren: true}', function () {
 
             var options = {compact: false, alwaysChildren: true};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8542,10 +8660,76 @@ describe('Testing xml2js.js:', function () {
 
         });
 
-        describe('options = {compact: false, addParent: true}', function () {
+        describe('options = {addParent: true}', function () {
 
             var options = {compact: false, addParent: true};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+
+        });
+
+        describe('options = {ignoreText: true}', function () {
+
+            var options = {compact: false, ignoreText: true};
+            testItems('xml2js', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+
+        });
+
+        describe('options = {ignoreComment: true}', function () {
+
+            var options = {compact: false, ignoreComment: true};
+            testItems('xml2js', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+
+        });
+
+        describe('options = {ignoreCdata: true}', function () {
+
+            var options = {compact: false, ignoreCdata: true};
+            testItems('xml2js', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+
+        });
+
+        describe('options = {ignoreDoctype: true}', function () {
+
+            var options = {compact: false, ignoreDoctype: true};
+            testItems('xml2js', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+
+        });
+
+        describe('options = {ignoreDeclaration: true}', function () {
+
+            var options = {compact: false, ignoreDeclaration: true};
+            testItems('xml2js', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+
+        });
+
+        describe('options = {ignoreInstruction: true}', function () {
+
+            var options = {compact: false, ignoreInstruction: true};
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8560,7 +8744,7 @@ describe('Testing xml2js.js:', function () {
         describe('Options set to default values explicitly:', function () {
 
             var options = {compact: true, trim: false, sanitize: false, nativeType: false, alwaysChildren: false, addParent: false};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8571,7 +8755,7 @@ describe('Testing xml2js.js:', function () {
         describe('options = {compact: true}', function () {
 
             var options = {compact: true};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8579,10 +8763,10 @@ describe('Testing xml2js.js:', function () {
 
         });
 
-        describe('options = {compact: true, trim: true}', function () {
+        describe('options = {trim: true}', function () {
 
             var options = {compact: true, trim: true};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8590,10 +8774,10 @@ describe('Testing xml2js.js:', function () {
 
         });
 
-        describe('options = {compact: true, sanitize: true}', function () {
+        describe('options = {sanitize: true}', function () {
 
             var options = {compact: true, sanitize: true};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8601,10 +8785,10 @@ describe('Testing xml2js.js:', function () {
 
         });
 
-        describe('options = {compact: true, alwaysArray: true}', function () {
+        fdescribe('options = {alwaysArray: true}', function () {
 
             var options = {compact: true, alwaysArray: true};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8612,10 +8796,76 @@ describe('Testing xml2js.js:', function () {
 
         });
 
-        describe('options = {compact: true, addParent: true}', function () {
+        describe('options = {addParent: true}', function () {
 
             var options = {compact: true, addParent: true};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+
+        });
+
+        describe('options = {ignoreText: true}', function () {
+
+            var options = {compact: true, ignoreText: true};
+            testItems('xml2js', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+
+        });
+
+        describe('options = {ignoreComment: true}', function () {
+
+            var options = {compact: true, ignoreComment: true};
+            testItems('xml2js', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+
+        });
+
+        describe('options = {ignoreCdata: true}', function () {
+
+            var options = {compact: true, ignoreCdata: true};
+            testItems('xml2js', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+
+        });
+
+        describe('options = {ignoreDoctype: true}', function () {
+
+            var options = {compact: true, ignoreDoctype: true};
+            testItems('xml2js', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+
+        });
+
+        describe('options = {ignoreDeclaration: true}', function () {
+
+            var options = {compact: true, ignoreDeclaration: true};
+            testItems('xml2js', options).forEach(function (test) {
+                it(test.desc, function () {
+                    expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+                });
+            });
+
+        });
+
+        describe('options = {ignoreInstruction: true}', function () {
+
+            var options = {compact: true, ignoreInstruction: true};
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8630,7 +8880,7 @@ describe('Testing xml2js.js:', function () {
         describe('options = {}', function () {
 
             var options = {};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8641,7 +8891,7 @@ describe('Testing xml2js.js:', function () {
         describe('options = {spaces: true}', function () {
 
             var options = {spaces: true};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8652,7 +8902,7 @@ describe('Testing xml2js.js:', function () {
         describe('options = {spaces: 2}', function () {
 
             var options = {spaces: 2};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8663,7 +8913,7 @@ describe('Testing xml2js.js:', function () {
         describe('options = {spaces: 4}', function () {
 
             var options = {spaces: 4};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8674,7 +8924,7 @@ describe('Testing xml2js.js:', function () {
         describe('options = {spaces: \'  \'}', function () {
 
             var options = {spaces: '  '};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8685,7 +8935,7 @@ describe('Testing xml2js.js:', function () {
         describe('options = {spaces: \\t}', function () {
 
             var options = {spaces: '\t'};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8700,7 +8950,7 @@ describe('Testing xml2js.js:', function () {
         describe('options = {trim: true}', function () {
 
             var options = {trim: true};
-            testItems({trim: true}).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2js(test.xml, options)).toEqual(test.js);
                 });
@@ -8735,7 +8985,7 @@ describe('Testing xml2js.js:', function () {
         describe('No options supplied (fallback to defaults):', function () {
 
             var options = {};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2json(test.xml, options)).toEqual(JSON.stringify(test.js));
                 });
@@ -8746,7 +8996,7 @@ describe('Testing xml2js.js:', function () {
         describe('options = {compact: true, addParent: true}:', function () {
 
             var options = {onlyItem: 6, compact: true, addParent: true};
-            testItems(options).forEach(function (test) {
+            testItems('xml2js', options).forEach(function (test) {
                 it(test.desc, function () {
                     expect(convert.xml2json(test.xml, options)).toBe(JSON.stringify(test.js, function (k, v) { return k === '_parent'? '_' : v; }));
                 });

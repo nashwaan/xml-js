@@ -20,11 +20,11 @@ var cases = [
         js1: {"_declaration":{},"a":{"b":{}}},
         js2: {"declaration":{},"elements":[{"type":"element","name":"a","elements":[{"type":"element","name":"b"}]}]}
     }, {
-    //     desc: 'processing instruction <?go there>',
-    //     xml: '<?go there?>',
-    //     js1: {"_instruction":{"go": "there"}},
-    //     js2: {"elements":[{"type":"instruction","name":"go","instruction":"there"}]}
-    // }, {
+        desc: 'processing instruction <?go there>',
+        xml: '<?go there?>',
+        js1: {"_instruction":{"go": "there"}},
+        js2: {"elements":[{"type":"instruction","name":"go","instruction":"there"}]}
+    }, {
         desc: 'should convert comment',
         xml: '<!-- \t Hello, World! \t -->',
         js1: {"_comment":" \t Hello, World! \t "},
@@ -98,19 +98,22 @@ var cases = [
     }
 ];
 
-module.exports = function (options) {
+module.exports = function (direction, options) {
     var i, tests = [];
     options = options || {};
     function applyOptions (obj, fullKey) {
         var key;
         if (obj instanceof Array) {
-            obj.map(function (el) {
+            obj = obj.filter(function (el) {
+                return !(options.ignoreText && el.type === 'text' || options.ignoreComment && el.type === 'comment' || options.ignoreCdata && el.type === 'cdata'
+                || options.ignoreDoctype && el.type === 'doctype' || options.ignoreDeclaration && el.type === 'declaration' || options.ignoreInstruction && el.type === 'instruction');
+            }).map(function (el) {
                 return transform(el, fullKey);
             });
         } else if (typeof obj === 'object') {
             for (key in obj) {
                 fullKey = (fullKey? fullKey + '.' : '') + key;
-                if (options.compact && options.alwaysArray && !(obj[key] instanceof Array) && key !== '_declaration' && fullKey.indexOf('_attributes') < 0) {
+                if (options.compact && options.alwaysArray && !(obj[key] instanceof Array) && key !== '_declaration' && (key === '_instruction' || fullKey.indexOf('_instruction') < 0) && fullKey.indexOf('_attributes') < 0) {
                     obj[key] = [obj[key]];
                 }
                 if (key.indexOf('_') === 0 && obj[key] instanceof Array) {
@@ -120,9 +123,12 @@ module.exports = function (options) {
                 } else {
                     if (key !== 'parent' && key !== '_parent') {
                         obj[key] = transform(obj[key], fullKey);
+                        if (obj[key] instanceof Array && obj[key].length === 0) {
+                            delete obj[key];
+                        }
                     }
                 }
-                if (options.addParent /*&& key.indexOf('declaration') === -1*/ && key.indexOf('attributes') === -1) {
+                if (options.addParent /*&& key.indexOf('declaration') === -1*/ && key.indexOf('attributes') === -1 && key.indexOf('instruction') === -1) {
                     if (obj[key] instanceof Array) {
                         obj[key].forEach(function (el) {
                             if (options.compact) {el._parent = obj;} else {el.parent = obj;}
@@ -130,6 +136,10 @@ module.exports = function (options) {
                     } else if (typeof obj[key] === 'object' && !(obj[key] instanceof Array)) {
                         if (options.compact) {obj[key]._parent = obj;} else {obj[key].parent = obj;}
                     }
+                }
+                if (options.ignoreText && key === '_text' || options.ignoreComment && key === '_comment' || options.ignoreCdata && key === '_cdata'
+                || options.ignoreDoctype && key === '_doctype' || options.ignoreDeclaration && (key === '_declaration' || key === 'declaration') || options.ignoreInstruction && key === '_instruction') {
+                    delete obj[key];
                 }
             }
             if (!options.compact && options.addParent && obj.elements) {
@@ -140,6 +150,9 @@ module.exports = function (options) {
             if (!options.compact && options.alwaysChildren && obj.type === 'element' && !obj.elements) {
                 obj.elements = [];
             }
+            // if (!options.compact && options.trim && obj.type in obj) {
+            //     obj[obj.type] = obj[obj.type].trim();
+            // }
         }
         return obj;
         function transform (x, key) {
@@ -156,17 +169,23 @@ module.exports = function (options) {
     }
     for (i = 0; i < cases.length; ++i) {
         tests.push({desc: cases[i].desc, xml: null, js: null});
-        tests[i].js = applyOptions(JSON.parse(JSON.stringify(options.compact ? cases[i].js1 : cases[i].js2)));
+        tests[i].js = options.compact ? cases[i].js1 : cases[i].js2;
+        if (direction === 'xml2js') {
+            tests[i].js = applyOptions(JSON.parse(JSON.stringify(tests[i].js)));
+        }
         tests[i].xml = cases[i].xml;
-        if (!('spaces' in options) || options.spaces === 0 || typeof options.spaces === 'boolean') { tests[i].xml = tests[i].xml.replace(/>\n\v*/gm, '>'); }
-        if ('spaces' in options && options.spaces !== 0 && typeof options.spaces === 'number') { tests[i].xml = tests[i].xml.replace(/\v/g, Array(options.spaces + 1).join(' ')); }
-        if ('spaces' in options && typeof options.spaces === 'string') { tests[i].xml = tests[i].xml.replace(/\v/g, options.spaces); }
-        if (options.ignoreText) { tests[i].xml = tests[i].xml.replace(/>([\s\S]*?)</gm, '><'); }
-        if (options.ignoreComment) { tests[i].xml = tests[i].xml.replace(/<!--.*?-->/gm, ''); }
-        if (options.ignoreCdata) { tests[i].xml = tests[i].xml.replace(/<!\[CDATA\[.*?\]\]>/gm, ''); }
-        if (options.ignoreDoctype) { tests[i].xml = tests[i].xml.replace(/<!DOCTYPE[\s\S]*>/gm, ''); }
-        if (options.ignoreInstruction) { tests[i].xml = tests[i].xml.replace(/<![\s\S]*!>/gm, ''); }
-        if (options.fullTagEmptyElement) { tests[i].xml = tests[i].xml.replace('<a/>', '<a></a>').replace('<b/>', '<b></b>').replace('<c/>', '<c></c>').replace('/>', '></a>'); }
+        if (direction === 'js2xml') {
+            if (!('spaces' in options) || options.spaces === 0 || typeof options.spaces === 'boolean') { tests[i].xml = tests[i].xml.replace(/>\n\v*/gm, '>'); }
+            if ('spaces' in options && options.spaces !== 0 && typeof options.spaces === 'number') { tests[i].xml = tests[i].xml.replace(/\v/g, Array(options.spaces + 1).join(' ')); }
+            if ('spaces' in options && typeof options.spaces === 'string') { tests[i].xml = tests[i].xml.replace(/\v/g, options.spaces); }
+            if (options.ignoreText) { tests[i].xml = tests[i].xml.replace(/>([\s\S]*?)</gm, '><'); }
+            if (options.ignoreComment) { tests[i].xml = tests[i].xml.replace(/<!--.*?-->/gm, ''); }
+            if (options.ignoreCdata) { tests[i].xml = tests[i].xml.replace(/<!\[CDATA\[.*?\]\]>/gm, ''); }
+            if (options.ignoreDoctype) { tests[i].xml = tests[i].xml.replace(/<!DOCTYPE[\s\S]*>/gm, ''); }
+            if (options.ignoreDeclaration) { tests[i].xml = tests[i].xml.replace(/<\?xml[\s\S]*\?>/gm, ''); }
+            if (options.ignoreInstruction) { tests[i].xml = tests[i].xml.replace(/<\?(?!xml)[\s\S]*\?>/gm, ''); }
+            if (options.fullTagEmptyElement) { tests[i].xml = tests[i].xml.replace('<a/>', '<a></a>').replace('<b/>', '<b></b>').replace('<c/>', '<c></c>').replace('/>', '></a>'); }
+        }
     }
     if ('onlyItem' in options) {
         tests = [tests[options.onlyItem]];

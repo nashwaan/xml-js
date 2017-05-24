@@ -6,7 +6,7 @@
     "type": "git",
     "url": "git+https://github.com/nashwaan/xml-js.git"
   },
-  "author": "Yousuf Almarzooqi",
+  "author": "Yousuf Almarzooqi <ysf953@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/nashwaan/xml-js/issues"
