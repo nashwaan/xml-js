@@ -362,6 +362,22 @@ describe('Testing js2xml.js:', function () {
 
     });
 
+    describe('Various options:', function () {
+
+        describe('options = {instructionHasAttributes: true}', function () {
+
+            it('Write processing instruction attributes, {compact: true}', function () {
+                expect(convert.js2xml({"_instruction":{"go":{"_attributes":{"to":"there"}}}}, {compact: true})).toEqual('<?go to="there"?>');
+            });
+
+            it('Write processing instruction attributes, {compact: false}', function () {
+                expect(convert.js2xml({"elements":[{"type":"instruction","name":"go","attributes":{"to":"there"}}]})).toEqual('<?go to="there"?>');
+            });
+
+        });
+
+    });
+
     describe('User reported issues:', function () {
 
         describe('case by Jan T. Sott', function () {
