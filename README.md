@@ -193,6 +193,7 @@ The below options are applicable for both `xml2js()` and `xml2json()` functions.
 | `addParent`         | `false` | Whether to add `parent` property in each element object that points to parent object. |
 | `alwaysArray`       | `false` | Whether to always put sub element, even if it is one only, as an item inside an array. `<a><b/></a>` will be `a:[{b:[{}]}]` rather than `a:{b:{}}` (applicable for compact output only). |
 | `alwaysChildren`    | `false` | Whether to always generate `elements` property even when there are no actual sub elements. `<a></a>` will be `{"elements":[{"type":"element","name":"a","elements":[]}]}` rather than `{"elements":[{"type":"element","name":"a"}]}` (applicable for non-compact output). |
+| `instructionHasAttributes` | `false` | Whether to parse contents of Processing Instruction as attributes or not. `<?go to="there"?>` will be `{"_instruction":{"go":{"_attributes":{"to":"there"}}}}` rather than `{"_instruction":{"go":"to=\"there\""}}`. See [discussion](https://github.com/nashwaan/xml-js/issues/17). |
 | `ignoreDeclaration` | `false` | Whether to ignore parsing declaration property. That is, no `declaration` property will be generated. |
 | `ignoreInstruction` | `false` | Whether to ignore parsing processing instruction property. That is, no `instruction` property will be generated. |
 | `ignoreAttributes`  | `false` | Whether to ignore parsing attributes of elements.That is, no `attributes` property will be generated. |

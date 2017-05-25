@@ -405,6 +405,20 @@ describe('Testing xml2js.js:', function () {
 
         });
 
+        describe('options = {instructionHasAttributes: true}', function () {
+
+            var options = {compact: true, instructionHasAttributes: true};
+
+            it('Parse attributes in processing instruction', function () {
+                expect(convert.xml2js('<?go to="there"?>', options)).toEqual({"_instruction":{"go":{"_attributes":{"to":"there"}}}});
+            });
+
+            it('Parse attributes in processing instruction', function () {
+                expect(convert.xml2js('<?go to="there"?>', {instructionHasAttributes: true})).toEqual({"elements":[{"type":"instruction","name":"go","attributes":{"to":"there"}}]});
+            });
+
+        });
+
     });
 
     describe('xml2json:', function () {

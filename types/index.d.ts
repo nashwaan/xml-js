@@ -48,6 +48,7 @@ declare namespace Options {
         addParent?: boolean
         alwaysArray?: boolean
         alwaysChildren?: boolean
+        instructionHasAttributes?: boolean
     }
 
     interface JS2XML extends ChangingKeyNames, IgnoreOptions {

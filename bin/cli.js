@@ -25,6 +25,7 @@ var optionalArgs = [
     {arg: 'native-type', type: 'flag', option:'nativeType', desc: 'Numbers and boolean will be converted (coreced) to native type instead of text.'},
     {arg: 'always-array', type: 'flag', option:'alwaysArray', desc: 'Every element will always be an array type (applicable if --compact is set).'},
     {arg: 'always-children', type: 'flag', option:'alwaysChildren', desc: 'Every element will always contain sub-elements (applicable if --compact is not set).'},
+    {arg: 'instruction-attr', type: 'flag', option:'instructionHasAttributes', desc: 'Whether to parse contents of processing instruction as attributes.'},
     {arg: 'full-tag', type: 'flag', option:'fullTagEmptyElement', desc: 'XML elements will always be in <a></a> form.'},
     {arg: 'no-decl', type: 'flag', option:'ignoreDeclaration', desc: 'Declaration instruction <?xml?> will be ignored.'},
     {arg: 'no-decl', type: 'flag', option:'ignoreInstruction', desc: 'Processing instruction <?...?> will be ignored.'},
