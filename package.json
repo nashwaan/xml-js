@@ -58,7 +58,7 @@
     "start": "npm-run-all --parallel bundle:jasmine watch:istanbul live:* open:*",
     "git:commit": "git add . && git commit -a -m \"Committed by npm script.\" && git push origin master",
     "git:push": "git push origin master",
-    "deploy": "npm-run-all --serial coverage git:*",
+    "deploy": "npm-run-all --serial coverage:* git:*",
     "coverage": "npm-run-all coverage:*",
     "coverage:a-step": "npm run istanbul",
     "coverage:coveralls": "cat ./test/browse-coverage/lcov.info | coveralls",
