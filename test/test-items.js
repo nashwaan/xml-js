@@ -72,7 +72,7 @@ var cases = [
         js2: {"elements":[{"type":"element","name":"a","attributes":{"x":"hello"}}]}
     }, {
         desc: 'should convert 2 attributes',
-        xml: '<a x="1.234" y="It\'s"/>',
+        xml: '<a x="1.234" y="It&apos;s"/>',
         js1: {"a":{_attributes:{"x":"1.234","y":"It\'s"}}},
         js2: {"elements":[{"type":"element","name":"a","attributes":{"x":"1.234","y":"It\'s"}}]}
     }, {
