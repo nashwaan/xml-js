@@ -551,6 +551,54 @@ describe('Testing js2xml.js:', function () {
 
         });
 
+        describe('case by John ', function () {
+            // see https://github.com/nashwaan/xml-js/issues/20
+            // var js = {
+            //     request: {
+            //         user: 'username',
+            //         pass: 'password',
+            //         numbers: {
+            //             number: 1,
+            //             number: 2
+            //         }
+            //     }
+            // };
+            var js = {
+                request: {
+                    user: {
+                        _text: 'username'
+                    },
+                    pass: {
+                        _text: 'password'
+                    },
+                    numbers: {
+                        number: [
+                            {
+                                _text: 1
+                            },
+                            {
+                                _text: 2
+                            }
+                        ]
+                    }
+                }
+            };
+            var xml = '<request>\n' +
+                '\v<user>username</user>\n' +
+                '\v<pass>password</pass>\n' +
+                '\v<numbers>\n' +
+                '\v\v<number>1</number>\n' +
+                '\v\v<number>2</number>\n' +
+                '\v</numbers>\n' +
+                '</request>';
+
+            it('should convert javascript object to xml correctly', function () {
+                expect(convert.js2xml(js, {spaces: 4, compact: true})).toEqual(xml.replace(/\v/g, '    '));
+                // expect(convert.xml2js(xml, {compact: true, nativeType: true})).toEqual(js);
+            });
+
+        });
+
     });
 
 });

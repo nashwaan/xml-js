@@ -292,7 +292,7 @@ Options:
   --trim               Any whitespaces surrounding texts will be trimmed.
   --compact            JSON is in compact form.
   --sanitize           Special xml characters will be replaced with entity codes.
-  --native-type        Numbers and boolean will be converted (coreced) to native type instead of text.
+  --native-type        Numbers and boolean will be converted (coerced) to native type instead of text.
   --always-array       Every element will always be an array type (applicable if --compact is set).
   --always-children    Every element will always contain sub-elements (applicable if --compact is not set).
   --text-key           To change the default 'text' key.
