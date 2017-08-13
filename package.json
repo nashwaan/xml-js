@@ -1,6 +1,6 @@
 {
   "name": "xml-js",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "A convertor between XML text and Javascript object / JSON text.",
   "repository": {
     "type": "git",
