@@ -188,7 +188,7 @@ The below options are applicable for both `xml2js()` and `xml2json()` functions.
 |:--------------------|:--------|:------------|
 | `compact`           | `false` | Whether to produce detailed object or compact object. |
 | `trim`              | `false` | Whether to trim whitespace characters that may exist before and after the text. |
-| `sanitize`          | `false` | Whether to replace `&` `<` `>` `"` `'` with `&amp;` `&lt;` `&gt;` `&quot;` `&#39;` respectively in the resultant text. |
+| `sanitize` (Deprecated) | `false` | Whether to replace `&` `<` `>` with `&amp;` `&lt;` `&gt;` respectively, in the resultant text. |
 | `nativeType`        | `false` | Whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
 | `addParent`         | `false` | Whether to add `parent` property in each element object that points to parent object. |
 | `alwaysArray`       | `false` | Whether to always put sub element, even if it is one only, as an item inside an array. `<a><b/></a>` will be `a:[{b:[{}]}]` rather than `a:{b:{}}` (applicable for compact output only). |
@@ -291,7 +291,6 @@ Options:
   --no-comment         Comments of elements will be ignored.
   --trim               Any whitespaces surrounding texts will be trimmed.
   --compact            JSON is in compact form.
-  --sanitize           Special xml characters will be replaced with entity codes.
   --native-type        Numbers and boolean will be converted (coerced) to native type instead of text.
   --always-array       Every element will always be an array type (applicable if --compact is set).
   --always-children    Every element will always contain sub-elements (applicable if --compact is not set).

@@ -599,6 +599,72 @@ describe('Testing js2xml.js:', function () {
 
         });
 
+        describe('case by yverenoir', function () {
+            // see https://github.com/nashwaan/xml-js/issues/21
+            // var js = {
+            //     "vertical": {
+            //         "-display_name": "Exercise",
+            //         "html": {
+            //             "-url_name": "12345"
+            //         },
+            //         "lti_consumer": {
+            //             "-url_name": "12345",
+            //             "-xblock-family": "xblock.v1",
+            //             "-accept_grades_past_due": "false",
+            //             "-weight": "14.0",
+            //             "-has_score": "true",
+            //             "-display_name": "Exercise",
+            //             "-ask_to_send_username": "true",
+            //             "-ask_to_send_email": "true",
+            //             "-button_text": "Launch Exercise",
+            //             "-custom_parameters": "none",
+            //             "-lti_id": "id",
+            //             "-launch_target": "new_window",
+            //             "-launch_url": "url"
+            //         }
+            //     }
+            // };
+            var js = {
+                "vertical": {
+                    "_attributes": {
+                        "-display_name": "Exercise"
+                    },
+                    "html": {
+                        "_attributes": {
+                            "-url_name": "12345"
+                        }
+                    },
+                    "lti_consumer": {
+                        "_attributes": {
+                            "-url_name": "12345",
+                            "-xblock-family": "xblock.v1",
+                            "-accept_grades_past_due": "false",
+                            "-weight": "14.0",
+                            "-has_score": "true",
+                            "-display_name": "Exercise",
+                            "-ask_to_send_username": "true",
+                            "-ask_to_send_email": "true",
+                            "-button_text": "Launch Exercise",
+                            "-custom_parameters": "none",
+                            "-lti_id": "id",
+                            "-launch_target": "new_window",
+                            "-launch_url": "url"
+                        }
+                    }
+                }
+            };
+            var xml =
+                '<vertical -display_name="Exercise">\n' +
+                '\v<html -url_name="12345"/>\n' +
+                '\v<lti_consumer -url_name="12345" -xblock-family="xblock.v1" -accept_grades_past_due="false" -weight="14.0" -has_score="true" -display_name="Exercise" -ask_to_send_username="true" -ask_to_send_email="true" -button_text="Launch Exercise" -custom_parameters="none" -lti_id="id" -launch_target="new_window" -launch_url="url"/>\n' +
+                '</vertical>';
+
+            it('should convert javascript object to xml correctly', function () {
+                expect(convert.js2xml(js, {spaces: 4, compact: true})).toEqual(xml.replace(/\v/g, '    '));
+            });
+
+        });
+
     });
 
 });

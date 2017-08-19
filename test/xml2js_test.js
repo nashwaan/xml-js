@@ -554,6 +554,70 @@ describe('Testing xml2js.js:', function () {
 
         });
 
+        describe('case by adamgcraig', function () {
+            // see https://github.com/nashwaan/xml-js/issues/26
+            var xml =
+                '<?xml version="1.0" encoding="UTF-8"?>\n' +
+                '<note>\n' +
+                '\v<to>xml-js</to>\n' +
+                '\v<from>ACraig</from>\n' +
+                '\v<heading>Min Example</heading>\n' +
+                '\v<body>Here are some characters that get sanitized: " \'</body>\n' +
+                '</note>';
+            var js = {
+                "_declaration": {
+                    "_attributes": {
+                        "version": "1.0",
+                        "encoding": "UTF-8"
+                    }
+                },
+                "note": {
+                    "to": {
+                        "_text": "xml-js"
+                    },
+                    "from": {
+                        "_text": "ACraig"
+                    },
+                    "heading": {
+                        "_text": "Min Example"
+                    },
+                    "body": {
+                        "_text": "Here are some characters that get sanitized: \" '"
+                    }
+                }
+            };
+
+            it('should convert xml object to js and back to xml correctly', function () {
+                xml = xml.replace(/\v/g, '  ');
+                var js_ = convert.xml2js(xml, {compact: true});
+                expect(js_).toEqual(js);
+                expect(convert.js2xml(js_, {spaces: 2, compact: true})).toEqual(xml);
+            });
+
+        });
+
+        describe('case by bidiu', function () {
+            // see https://github.com/nashwaan/xml-js/issues/26
+            var xml = '<title>Support &amp; resistance</title>';
+            var js = {
+                elements: [{
+                    type: 'element',
+                    name: 'title',
+                    elements: [{
+                        type: 'text',
+                        text: 'Support & resistance'
+                    }]
+                }]
+            };
+
+            it('should convert xml object to js and back to xml correctly', function () {
+                var js_ = convert.xml2js(xml);
+                expect(js_).toEqual(js);
+                expect(convert.js2xml(js_)).toEqual(xml);
+            });
+
+        });
+
     });
 
 });
