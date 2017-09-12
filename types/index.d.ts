@@ -49,6 +49,7 @@ declare namespace Options {
         alwaysArray?: boolean
         alwaysChildren?: boolean
         instructionHasAttributes?: boolean
+        captureSpacesBetweenElements?: boolean
     }
 
     interface JS2XML extends ChangingKeyNames, IgnoreOptions {
