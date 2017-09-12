@@ -665,6 +665,23 @@ describe('Testing js2xml.js:', function () {
 
         });
 
+        describe('case by mariotsi ', function () {
+            // see https://github.com/nashwaan/xml-js/issues/28
+            var js = {
+                a: {
+                    _attributes: {
+                        num: 123
+                    }
+                }
+            };
+            var xml = '<a num="123"/>';
+
+            it('should process attribute number without issue', function () {
+                expect(convert.js2xml(js, {compact: true})).toEqual(xml);
+            });
+
+        });
+
     });
 
 });

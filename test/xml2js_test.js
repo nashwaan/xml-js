@@ -618,6 +618,48 @@ describe('Testing xml2js.js:', function () {
 
         });
 
+        describe('case by Daniel \'yngwi\'', function () {
+            // see https://github.com/nashwaan/xml-js/issues/29
+            var xml = '<outer> This is <inner> some</inner> <inner>Text </inner> </outer>';
+            var js = {
+                elements: [{
+                    type: 'element',
+                    name: 'outer',
+                    elements: [{
+                        type: 'text',
+                        text: ' This is '
+                    }, {
+                        type: 'element',
+                        name: 'inner',
+                        elements: [{
+                            type: 'text',
+                            text: ' some'
+                        }]
+                    }, {
+                        type: 'text',
+                        text: ' '
+                    }, {
+                        type: 'element',
+                        name: 'inner',
+                        elements: [{
+                            type: 'text',
+                            text: 'Text '
+                        }]
+                    }, {
+                        type: 'text',
+                        text: ' '
+                    }]
+                }]
+            };
+
+            it('should convert xml object to js and back to xml correctly', function () {
+                var js_ = convert.xml2js(xml, {captureSpacesBetweenElements: true});
+                expect(js_).toEqual(js);
+                expect(convert.js2xml(js_)).toEqual(xml);
+            });
+
+        });
+
     });
 
 });

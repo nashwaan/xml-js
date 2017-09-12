@@ -1,6 +1,6 @@
 {
   "name": "xml-js",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "A convertor between XML text and Javascript object / JSON text.",
   "repository": {
     "type": "git",
@@ -69,22 +69,22 @@
     "test:types": "tsc -p ./types"
   },
   "dependencies": {
-    "sax": "^1.2.1"
+    "sax": "^1.2.4"
   },
   "devDependencies": {
     "biased-opener": "^0.2.8",
-    "browser-sync": "^2.18.12",
+    "browser-sync": "^2.18.13",
     "cash-cat": "^0.2.0",
-    "codacy-coverage": "^2.0.2",
-    "codeclimate-test-reporter": "^0.4.0",
+    "codacy-coverage": "^2.0.3",
+    "codeclimate-test-reporter": "^0.5.0",
     "coveralls": "^2.13.1",
-    "cross-env": "^5.0.0",
-    "globify": "^2.0.0",
+    "cross-env": "^5.0.5",
+    "globify": "^2.1.0",
     "istanbul": "^0.4.5",
-    "jasmine": "^2.6.0",
-    "nodemon": "^1.11.0",
-    "npm-run-all": "^4.0.1",
-    "typescript": "^2.3.3",
+    "jasmine": "^2.8.0",
+    "nodemon": "^1.12.0",
+    "npm-run-all": "^4.1.1",
+    "typescript": "^2.5.2",
     "watch": "^1.0.1"
   }
 }
