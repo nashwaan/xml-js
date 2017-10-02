@@ -108,7 +108,7 @@ var result2 = convert.xml2json(xml, {compact: false, spaces: 4});
 console.log(result1, '\n', result2);
 ```
 
-To see the result of this code, see the output above in *Synopsis* section.
+To see the result of this code, see the output above in [Synopsis](#synopsis) section.
 
 Or [run and edit](https://runkit.com/587874e079a2f60013c1f5ac/587874e079a2f60013c1f5ad) this code live in the browser.
 
@@ -160,6 +160,7 @@ The below options are applicable for both `js2xml()` and `json2xml()` functions.
 | `compact`             | `false` | Whether the *input* object is in compact form or not. |
 | `fullTagEmptyElement` | `false` | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `<a/>`. |
 | `indentCdata`         | `false` | Whether to write CData in a new line and indent it. Will generate `<a>\n <![CDATA[foo]]></a>` instead of `<a><![CDATA[foo]]></a>`. See [discussion](https://github.com/nashwaan/xml-js/issues/14) |
+| `indentAttributes`    | `false` | Whether to print attributes across multiple lines and indent them (when `spaces` is not `0`). See [example](https://github.com/nashwaan/xml-js/issues/31). |
 | `ignoreDeclaration`   | `false` | Whether to ignore writing declaration directives of xml. For example, `<?xml?>` will be ignored. |
 | `ignoreInstruction`   | `false` | Whether to ignore writing processing instruction of xml. For example, `<?go there?>` will be ignored. |
 | `ignoreAttributes`    | `false` | Whether to ignore writing attributes of the elements. For example, `x="1"` in `<a x="1"></a>` will be ignored |

@@ -44,7 +44,7 @@ const xml = `
 </note>`;
 
 // xml2js
-let jsResult1: any = convert.xml2js(xml, {compact:true, spaces:4});
+let jsResult1: any = convert.xml2js(xml, {compact:true});
 let jsResult2: any = convert.xml2js(xml, {compact:false});
 
 // xml2json

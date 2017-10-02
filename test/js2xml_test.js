@@ -682,6 +682,50 @@ describe('Testing js2xml.js:', function () {
 
         });
 
+        describe('case by zaesnet ', function () {
+            // see https://github.com/nashwaan/xml-js/issues/30
+            var js = {
+                a: {_text:'Hi There'}
+            };
+            var xml = '<a>Hi There</a>';
+            it('should convert js object to xml', function () {
+                expect(convert.js2xml(js, {spaces: 3, fullTagEmptyElement: true, compact: true})).toEqual(xml);
+            });
+
+        });
+
+        describe('case by kolis ', function () {
+            // see https://github.com/nashwaan/xml-js/issues/31
+            var js = {
+                parent: {
+                    _attributes: {
+                        bar: 1,
+                        baz: 'hello'
+                    },
+                    child: {
+                        _attributes: {
+                            attr1: 'a',
+                            attr2: 'b'
+                        }
+                    }
+                }
+            };
+            var xml =
+            '<parent\n' +
+            '\vbar="1"\n' +
+            '\vbaz="hello"\n' +
+            '>\n' +
+            '\v<child\n' +
+            '\v\vattr1="a"\n' +
+            '\v\vattr2="b"\n' +
+            '\v/>\n' +
+            '</parent>';
+            it('should be able to indent attributes', function () {
+                expect(convert.js2xml(js, {indentAttributes: true, spaces: 2, compact: true})).toEqual(xml.replace(/\v/g, '  '));
+            });
+
+        });
+
     });
 
 });

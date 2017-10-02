@@ -39,9 +39,12 @@ export interface Element {
 }
 
 declare namespace Options {
+    interface XML2JSON extends XML2JS {
+        spaces?: number | string
+    }
+
     interface XML2JS extends ChangingKeyNames, IgnoreOptions {
         compact?: boolean
-        spaces?: number | string
         trim?: boolean
         sanitize?: boolean
         nativeType?: boolean
@@ -57,6 +60,7 @@ declare namespace Options {
         compact?: boolean
         indentText?: boolean
         indentCdata?: boolean
+        indentAttributes?: boolean
         indentInstruction?: boolean
         fullTagEmptyElement?: boolean
     }
@@ -88,5 +92,5 @@ declare namespace Options {
 
 export function js2xml(obj: Element | ElementCompact, options?: Options.JS2XML): string;
 export function json2xml(json: string, options?: Options.JS2XML): string;
-export function xml2json(xml: string, options?: Options.XML2JS): string;
+export function xml2json(xml: string, options?: Options.XML2JSON): string;
 export function xml2js(xml: string, options?: Options.XML2JS): any;
