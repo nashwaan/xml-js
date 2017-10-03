@@ -63,6 +63,7 @@ declare namespace Options {
         indentAttributes?: boolean
         indentInstruction?: boolean
         fullTagEmptyElement?: boolean
+        noQuotesForNativeAttributes?: boolean
     }
 
     interface IgnoreOptions {

@@ -694,7 +694,7 @@ describe('Testing js2xml.js:', function () {
 
         });
 
-        describe('case by kolis ', function () {
+        fdescribe('case by kolis ', function () {
             // see https://github.com/nashwaan/xml-js/issues/31
             var js = {
                 parent: {
@@ -712,7 +712,7 @@ describe('Testing js2xml.js:', function () {
             };
             var xml =
             '<parent\n' +
-            '\vbar="1"\n' +
+            '\vbar=1\n' +
             '\vbaz="hello"\n' +
             '>\n' +
             '\v<child\n' +
@@ -721,7 +721,10 @@ describe('Testing js2xml.js:', function () {
             '\v/>\n' +
             '</parent>';
             it('should be able to indent attributes', function () {
-                expect(convert.js2xml(js, {indentAttributes: true, spaces: 2, compact: true})).toEqual(xml.replace(/\v/g, '  '));
+                expect(convert.js2xml(js, {indentAttributes: true, spaces: 2, compact: true})).toEqual(xml.replace(/\v/g, '  ').replace('=1', '="1"'));
+            });
+            it('should be able to indent attributes and no quotes for native attributes', function () {
+                expect(convert.js2xml(js, {indentAttributes: true, spaces: 2, compact: true, noQuotesForNativeAttributes: true})).toEqual(xml.replace(/\v/g, '  '));
             });
 
         });
