@@ -694,7 +694,7 @@ describe('Testing js2xml.js:', function () {
 
         });
 
-        fdescribe('case by kolis ', function () {
+        describe('case by kolis ', function () {
             // see https://github.com/nashwaan/xml-js/issues/31
             var js = {
                 parent: {
@@ -725,6 +725,23 @@ describe('Testing js2xml.js:', function () {
             });
             it('should be able to indent attributes and no quotes for native attributes', function () {
                 expect(convert.js2xml(js, {indentAttributes: true, spaces: 2, compact: true, noQuotesForNativeAttributes: true})).toEqual(xml.replace(/\v/g, '  '));
+            });
+
+        });
+
+        describe('case by techborn ', function () {
+            // see https://github.com/nashwaan/xml-js/pull/32
+            // var js = {
+            //     example: {
+            //         _text: 'value'
+            //     }
+            // };
+            var js = {
+                example: 'value'
+            };
+            var xml = '<example>value</example>';
+            it('should convert element text without _text property', function () {
+                expect(convert.js2xml(js, {compact: true})).toEqual(xml);
             });
 
         });
