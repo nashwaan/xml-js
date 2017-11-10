@@ -234,7 +234,7 @@ Two default values mean the first is used for *non-compact* output and the secon
 
 # Command Line
 
-Because any good library should support command line usage, this library is no difference.
+Because any good library should support command line usage, this library is no different.
 
 ## As Globally Accessible Command
 
@@ -265,6 +265,7 @@ In package.json, write a script:
   }
 ```
 
+Now in the command line, you can run this script by typing:
 ```
 npm run convert             // task 'scripts.convert' will be executed
 ```

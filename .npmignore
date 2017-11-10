@@ -2,6 +2,7 @@ node_modules/
 _playground/
 artwork/
 test/
+package-lock.json
 yarn.lock
 *.log
 *.yml
