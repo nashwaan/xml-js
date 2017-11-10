@@ -660,23 +660,6 @@ describe('Testing xml2js.js:', function () {
 
         });
 
-        describe('case by Nuno Martins', function () {
-            // see https://github.com/nashwaan/xml-js/issues/34
-            var xml = '<?xml version=\'1.0\' encoding=\'UTF-8\'?>';
-            var js = {
-                declaration: {
-                    attributes: {
-                        version: '1.0',
-                        encoding: 'UTF-8'
-                    }
-                }
-            };
-
-            it('should accept XML declarations that use single quotes', function () {
-                expect(convert.xml2js(xml)).toEqual(js);
-            });
-        })
-
     });
 
 });
