@@ -62,6 +62,7 @@
     "coverage": "npm-run-all coverage:*",
     "coverage:a-step": "npm run istanbul",
     "coverage:coveralls": "cat ./test/browse-coverage/lcov.info | coveralls",
+    "coverage:codecov": "codecov --token=0e52af41-702b-4d7f-8aa3-61145ac36624",
     "coverage:codacy": "cross-env CODACY_PROJECT_TOKEN=0207815122ea49a68241d1aa435f21f1 cat ./test/browse-coverage/lcov.info | codacy-coverage",
     "coverage:codeclimate": "cross-env CODECLIMATE_REPO_TOKEN=60848a077f9070acf358b0c7145f0a2698a460ddeca7d8250815e75aa4333f7d codeclimate-test-reporter < test\\browse-coverage\\lcov.info",
     "prepublish": "npm run test",
@@ -77,14 +78,16 @@
     "cash-cat": "^0.2.0",
     "codacy-coverage": "^2.0.3",
     "codeclimate-test-reporter": "^0.5.0",
+    "codecov": "^3.0.0",
     "coveralls": "^3.0.0",
     "cross-env": "^5.1.1",
-    "globify": "^2.1.0",
+    "eslint": "^4.13.0",
+    "globify": "^2.2.1",
     "istanbul": "^0.4.5",
     "jasmine": "^2.8.0",
-    "nodemon": "^1.12.1",
+    "nodemon": "^1.12.5",
     "npm-run-all": "^4.1.2",
-    "typescript": "^2.6.1",
+    "typescript": "^2.6.2",
     "watch": "^1.0.1"
   }
 }
