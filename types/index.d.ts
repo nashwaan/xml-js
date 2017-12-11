@@ -1,94 +1,94 @@
 export interface ElementCompact {
-    [key: string]: any
-    _declaration?: {
-        _attributes?: {
-            version?: string | number
-            encoding?: string | number
-        }
-    }
-    _instruction?: {
-        [key: string]: string
-    }
+  [key: string]: any
+  _declaration?: {
     _attributes?: {
-        [key: string]: string | number
+      version?: string | number
+      encoding?: string | number
     }
-    _cdata?: string
-    _doctype?: string
-    _comment?: string
-    _text?: string | number
+  }
+  _instruction?: {
+    [key: string]: string
+  }
+  _attributes?: {
+    [key: string]: string | number
+  }
+  _cdata?: string
+  _doctype?: string
+  _comment?: string
+  _text?: string | number
 }
 
 export interface Element {
-    declaration?: {
-        attributes?: {
-            version: string | number
-            encoding: string | number
-        }
-    }
-    instruction?: string
+  declaration?: {
     attributes?: {
-        [key: string]: string | number
+      version: string | number
+      encoding: string | number
     }
-    cdata?: string
-    doctype?: string
-    comment?: string
-    text?: string | number | boolean
-    type?: string
-    name?: string
-    elements?: Array<Element>
+  }
+  instruction?: string
+  attributes?: {
+    [key: string]: string | number
+  }
+  cdata?: string
+  doctype?: string
+  comment?: string
+  text?: string | number | boolean
+  type?: string
+  name?: string
+  elements?: Array<Element>
 }
 
 declare namespace Options {
-    interface XML2JSON extends XML2JS {
-        spaces?: number | string
-    }
+  interface XML2JSON extends XML2JS {
+    spaces?: number | string
+  }
 
-    interface XML2JS extends ChangingKeyNames, IgnoreOptions {
-        compact?: boolean
-        trim?: boolean
-        sanitize?: boolean
-        nativeType?: boolean
-        addParent?: boolean
-        alwaysArray?: boolean
-        alwaysChildren?: boolean
-        instructionHasAttributes?: boolean
-        captureSpacesBetweenElements?: boolean
-    }
+  interface XML2JS extends ChangingKeyNames, IgnoreOptions {
+    compact?: boolean
+    trim?: boolean
+    sanitize?: boolean
+    nativeType?: boolean
+    addParent?: boolean
+    alwaysArray?: boolean
+    alwaysChildren?: boolean
+    instructionHasAttributes?: boolean
+    captureSpacesBetweenElements?: boolean
+  }
 
-    interface JS2XML extends ChangingKeyNames, IgnoreOptions {
-        spaces?: number | string
-        compact?: boolean
-        indentText?: boolean
-        indentCdata?: boolean
-        indentAttributes?: boolean
-        indentInstruction?: boolean
-        fullTagEmptyElement?: boolean
-        noQuotesForNativeAttributes?: boolean
-    }
+  interface JS2XML extends ChangingKeyNames, IgnoreOptions {
+    spaces?: number | string
+    compact?: boolean
+    indentText?: boolean
+    indentCdata?: boolean
+    indentAttributes?: boolean
+    indentInstruction?: boolean
+    fullTagEmptyElement?: boolean
+    noQuotesForNativeAttributes?: boolean
+  }
 
-    interface IgnoreOptions {
-        ignoreDeclaration?: boolean
-        ignoreInstruction?: boolean
-        ignoreAttributes?: boolean
-        ignoreComment?: boolean
-        ignoreCdata?: boolean
-        ignoreDoctype?: boolean
-        ignoreText?: boolean
-    }
+  interface IgnoreOptions {
+    ignoreDeclaration?: boolean
+    ignoreInstruction?: boolean
+    ignoreAttributes?: boolean
+    ignoreComment?: boolean
+    ignoreCdata?: boolean
+    ignoreDoctype?: boolean
+    ignoreText?: boolean
+  }
 
-    interface ChangingKeyNames {
-        declarationKey?: string
-        instructionKey?: string
-        attributesKey?: string
-        textKey?: string
-        cdataKey?: string
-        doctypeKey?: string
-        commentKey?: string
-        parentKey?: string
-        typeKey?: string
-        nameKey?: string
-        elementsKey?: string
-    }
+  interface ChangingKeyNames {
+    declarationKey?: string
+    instructionKey?: string
+    attributesKey?: string
+    textKey?: string
+    cdataKey?: string
+    doctypeKey?: string
+    commentKey?: string
+    parentKey?: string
+    typeKey?: string
+    nameKey?: string
+    elementsKey?: string
+  }
 }
 
 export function js2xml(obj: Element | ElementCompact, options?: Options.JS2XML): string;

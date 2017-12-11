@@ -38,9 +38,9 @@ const element5: Element = { elements: [{ type: 'element', name: 'a', elements: [
 const xml = `
 <?xml version="1.0" encoding="utf-8"?>
 <note importance="high" logged="true">
-    <title>Happy</title>
-    <todo>Work</todo>
-    <todo>Play</todo>
+  <title>Happy</title>
+  <todo>Work</todo>
+  <todo>Play</todo>
 </note>`;
 
 // xml2js
