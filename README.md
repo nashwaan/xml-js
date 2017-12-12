@@ -23,13 +23,13 @@ Convert XML text to Javascript object / JSON text (and vice versa).
 ![Convert XML ↔ JS/JSON as compact or non-compact](http://nashwaan.github.io/xml-js/images/synopsis.svg)
 <!---![Convert XML ↔ JS/JSON as compact or non-compact](/synopsis.png?raw=true "Synopsis Diagram")-->
 
-# Motivation
-
-There are many XML to JavaScript object / JSON converters out there, but could not satisfy the following requirements:
+# Features
 
 * **Maintain Order of Elements**:
-Instead of converting `<a/><b/><a/>` to `{a:[{},{}],b:{}}`, I wanted to preserve order of elements by doing this:
+Most libraries will convert `<a/><b/><a/>` to `{a:[{},{}],b:{}}` which merges any node of same name into an array. This library can creates the following to preserve the order of elements:
 `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"},{"type":"element","name":"a"}]}`.
+
+This is very important and it is the main reason why this library was created.
 
 * **Fully XML Compliant**:
 Can parse: elements, attributes, texts, comments, CData, DOCTYPE, XML declarations, and Processing Instructions.
@@ -41,7 +41,7 @@ Whether converting xml→json or json→xml, the result can be converted back to
 This library depends only on one external npm module.
 
 * **Change Property Key Name**:
-Usually output of XML attributes are stored in `@attr`, `_atrr`, `$attr`, `$`, or `whatever` in order to avoid conflicting with name of sub-elements.
+Usually output of XML attributes are stored in `@attr`, `_atrr`, `$attr` or `$` in order to avoid conflicting with name of sub-elements.
 This library store them in `attributes`, but most importantly, you can change this to whatever you like.
 
 * **Support Upwards Traversal**:

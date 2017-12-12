@@ -1,10 +1,9 @@
-/*global describe,it,expect,beforeEach,afterEach*/
-
 var convert = require('../lib');
 var testItems = require('./test-items');
 
+/*global describe,it,expect*/
+
 describe('Testing xml2js.js:', function () {
-  'use strict';
 
   //var books = require('fs').readFileSync('test/fixtures/books.xml', 'utf8');
 
@@ -451,14 +450,15 @@ describe('Testing xml2js.js:', function () {
 
     describe('case by Mark Pareja', function () {
       // see https://github.com/nashwaan/xml-js/issues/3
-      var xml = '<?xml version="1.0" encoding="utf-8"?>\n' +
-           '<dp:ListServicesReply ReturnCode="0" xmlns:dp="http://www.cisco.com/vtg/diagnosticportal">\n' +
-           '  <dp:Schema Version="1.0" />\n' +
-           '  <dp:ServiceList>\n' +
-           '    <dp:Service Name="Cisco ICM usgd1 LoggerA" Description="Provides Call Logging services for Instance usgd1" Status="Running" StartupType="Auto" LogOnAs="****" />\n' +
-           '    <dp:Service Name="Cisco ICM Diagnostic Framework" Description="Provides a web-based diagnostic service for Cisco Unified ICM, Contact Center Enterprise application." Status="Running" StartupType="Auto" LogOnAs="LocalSystem" />\n' +
-           '  </dp:ServiceList>\n' +
-           '</dp:ListServicesReply>';
+      var xml =
+        '<?xml version="1.0" encoding="utf-8"?>\n' +
+        '<dp:ListServicesReply ReturnCode="0" xmlns:dp="http://www.cisco.com/vtg/diagnosticportal">\n' +
+        '  <dp:Schema Version="1.0" />\n' +
+        '  <dp:ServiceList>\n' +
+        '    <dp:Service Name="Cisco ICM usgd1 LoggerA" Description="Provides Call Logging services for Instance usgd1" Status="Running" StartupType="Auto" LogOnAs="****" />\n' +
+        '    <dp:Service Name="Cisco ICM Diagnostic Framework" Description="Provides a web-based diagnostic service for Cisco Unified ICM, Contact Center Enterprise application." Status="Running" StartupType="Auto" LogOnAs="LocalSystem" />\n' +
+        '  </dp:ServiceList>\n' +
+        '</dp:ListServicesReply>';
       var json = {
         "_declaration": {
           "_attributes": {
@@ -509,31 +509,32 @@ describe('Testing xml2js.js:', function () {
 
     describe('case by Félix Dion Robidoux', function () {
       // see https://github.com/nashwaan/xml-js/issues/6
-      var xml = '<ZohoCreator>\n' +
-           '    <applicationslist>\n' +
-           '        <application name="testapp">\n' +
-           '            <formlist>\n' +
-           '                <form name="Untitled_Form">\n' +
-           '                    <add>\n' +
-           '                        <field name="Subform_Single_Line">\n' +
-           '                            <value>BEUHBALUGU</value>\n' +
-           '                        </field>\n' +
-           '                    </add>\n' +
-           '                </form>\n' +
-           '                <form name="Untitled_Form">\n' +
-           '                    <add>\n' +
-           '                        <field name="Subform_Single_Line">\n' +
-           '                            <value>IF YOU CAN SEE THIS YOU DESERVE THE SUCC</value>\n' +
-           '                        </field>\n' +
-           '                    </add>\n' +
-           '                </form>\n' +
-           '            </formlist>\n' +
-           '        </application>\n' +
-           '        <application name="derp">\n' +
-           '            <formlist></formlist>\n' +
-           '        </application>\n' +
-           '    </applicationslist>\n' +
-           '</ZohoCreator>';
+      var xml =
+        '<ZohoCreator>\n' +
+        '    <applicationslist>\n' +
+        '        <application name="testapp">\n' +
+        '            <formlist>\n' +
+        '                <form name="Untitled_Form">\n' +
+        '                    <add>\n' +
+        '                        <field name="Subform_Single_Line">\n' +
+        '                            <value>BEUHBALUGU</value>\n' +
+        '                        </field>\n' +
+        '                    </add>\n' +
+        '                </form>\n' +
+        '                <form name="Untitled_Form">\n' +
+        '                    <add>\n' +
+        '                        <field name="Subform_Single_Line">\n' +
+        '                            <value>IF YOU CAN SEE THIS YOU DESERVE THE SUCC</value>\n' +
+        '                        </field>\n' +
+        '                    </add>\n' +
+        '                </form>\n' +
+        '            </formlist>\n' +
+        '        </application>\n' +
+        '        <application name="derp">\n' +
+        '            <formlist></formlist>\n' +
+        '        </application>\n' +
+        '    </applicationslist>\n' +
+        '</ZohoCreator>';
 
       var json = convert.xml2json(xml, {compact: true, spaces: 4});
 
@@ -675,7 +676,8 @@ describe('Testing xml2js.js:', function () {
       it('should accept XML declarations that use single quotes', function () {
         expect(convert.xml2js(xml)).toEqual(js);
       });
-    })
+
+    });
 
   });
 

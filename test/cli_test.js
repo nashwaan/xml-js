@@ -1,20 +1,19 @@
-/*global describe,it,expect,beforeEach,afterEach*/
-
-if (typeof jasmineRequire === 'undefined') {
+if (typeof jasmineRequire !== 'undefined') return;
 
 var path = require('path');
 var exec = require('child_process').exec;
 var packageInfo = require('../package.json');
 
-var command = 'node ' + path.join(__dirname, '../bin/cli')
+var command = 'node ' + path.join(__dirname, '../bin/cli');
 
 /*exec('node ./bin/cli.js --version', function (error, stdout, stderr) {
   console.log(stdout, stderr);
 });*/
 //console.log(exec('node ./bin/cli.js --version'), {encoding: 'utf8'});
 
+/*global describe,it,expect*/
+
 describe('Testing cli.js:', function () {
-  'use strict';
 
   describe('Getting version and help on usage:', function () {
 
@@ -74,5 +73,3 @@ describe('Testing cli.js:', function () {
   });
 
 });
-
-}

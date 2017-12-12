@@ -45,7 +45,6 @@ var cases = [
     js1: {"_cdata":[" \t data", "< > \" and & \t "]},
     js2: {"elements":[{"type":"cdata","cdata":" \t data"},{"type":"cdata","cdata":"< > \" and & \t "}]}
   }, {
-
     desc: 'should convert doctype',
     xml: '<!DOCTYPE note [\n<!ENTITY foo "baa">]>',
     js1: {"_doctype":"note [\n<!ENTITY foo \"baa\">]"},
@@ -102,13 +101,13 @@ module.exports = function (direction, options) {
   var i, tests = [];
   options = options || {};
   function applyOptions (obj, fullKey) {
-    var key;
+    var key, fn;
     if (obj instanceof Array) {
       obj = obj.filter(function (el) {
         return !(options.ignoreText && el.type === 'text' || options.ignoreComment && el.type === 'comment' || options.ignoreCdata && el.type === 'cdata'
         || options.ignoreDoctype && el.type === 'doctype' || options.ignoreDeclaration && el.type === 'declaration' || options.ignoreInstruction && el.type === 'instruction');
       }).map(function (el) {
-        return transform(el, fullKey);
+        return manipulate(el, fullKey);
       });
     } else if (typeof obj === 'object') {
       for (key in obj) {
@@ -118,11 +117,11 @@ module.exports = function (direction, options) {
         }
         if (key.indexOf('_') === 0 && obj[key] instanceof Array) {
           obj[key] = obj[key].map(function (el) {
-            return transform(el, fullKey);
+            return manipulate(el, fullKey);
           });
         } else {
           if (key !== 'parent' && key !== '_parent') {
-            obj[key] = transform(obj[key], fullKey);
+            obj[key] = manipulate(obj[key], fullKey);
             if (obj[key] instanceof Array && obj[key].length === 0) {
               delete obj[key];
             }
@@ -155,7 +154,7 @@ module.exports = function (direction, options) {
       // }
     }
     return obj;
-    function transform (x, key) {
+    function manipulate(x, key) {
       if (x instanceof Array || typeof x === 'object') {
         return applyOptions(x, key);
       } else if (typeof x === 'string') {
@@ -167,11 +166,22 @@ module.exports = function (direction, options) {
       }
     }
   }
+  function applyKeyNames(js) {
+    var key;
+    for (key in options) {
+      if (key.match(/Key$/)) {
+        var keyName = (options.compact ? '_' : '') + key.replace('Key', '');
+        js = JSON.parse(JSON.stringify(js).replace(new RegExp('"' + keyName + '":', 'g'), '"' + options[key] + '":'));
+      }
+    }
+    return js;
+  }
   for (i = 0; i < cases.length; ++i) {
     tests.push({desc: cases[i].desc, xml: null, js: null});
     tests[i].js = options.compact ? cases[i].js1 : cases[i].js2;
     if (direction === 'xml2js') {
       tests[i].js = applyOptions(JSON.parse(JSON.stringify(tests[i].js)));
+      tests[i].js = applyKeyNames(tests[i].js);
     }
     tests[i].xml = cases[i].xml;
     if (direction === 'js2xml') {

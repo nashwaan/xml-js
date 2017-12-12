@@ -2,6 +2,7 @@ node_modules/
 _playground/
 artwork/
 test/
+doc/
 package-lock.json
 yarn.lock
 *.log

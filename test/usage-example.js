@@ -1,6 +1,5 @@
-/*jslint node:true */
 var convert = require('..');
-var xml = 
+var xml =
 '<?xml version="1.0" encoding="utf-8"?>' + '\n' +
 '<note importance="high" logged="true">' + '\n' +
 '    <title>Happy</title>' + '\n' +
