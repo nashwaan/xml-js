@@ -1,0 +1,8 @@
+title: XML ⟷ JS
+description: Converter utility between XML text and Javascript object / JSON text.
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-tactile
+
+gems:
+  - jekyll-mentions

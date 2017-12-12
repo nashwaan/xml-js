@@ -1,6 +1,0 @@
-{
-  "name": "XML ⟷ JS",
-  "tagline": "Converter utility between XML text and Javascript object / JSON text.",
-  "body": "### Welcome to XML-JS Convertor\r\n![Alt text](http://nashwaan.github.com/xml-js/logo.svg)\r\n<img src=\"http://nashwaan.github.com/xml-js/logo.svg\">\r\n![Alt text](http://nashwaan.github.io/xml-js/logo.svg)\r\n<img src=\"http://nashwaan.github.io/xml-js/logo.svg\">\r\n\r\nConvert XML text to Javascript object (and vice versa) or to JSON text (and vice versa):\r\n",
-  "note": "Don't delete this file! It's used internally to help with page regeneration."
-}
