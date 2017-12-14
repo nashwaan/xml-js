@@ -20,10 +20,15 @@ var cases = [
     js1: {"_declaration":{},"a":{"b":{}}},
     js2: {"declaration":{},"elements":[{"type":"element","name":"a","elements":[{"type":"element","name":"b"}]}]}
   }, {
-    desc: 'processing instruction <?go there>',
+    desc: 'processing instruction <?go there?>',
     xml: '<?go there?>',
     js1: {"_instruction":{"go": "there"}},
     js2: {"elements":[{"type":"instruction","name":"go","instruction":"there"}]}
+  }, {
+    desc: '2 processing instructions <?go there?><?come here?>',
+    xml: '<?go there?><?come here?>',
+    js1: {"_instruction":[{"go": "there"},{"come": "here"}]},
+    js2: {"elements":[{"type":"instruction","name":"go","instruction":"there"},{"type":"instruction","name":"come","instruction":"here"}]}
   }, {
     desc: 'should convert comment',
     xml: '<!-- \t Hello, World! \t -->',
@@ -100,21 +105,24 @@ var cases = [
 module.exports = function (direction, options) {
   var i, tests = [];
   options = options || {};
-  function applyOptions (obj, fullKey) {
-    var key, fn;
+  function applyOptions (obj, pathKey) {
+    var key, fullKey;
+    pathKey = pathKey || '';
     if (obj instanceof Array) {
       obj = obj.filter(function (el) {
         return !(options.ignoreText && el.type === 'text' || options.ignoreComment && el.type === 'comment' || options.ignoreCdata && el.type === 'cdata'
         || options.ignoreDoctype && el.type === 'doctype' || options.ignoreDeclaration && el.type === 'declaration' || options.ignoreInstruction && el.type === 'instruction');
       }).map(function (el) {
-        return manipulate(el, fullKey);
+        return manipulate(el, pathKey);
       });
     } else if (typeof obj === 'object') {
       for (key in obj) {
-        fullKey = (fullKey? fullKey + '.' : '') + key;
+        fullKey = (pathKey ? pathKey + '.' : '') + key;
         if (options.compact && options.alwaysArray && !(obj[key] instanceof Array) && key !== '_declaration' && (key === '_instruction' || fullKey.indexOf('_instruction') < 0) && fullKey.indexOf('_attributes') < 0) {
           obj[key] = [obj[key]];
         }
+        key = applyNameCallbacks(obj, key, pathKey.split('.').pop());
+        key = applyAttributesCallback(obj, key, pathKey.split('.').pop());
         if (key.indexOf('_') === 0 && obj[key] instanceof Array) {
           obj[key] = obj[key].map(function (el) {
             return manipulate(el, fullKey);
@@ -154,10 +162,13 @@ module.exports = function (direction, options) {
       // }
     }
     return obj;
-    function manipulate(x, key) {
-      if (x instanceof Array || typeof x === 'object') {
-        return applyOptions(x, key);
+    function manipulate(x, fullKey) {
+      if (x instanceof Array) {
+        return applyOptions(x, fullKey);
+      } if (typeof x === 'object') {
+        return applyOptions(x, fullKey);
       } else if (typeof x === 'string') {
+        x = applyValueCallbacks(x, fullKey.split('.').pop(), fullKey.split('.')[fullKey.split('.').length - 2] || '');
         return options.trim? x.trim() : x;
       } else if (typeof x === 'number' || typeof x === 'boolean') {
         return options.nativeType? x.toString() : x;
@@ -176,15 +187,57 @@ module.exports = function (direction, options) {
     }
     return js;
   }
+  function applyNameCallbacks(obj, key, parentKey) {
+    if ('instructionNameFn' in options && (options.compact && parentKey === '_instruction' || !options.compact && obj.type === 'instruction')
+      || 'elementNameFn' in options && (options.compact && key.indexOf('_') < 0 && parentKey !== '_attributes' && parentKey !== '_instruction' || !options.compact && obj.type === 'element')) {
+      if (options.compact) {
+        var temp = obj[key];
+        delete obj[key];
+        key = 'elementNameFn' in options ? options.elementNameFn(key) : options.instructionNameFn(key);
+        obj[key] = temp;
+      } else {
+        obj.name = 'elementNameFn' in options ? options.elementNameFn(obj.name) : options.instructionNameFn(obj.name);
+      }
+    }
+    return key;
+  }
+  function applyAttributesCallback(obj, key, parentKey) {
+    if (('attributeNameFn' in options || 'attributeValueFn' in options) && (parentKey === '_attributes' || parentKey === 'attributes')) {
+      if ('attributeNameFn' in options) {
+        var temp = obj[key];
+        delete obj[key];
+        key = options.attributeNameFn(key);
+        obj[key] = temp;
+      }
+      if ('attributeValueFn' in options) {
+        obj[key] = options.attributeValueFn(obj[key]);
+      }
+    }
+    if ('attributesFn' in options && (key === '_attributes' || key === 'attributes')) {
+      obj[key] = options.attributesFn(obj[key]);
+    }
+    return key;
+  }
+  function applyValueCallbacks(value, key, parentKey) {
+    var fn;
+    for (fn in options) {
+      if (fn.match(/Fn$/) && !fn.match(/NameFn$/)) {
+        var callbackName = (options.compact ? '_' : '') + fn.replace('Fn', '');
+        if (key === callbackName || parentKey === callbackName) {
+          value = options[fn](value);
+        }
+      }
+    }
+    return value;
+  }
   for (i = 0; i < cases.length; ++i) {
     tests.push({desc: cases[i].desc, xml: null, js: null});
     tests[i].js = options.compact ? cases[i].js1 : cases[i].js2;
+    tests[i].xml = cases[i].xml;
     if (direction === 'xml2js') {
       tests[i].js = applyOptions(JSON.parse(JSON.stringify(tests[i].js)));
       tests[i].js = applyKeyNames(tests[i].js);
-    }
-    tests[i].xml = cases[i].xml;
-    if (direction === 'js2xml') {
+    } else if (direction === 'js2xml') {
       if (!('spaces' in options) || options.spaces === 0 || typeof options.spaces === 'boolean') { tests[i].xml = tests[i].xml.replace(/>\n\v*/gm, '>'); }
       if ('spaces' in options && options.spaces !== 0 && typeof options.spaces === 'number') { tests[i].xml = tests[i].xml.replace(/\v/g, Array(options.spaces + 1).join(' ')); }
       if ('spaces' in options && typeof options.spaces === 'string') { tests[i].xml = tests[i].xml.replace(/\v/g, options.spaces); }
