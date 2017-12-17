@@ -48,11 +48,14 @@ This library store them in `attributes`, but most importantly, you can change th
 By setting `{addParent: true}` option, an extra property named `parent` will be generated along each element so that its parent can be referenced.
 Therefore, anywhere during the traversal of an element, its children **and** its parent can be easily accessed.
 
-* **Portable Code**:
-Written purely in JavaScript which means it can be used in Node environment and **browser** environment (via bundlers like browserify/JSPM/Webpack).
-
 * **Support Command Line**:
 To quickly convert xml or json files, this module can be installed globally or locally (i.e. use it as [script](https://docs.npmjs.com/misc/scripts) in package.json).
+
+* **Customize Processing using Callback Hooks**:
+[Custom functions](#options-for-custom-processing-functions) can be supplied to do additional processing for different parts of xml or json (like cdata, comments, elements, attributes ...etc).
+
+* **Portable Code**:
+Written purely in JavaScript which means it can be used in Node environment and **browser** environment (via bundlers like browserify/JSPM/Webpack).
 
 * **Typings Info Included**:
 Support type checking and code suggestion via intellisense.
@@ -233,6 +236,38 @@ Two default values mean the first is used for *non-compact* output and the secon
 
 > **TIP**: You probably want to set `{textKey: 'value', cdataKey: 'value', commentKey: 'value'}` for *non-compact* output
 > to make it more consistent and easier for your client code to go through the contents of text, cdata, and comment.
+
+## Options for Custom Processing Functions
+
+For XML → JS object / JSON, following custom callback functions can be supplied:
+
+| Option              | Signature | Description |
+|:--------------------|:----------|:------------|
+| `doctypeFn` | `(value, parentElement)` | To perform additional processing for DOCTYPE. For example, `{doctypeFn: function(val) {return val.toUpperCase();}` |
+| `instructionFn` | `(instructionValue, instructionName, parentElement)` | To perform additional processing for content of Processing Instruction value. For example, `{instructionFn: function(val) {return val.toUpperCase();}`. Note: `instructionValue` will be an object if `instructionHasAttributes` is enabled. |
+| `cdataFn` | `(value, parentElement)` | To perform additional processing for CData. For example, `{cdataFn: function(val) {return val.toUpperCase();}`. |
+| `commentFn` | `(value, parentElement)` | To perform additional processing for comments. For example, `{commentFn: function(val) {return val.toUpperCase();}`. |
+| `textFn` | `(value, parentElement)` | To perform additional processing for texts inside elements. For example, `{textFn: function(val) {return val.toUpperCase();}`. |
+| `instructionNameFn` | `(instructionName, instructionValue, parentElement)` | To perform additional processing for Processing Instruction name. For example, `{instructionNameFn: function(val) {return val.toUpperCase();}`. Note: `instructionValue` will be an object if `instructionHasAttributes` is enabled. |
+| `elementNameFn` | `(value, parentElement)` | To perform additional processing for element name. For example, `{elementNameFn: function(val) {return val.toUpperCase();}`. |
+| `attributeNameFn` | `(attributeName, attributeValue, parentElement)` | To perform additional processing for attribute name. For example, `{attributeNameFn: function(val) {return val.toUpperCase();}`. |
+| `attributeValueFn` | `(attributeValue, attributeName, parentElement)` | To perform additional processing for attributeValue. For example, `{attributeValueFn: function(val) {return val.toUpperCase();}`. |
+| `attributesFn` | `(value, parentElement)` | To perform additional processing for attributes object. For example, `{attributesFn: function(val) {return val.toUpperCase();}`. |
+
+For JS object / JSON → XML, following custom callback functions can be supplied:
+
+| Option              | Signature | Description |
+|:--------------------|:----------|:------------|
+| `doctypeFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for DOCTYPE. For example, `{doctypeFn: function(val) {return val.toUpperCase();}` |
+| `instructionFn` | `(instructionValue, instructionName, currentElementName, currentElementObj)` | To perform additional processing for content of Processing Instruction value. For example, `{instructionFn: function(val) {return val.toUpperCase();}`. Note: `instructionValue` will be an object if `instructionHasAttributes` is enabled. |
+| `cdataFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for CData. For example, `{cdataFn: function(val) {return val.toUpperCase();}`. |
+| `commentFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for comments. For example, `{commentFn: function(val) {return val.toUpperCase();}`. |
+| `textFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for texts inside elements. For example, `{textFn: function(val) {return val.toUpperCase();}`. |
+| `instructionNameFn` | `(instructionName, instructionValue, currentElementName, currentElementObj)` | To perform additional processing for Processing Instruction name. For example, `{instructionNameFn: function(val) {return val.toUpperCase();}`. Note: `instructionValue` will be an object if `instructionHasAttributes` is enabled. |
+| `elementNameFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for element name. For example, `{elementNameFn: function(val) {return val.toUpperCase();}`. |
+| `attributeNameFn` | `(attributeName, attributeValue, currentElementName, currentElementObj)` | To perform additional processing for attribute name. For example, `{attributeNameFn: function(val) {return val.toUpperCase();}`. |
+| `attributeValueFn` | `(attributeValue, attributeName, currentElementName, currentElementObj)` | To perform additional processing for attributeValue. For example, `{attributeValueFn: function(val) {return val.toUpperCase();}`. |
+| `attributesFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for attributes object. For example, `{attributesFn: function(val) {return val.toUpperCase();}`. |
 
 # Command Line
 
