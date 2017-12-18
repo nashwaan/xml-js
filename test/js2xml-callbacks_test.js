@@ -20,6 +20,11 @@ function manipulateAttribute(obj) {
   return obj;
 }
 
+function fullTag(name) {
+  args = arguments;
+  return name === 'b';
+}
+
 describe('Testing js2xml.js:', function () {
 
   describe('Adding function callbacks, options = {compact: false}', function () {
@@ -285,6 +290,36 @@ describe('Testing js2xml.js:', function () {
       });
       it('should provide correct arguments', function () {
         expect(args).toEqual(jasmine.arrayContaining([{"X":"1.234","Y":"IT\'S"}, 'a', js.a]));
+      });
+
+    });
+
+  });
+
+  describe('options = {fullTagEmptyElementFn: fullTag}', function () {
+
+    describe('options = {compact: false}', function () {
+
+      var js = {"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"}]};
+      var xml = '<a/><b></b>';
+      it('<a/><b/>', function () {
+        expect(convert.js2xml(js, {compact: false, fullTagEmptyElementFn: fullTag})).toEqual(xml);
+      });
+      it('should provide correct arguments', function () {
+        expect(args).toEqual(jasmine.arrayContaining(['b', js.elements[1]]));
+      });
+
+    });
+
+    describe('options = {compact: true}', function () {
+
+      var js = {"a":{},"b":{}};
+      var xml = '<a/><b></b>';
+      it('<a/><b/>', function () {
+        expect(convert.js2xml(js, {compact: true, fullTagEmptyElementFn: fullTag})).toEqual(xml);
+      });
+      it('should provide correct arguments', function () {
+        expect(args).toEqual(jasmine.arrayContaining(['b', js.b]));
       });
 
     });

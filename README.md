@@ -268,6 +268,7 @@ For JS object / JSON → XML, following custom callback functions can be supplie
 | `attributeNameFn` | `(attributeName, attributeValue, currentElementName, currentElementObj)` | To perform additional processing for attribute name. For example, `{attributeNameFn: function(val) {return val.toUpperCase();}`. |
 | `attributeValueFn` | `(attributeValue, attributeName, currentElementName, currentElementObj)` | To perform additional processing for attributeValue. For example, `{attributeValueFn: function(val) {return val.toUpperCase();}`. |
 | `attributesFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for attributes object. For example, `{attributesFn: function(val) {return val.toUpperCase();}`. |
+| `fullTagEmptyElementFn` | `(currentElementName, currentElementObj)` | Whether to generate full tag or just self closing tag for elements that has no sub elements. For example, `{fullTagEmptyElementFn: function(val) {return val === 'foo'}`. |
 
 # Command Line
 
