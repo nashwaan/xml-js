@@ -1,6 +1,6 @@
 {
   "name": "xml-js",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "A convertor between XML text and Javascript object / JSON text.",
   "repository": {
     "type": "git",
@@ -43,18 +43,24 @@
   "bin": "./bin/cli.js",
   "types": "./types/index.d.ts",
   "scripts": {
+    "build": "webpack",
+    "doc": "node doc/compile-doc.js",
+    "watch:doc": "watch \"npm run doc\" doc/templates/",
+    "live:doc": "browser-sync start --port 9996 --server doc/ --files doc/templates/ --no-open --no-ui --no-online",
+    "open:doc": "biased-opener --browser chrome http://localhost:9997",
     "debug": "nodemon --inspect --watch lib/ --watch test/ --debug-brk test/index.js",
     "debug:cli": "nodemon --inspect --watch lib/ --debug-brk index.js -- --help",
+    "jest": "jest --config=test/jest.conf.js",
     "jasmine": "jasmine JASMINE_CONFIG_PATH=./test/jasmine.json",
     "watch:jasmine": "watch \"npm run jasmine\" lib/ test/",
-    "bundle:jasmine": "globify test/*_test.js --watch --verbose --list --outfile test/browse-jasmine/bundle.js",
+    "bundle:jasmine": "globify test/*.spec.js --watch --verbose --list --outfile test/browse-jasmine/bundle.js",
     "live:jasmine": "browser-sync start --port 9999 --server test/browse-jasmine/ --files test/browse-jasmine/ --no-open --no-ui --no-online",
     "open-help": "biased-opener --help",
     "open:jasmine": "biased-opener --browser chrome http://localhost:9999",
-    "istanbul-original": "istanbul cover --dir test/browse-coverage -x test/browse-** test/index.js",
-    "istanbul": "istanbul cover --dir test/browse-coverage test/index.js",
+    "istanbul-original": "istanbul cover --dir test/coverage-jasmine -x test/browse-** test/index.js",
+    "istanbul": "istanbul cover --dir test/coverage-jasmine test/index.js",
     "watch:istanbul": "watch \"npm run istanbul\" lib/ test/ --ignoreDirectoryPattern=/browse-.+/",
-    "live:istanbul": "browser-sync start --port 9998 --server test/browse-coverage/lcov-report/ --files test/browse-coverage/lcov-report/ --no-open --no-ui --no-online",
+    "live:istanbul": "browser-sync start --port 9998 --server test/coverage-jasmine/lcov-report/ --files test/coverage-jasmine/lcov-report/ --no-open --no-ui --no-online",
     "open:istanbul": "biased-opener --browser chrome http://localhost:9998",
     "live": "npm-run-all --parallel live:* open:*",
     "start": "npm-run-all --parallel bundle:jasmine watch:istanbul live:* open:*",
@@ -63,10 +69,10 @@
     "deploy": "npm-run-all --serial coverage:* git:*",
     "coverage": "npm-run-all coverage:*",
     "coverage:a-step": "npm run istanbul",
-    "coverage:coveralls": "cat ./test/browse-coverage/lcov.info | coveralls",
+    "coverage:coveralls": "cat ./test/coverage-jasmine/lcov.info | coveralls",
     "coverage:codecov": "codecov --token=0e52af41-702b-4d7f-8aa3-61145ac36624",
-    "coverage:codacy": "cross-env CODACY_PROJECT_TOKEN=0207815122ea49a68241d1aa435f21f1 && cat ./test/browse-coverage/lcov.info | codacy-coverage",
-    "coverage:codeclimate": "cross-env CODECLIMATE_REPO_TOKEN=60848a077f9070acf358b0c7145f0a2698a460ddeca7d8250815e75aa4333f7d codeclimate-test-reporter < test\\browse-coverage\\lcov.info",
+    "coverage:codacy": "cross-env CODACY_PROJECT_TOKEN=0207815122ea49a68241d1aa435f21f1 && cat ./test/coverage-jasmine/lcov.info | codacy-coverage",
+    "coverage:codeclimate": "cross-env CODECLIMATE_REPO_TOKEN=60848a077f9070acf358b0c7145f0a2698a460ddeca7d8250815e75aa4333f7d codeclimate-test-reporter < test\\coverage-jasmine\\lcov.info",
     "prepublish": "npm run test",
     "test": "npm run jasmine && npm run test:types",
     "test:types": "tsc -p ./types"
@@ -75,6 +81,9 @@
     "sax": "^1.2.4"
   },
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
     "biased-opener": "^0.2.8",
     "browser-sync": "^2.18.13",
     "cash-cat": "^0.2.0",
@@ -87,10 +96,15 @@
     "globify": "^2.2.1",
     "istanbul": "^0.4.5",
     "jasmine": "^2.8.0",
+    "jest": "^20.0.4",
+    "jest-cli": "^20.0.4",
     "jsonpath": "^1.0.0",
     "nodemon": "^1.13.3",
     "npm-run-all": "^4.1.2",
+    "prismjs": "^1.9.0",
     "typescript": "^2.6.2",
-    "watch": "^1.0.1"
+    "unminified-webpack-plugin": "^1.4.2",
+    "watch": "^1.0.1",
+    "webpack": "^3.10.0"
   }
 }

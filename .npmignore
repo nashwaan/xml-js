@@ -5,5 +5,7 @@ test/
 doc/
 package-lock.json
 yarn.lock
+webpack.config.json
 *.log
 *.yml
+.*

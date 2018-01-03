@@ -7,7 +7,7 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.{js,ts,json,yml}]
+[*.{html,css,js,ts,json,yml}]
 charset = utf-8
 indent_style = space
 indent_size = 2

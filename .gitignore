@@ -1,6 +1,7 @@
 _playground/
 node_modules/
-test/browse-coverage/
+test/coverage-jasmine/
+test/coverage-jest/
 test/fixtures/
 .coveralls.yml
 npm-debug.log

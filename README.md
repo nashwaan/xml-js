@@ -67,21 +67,20 @@ Most XML to JSON converters (including online converters) convert `<a/>` to some
 instead of non-compact output like `{"elements":[{"type":"element","name":"a"}]}`.
 
 While compact output might work in most situations, there are cases when elements of different names are mixed inside a parent element. Lets use `<a x="1"/><b x="2"/><a x="3"/>` as an example.
-Most converters will produce compact like `{a:[{_:{x:"1"}},{_:{x:"3"}}], b:{_:{x:"2"}}}`,
+Most converters will produce compact output like `{a:[{_:{x:"1"}},{_:{x:"3"}}], b:{_:{x:"2"}}}`,
 which has merged both `<a>` elements into an array! If you try to convert this back to xml, you will get `<a x="1"/><a x="3"/><b x="2"/>`
-which has not preserved the order of elements! This is an inherent limitation in the compact representation
-because output like `{a:{_:{x:"1"}}, b:{_:{x:"2"}}, a:{_:{x:"3"}}}` is illegal (same property name `a` should not appear twice in an object).
+which has not preserved the order of elements! There is an inherent limitation in the compact representation
+because output like `{a:{_:{x:"1"}}, b:{_:{x:"2"}}, a:{_:{x:"3"}}}` is illegal (same property name `a` should not appear twice in an object). This leaves no option but to use array `{a:[{_:{x:"1"}},{_:{x:"3"}}]`.
 
 The non-compact output, which is supported by this library, will produce more information and always guarantees the order of the elements as they appeared in the XML file.
 
-Another drawback of compact output is the resultant element can be an object or an array and therefore makes the client code a little awkwards in terms of the extra check needed on object type before processing.
+Another drawback of compact output is the resultant element can be an object or an array and therefore makes the client code a little awkward in terms of the extra check needed on object type before processing.
 
 NOTE: Although non-compact output is more accurate representation of original XML than compact version, the non-compact version is verbose and consumes more space.
 This library provides both options. Use `{compact: false}` if you are not sure because it preserves everything;
 otherwise use `{compact: true}` if you want to save space and you don't care about mixing elements of same type and losing their order.
 
-
-
+Tip: You can reduce the output size by using shorter [key names](#options-for-changing-key-names).
 
 # Usage
 

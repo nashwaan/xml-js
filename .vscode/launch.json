@@ -7,8 +7,17 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Test Library",
             "program": "${workspaceRoot}/test/index",
+            "outFiles": [
+                "${workspaceRoot}/out/**/*.js"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Compile Docs",
+            "program": "${workspaceRoot}/doc/compile-doc",
             "outFiles": [
                 "${workspaceRoot}/out/**/*.js"
             ]

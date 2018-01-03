@@ -138,10 +138,10 @@ module.exports = function (direction, options) {
         if (options.addParent /*&& key.indexOf('declaration') === -1*/ && key.indexOf('attributes') === -1 && key.indexOf('instruction') === -1) {
           if (obj[key] instanceof Array) {
             obj[key].forEach(function (el) {
-              if (options.compact) {el._parent = obj;} else {el.parent = obj;}
+              if (options.compact) { if (typeof el === 'object') el._parent = obj; } else { el.parent = obj; }
             });
-          } else if (typeof obj[key] === 'object' && !(obj[key] instanceof Array)) {
-            if (options.compact) {obj[key]._parent = obj;} else {obj[key].parent = obj;}
+          } else if (typeof obj[key] === 'object') {
+            if (options.compact) { if (typeof obj[key] === 'object') obj[key]._parent = obj; } else { obj[key].parent = obj; }
           }
         }
         if (options.ignoreText && key === '_text' || options.ignoreComment && key === '_comment' || options.ignoreCdata && key === '_cdata'
