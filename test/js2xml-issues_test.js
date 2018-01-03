@@ -1,4 +1,5 @@
 var convert = require('../lib');
+var Script = require("vm").Script;
 
 /*global describe,it,expect*/
 
@@ -373,6 +374,46 @@ describe('Testing js2xml.js:', function () {
       });
 
     });
+
+    describe("case by silentgert", function() {
+      // see https://github.com/nashwaan/xml-js/issues/42
+      var context = {
+        convert: convert,
+        output: undefined,
+      };
+      var scriptCode = 
+      "(function() {\n" +
+      "  const obj = {\n" +
+      "    customers : {\n" +
+      "      customer: [\n" +
+      "        {\n" +
+      "          _text: 'John Doe',\n" +
+      "          _attributes: {\n" +
+      "            status: 'silver'\n" +
+      "          }\n" +
+      "        },\n" +
+      "        {\n" +
+      "          _text: 'Alice Allgood',\n" +
+      "          _attributes: {\n" +
+      "            status: 'gold'\n" +
+      "          }\n" +
+      "        }\n" +
+      "      ]\n" +
+      "    }\n" +
+      "  };\n" +
+      "  output = convert.js2xml(obj, { compact: true });\n" +
+      "})()\n";
+
+      var executableScript = new Script(scriptCode, {
+        displayErrors: true,
+      });
+  
+      it ('should convert Arrays in a different context', function() {
+        executableScript.runInNewContext(context);
+        expect(context.output).toEqual('<customers><customer status="silver">John Doe</customer><customer status="gold">Alice Allgood</customer></customers>');
+      });
+    });
+
 
   });
 
