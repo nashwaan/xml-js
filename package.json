@@ -81,6 +81,9 @@
     "sax": "^1.2.4"
   },
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
     "biased-opener": "^0.2.8",
     "browser-sync": "^2.18.13",
     "cash-cat": "^0.2.0",
