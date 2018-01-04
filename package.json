@@ -96,10 +96,15 @@
     "globify": "^2.2.1",
     "istanbul": "^0.4.5",
     "jasmine": "^2.8.0",
+    "jest": "^20.0.4",
+    "jest-cli": "^20.0.4",
     "jsonpath": "^1.0.0",
     "nodemon": "^1.13.3",
     "npm-run-all": "^4.1.2",
+    "prismjs": "^1.9.0",
     "typescript": "^2.6.2",
-    "watch": "^1.0.1"
+    "unminified-webpack-plugin": "^1.4.2",
+    "watch": "^1.0.1",
+    "webpack": "^3.10.0"
   }
 }
