@@ -1,0 +1,11 @@
+section{
+  max-width: 60em;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1em;
+}
+
+section > h1 {
+  text-align: center;
+}
+

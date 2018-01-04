@@ -1,0 +1,89 @@
+body {
+  font-family: Segoe UI, Helvetica Neue, Kanit, sans-serif;
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: Segoe UI Light, Helvetica Neue, Kanit, sans-serif;
+  font-weight: 100;
+  margin: 0.67em 0em;
+}
+
+h1 { font-size: 2.6em; }
+h2 { font-size: 2.1em; }
+h3 { font-size: 1.7em; }
+h4 { font-size: 1.4em; }
+h5 { font-size: 1.2em; }
+h6 { font-size: 1.1em; }
+
+input, textarea {
+  font-family: inherit;
+}
+
+nav {
+  display: table-row;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  font-weight: 200;
+  color: white;
+  background-color: #006090;
+  background-image: linear-gradient(to left, transparent 20%, #9070C0);}
+
+nav + * {
+  margin-top: 4rem;
+}
+
+nav > div {
+  display: inline-block;
+}
+
+nav > ul {
+  list-style-type: none;
+  display: inline-block;
+  margin: 0 auto;
+  padding: 0;
+}
+
+nav > ul > li {
+  float: left;
+  overflow: hidden;
+  padding-bottom: 0em;
+}
+
+nav > ul > li:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+nav > ul > li.active {
+  color: darkred;
+}
+
+nav > ul > li > a {
+  display: block;
+  color: currentColor;
+  font-size: 1.1em;
+  padding: 1.0em 1.5em 0.5em 1.5em;
+  border-bottom: 0.15em solid transparent;
+  transition: border-color 300ms ease-out;
+}
+
+nav > ul > li > a:hover {
+  border-bottom-color: currentColor;
+}
+
+nav > ul > li > a:link, nav > ul > li > a:visited {
+  text-decoration: none;
+}
+
+section{
+  max-width: 60em;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1em;
+}
+
+section > h1 {
+  text-align: center;
+}
+
