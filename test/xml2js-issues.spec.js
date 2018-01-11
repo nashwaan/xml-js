@@ -351,6 +351,26 @@ describe('Testing xml2js.js:', function () {
 
     });
 
+    describe('case by austin-laney', function () {
+      // see https://github.com/nashwaan/xml-js/issues/26
+      var xml = '<parser start="^\\s*?&lt;name&gt;regex&lt;/name&gt;$"/>';
+      var js = {
+        parser: {
+          _attributes: {
+            start: '^\\s*?<name>regex</name>$'
+          }
+        }
+      };
+
+      it('should xml to json and back to xml', function () {
+        expect(convert.xml2js(xml, {compact: true})).toEqual(js);
+        expect(convert.js2xml(js, {compact: true, attributeValueFn: function(value) {
+          return value.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }})).toEqual(xml);
+      });
+
+    });
+
   });
 
 });
