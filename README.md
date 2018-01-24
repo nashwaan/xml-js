@@ -27,7 +27,7 @@ Convert XML text to Javascript object / JSON text (and vice versa).
 # Features
 
 * **Maintain Order of Elements**:
-Most libraries will convert `<a/><b/><a/>` to `{a:[{},{}],b:{}}` which merges any node of same name into an array. This library can creates the following to preserve the order of elements:
+Most libraries will convert `<a/><b/><a/>` to `{a:[{},{}],b:{}}` which merges any node of same name into an array. This library can create the following to preserve the order of elements:
 `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"},{"type":"element","name":"a"}]}`.
 
 This is very important and it is the main reason why this library was created.
