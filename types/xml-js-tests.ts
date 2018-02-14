@@ -3,9 +3,9 @@ import * as convert from './index'
 
 // Declaration
 const declarationCompact1: ElementCompact = { _declaration: { _attributes: { version: 2 } }};
-const declarationCompact2: ElementCompact = { _declaration: { _attributes: { version: '1.0', encoding: 'utf-8' }}};
+const declarationCompact2: ElementCompact = { _declaration: { _attributes: { version: '1.0', encoding: 'utf-8', standalone: 'yes' }}};
 const declaration1: Element = { declaration: { }};
-const declaration2: Element = { declaration: { attributes: { version: '1.0', encoding: 'utf-8' }}};
+const declaration2: Element = { declaration: { attributes: { version: '1.0', encoding: 'utf-8', standalone: 'yes', }}};
 
 // Processing Instruction
 const instructionCompact: ElementCompact = { _instruction: { go: 'there' }};
@@ -23,8 +23,8 @@ const cdata: Element = { elements : [{ type: 'cdata', cdata: '<foo></bar>' }]};
 const elementCompact1: ElementCompact = { a: {} };
 const element1: Element = { elements:[{ type: 'element', name: 'a' }]};
 
-const elementCompact2: ElementCompact = { a: { _attributes: { x: '1.234', y:'It\'s' }}};
-const element2: Element = { elements: [{ type: 'element', name: 'a', attributes: { x: '1.234', y: 'It\'s' }}]};
+const elementCompact2: ElementCompact = { a: { _attributes: { x: '1.234', y:'It\'s', z: undefined }}};
+const element2: Element = { elements: [{ type: 'element', name: 'a', attributes: { x: '1.234', y: 'It\'s', z: undefined }}]};
 
 const elementCompact3: ElementCompact = { a: { _text: ' Hi ' }};
 const element3: Element = { elements:[{ type: 'element', name: 'a', elements: [{ type: 'text', text: ' Hi ' }]}]};
