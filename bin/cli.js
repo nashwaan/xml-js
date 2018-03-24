@@ -22,7 +22,7 @@ var optionalArgs = [
   { arg: 'trim', type: 'flag', option:'trim', desc: 'Any whitespaces surrounding texts will be trimmed.' },
   // { arg: 'sanitize', type: 'flag', option:'sanitize', desc: 'Special xml characters will be replaced with entity codes.' },
   { arg: 'native-type', type: 'flag', option:'nativeType', desc: 'Numbers and boolean will be converted (coerced) to native type instead of text.' },
-  { arg: 'always-array', type: 'flag', option:'alwaysArray', desc: 'Every element will always be an array type (applicable if --compact is set).' },
+  { arg: 'always-array', type: 'flag', option:'alwaysArray', desc: 'Every element will always be an array type (applicable if --compact is set). If the passed value is an array, only elements with names in the passed array are always made arrays.' },
   { arg: 'always-children', type: 'flag', option:'alwaysChildren', desc: 'Every element will always contain sub-elements (applicable if --compact is not set).' },
   { arg: 'instruction-attr', type: 'flag', option:'instructionHasAttributes', desc: 'Whether to parse contents of processing instruction as attributes.' },
   { arg: 'full-tag', type: 'flag', option:'fullTagEmptyElement', desc: 'XML elements will always be in <a></a> form.' },

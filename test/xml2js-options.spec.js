@@ -222,6 +222,17 @@ describe('Testing xml2js.js:', function () {
 
     });
 
+    describe('options = {alwaysArray: ["a", "c"]}', function () {
+
+      var options = {compact: true, alwaysArray: ['a', 'c']};
+      testItems('xml2js', options).forEach(function (test) {
+        it(test.desc, function () {
+          expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+        });
+      });
+
+    });
+
     describe('options = {addParent: true}', function () {
 
       var options = {compact: true, addParent: true};
