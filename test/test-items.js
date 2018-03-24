@@ -102,6 +102,8 @@ var cases = [
     js1: {"a":{"b":{"c":{}}}},
     js2: {"elements":[{"type":"element","name":"a","elements":[{"type":"element","name":"b","elements":[{"type":"element","name":"c"}]}]}]}
   }
+
+  // todo alwaysArray array case
 ];
 
 module.exports = function (direction, options) {
