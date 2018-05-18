@@ -164,7 +164,7 @@ The below options are applicable for both `js2xml()` and `json2xml()` functions.
 |:----------------------|:--------|:------------|
 | `spaces`              | `0`     | Number of spaces to be used for indenting XML output. Passing characters like `' '` or `'\t'` are also accepted. |
 | `compact`             | `false` | Whether the *input* object is in compact form or not. By default, input is expected to be in non-compact form. |
-| | | IMPORTANT: Remeber to set this `compact: true` if you are supplying normal json (equivalent to compact form). Otherwise, the function assumes your json input is non-compact form and you will not get a result if it is not in that form. |
+| | | IMPORTANT: Remeber to set this option `compact: true` if you are supplying normal json (which is likely equivalent to compact form). Otherwise, the function assumes your json input is non-compact form and you will not get a result if it is not in that form. See [Synopsis](#synopsis) to know the difference between the two json forms |
 | `fullTagEmptyElement` | `false` | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `<a/>`. |
 | `indentCdata`         | `false` | Whether to write CData in a new line and indent it. Will generate `<a>\n <![CDATA[foo]]></a>` instead of `<a><![CDATA[foo]]></a>`. See [discussion](https://github.com/nashwaan/xml-js/issues/14) |
 | `indentAttributes`    | `false` | Whether to print attributes across multiple lines and indent them (when `spaces` is not `0`). See [example](https://github.com/nashwaan/xml-js/issues/31). |
