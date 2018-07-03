@@ -422,6 +422,8 @@ module.exports = function (json, options) {
 
 }).call(this,require("buffer").Buffer)
 },{"./js2xml.js":4,"buffer":11}],6:[function(require,module,exports){
+var isArray = require('./array-helper').isArray;
+
 module.exports = {
 
   copyOptions: function (options) {
@@ -446,6 +448,12 @@ module.exports = {
     }
   },
 
+  ensureAlwaysArrayExists: function (options) {
+    if (!('alwaysArray' in options) || (typeof options.alwaysArray !== 'boolean' && !isArray(options.alwaysArray))) {
+      options.alwaysArray = false;
+    }
+  },
+
   ensureKeyExists: function (key, options) {
     if (!(key + 'Key' in options) || typeof options[key + 'Key'] !== 'string') {
       options[key + 'Key'] = options.compact ? '_' + key : key;
@@ -458,7 +466,7 @@ module.exports = {
 
 };
 
-},{}],7:[function(require,module,exports){
+},{"./array-helper":2}],7:[function(require,module,exports){
 var sax = require('sax');
 var expat /*= require('node-expat');*/ = { on: function () { }, parse: function () { } };
 var helper = require('./options-helper');
@@ -478,7 +486,6 @@ function validateOptions(userOptions) {
   helper.ensureFlagExists('ignoreCdata', options);
   helper.ensureFlagExists('ignoreDoctype', options);
   helper.ensureFlagExists('compact', options);
-  helper.ensureFlagExists('alwaysArray', options);
   helper.ensureFlagExists('alwaysChildren', options);
   helper.ensureFlagExists('addParent', options);
   helper.ensureFlagExists('trim', options);
@@ -486,6 +493,7 @@ function validateOptions(userOptions) {
   helper.ensureFlagExists('sanitize', options);
   helper.ensureFlagExists('instructionHasAttributes', options);
   helper.ensureFlagExists('captureSpacesBetweenElements', options);
+  helper.ensureAlwaysArrayExists(options);
   helper.ensureKeyExists('declaration', options);
   helper.ensureKeyExists('instruction', options);
   helper.ensureKeyExists('attributes', options);
@@ -527,7 +535,10 @@ function nativeType(value) {
 function addField(type, value) {
   var key;
   if (options.compact) {
-    if (!currentElement[options[type + 'Key']] && options.alwaysArray) {
+    if (
+      !currentElement[options[type + 'Key']] &&
+      (isArray(options.alwaysArray) ? options.alwaysArray.indexOf(options[type + 'Key']) !== -1 : options.alwaysArray)
+    ) {
       currentElement[options[type + 'Key']] = [];
     }
     if (currentElement[options[type + 'Key']] && !isArray(currentElement[options[type + 'Key']])) {
@@ -672,7 +683,10 @@ function onStartElement(name, attributes) {
         }
       }
     }
-    if (!(name in currentElement) && options.alwaysArray) {
+    if (
+      !(name in currentElement) &&
+      (isArray(options.alwaysArray) ? options.alwaysArray.indexOf(name) !== -1 : options.alwaysArray)
+    ) {
       currentElement[name] = [];
     }
     if (currentElement[name] && !isArray(currentElement[name])) {
@@ -8096,13 +8110,13 @@ Script.prototype.runInContext = function (context) {
     if (!(context instanceof Context)) {
         throw new TypeError("needs a 'context' argument.");
     }
-    
+
     var iframe = document.createElement('iframe');
     if (!iframe.style) iframe.style = {};
     iframe.style.display = 'none';
-    
+
     document.body.appendChild(iframe);
-    
+
     var win = iframe.contentWindow;
     var wEval = win.eval, wExecScript = win.execScript;
 
@@ -8111,7 +8125,7 @@ Script.prototype.runInContext = function (context) {
         wExecScript.call(win, 'null');
         wEval = win.eval;
     }
-    
+
     forEach(Object_keys(context), function (key) {
         win[key] = context[key];
     });
@@ -8120,11 +8134,11 @@ Script.prototype.runInContext = function (context) {
             win[key] = context[key];
         }
     });
-    
+
     var winKeys = Object_keys(win);
 
     var res = wEval.call(win, this.code);
-    
+
     forEach(Object_keys(win), function (key) {
         // Avoid copying circular objects like `top` and `window` by only
         // updating existing context properties or new properties in the `win`
@@ -8139,9 +8153,9 @@ Script.prototype.runInContext = function (context) {
             defineProp(context, key, win[key]);
         }
     });
-    
+
     document.body.removeChild(iframe);
-    
+
     return res;
 };
 
@@ -8333,7 +8347,7 @@ describe('Testing array-helper.js:', function () {
 
       it('Use fallback when isArray is not defined', function () {
         Array.isArray = undefined;
-        
+
         expect(helper.isArray(['one', 'two', 'three'])).toBe(true);
         expect(helper.isArray({})).toBe(false);
       });
@@ -9220,7 +9234,7 @@ describe('Testing js2xml.js:', function () {
         convert: convert,
         output: undefined,
       };
-      var scriptCode = 
+      var scriptCode =
       '(function() {\n' +
       '  const obj = {\n' +
       '    customers : {\n' +
@@ -9246,7 +9260,7 @@ describe('Testing js2xml.js:', function () {
       var executableScript = new Script(scriptCode, {
         displayErrors: true,
       });
-  
+
       it ('should convert Arrays in a different context', function() {
         executableScript.runInNewContext(context);
         expect(context.output).toEqual('<customers><customer status="silver">John Doe</customer><customer status="gold">Alice Allgood</customer></customers>');
@@ -9713,6 +9727,8 @@ describe('Testing options.js:', function () {
 });
 
 },{"../lib/options-helper":6}],50:[function(require,module,exports){
+var isArray = require('../lib/array-helper').isArray;
+
 var cases = [
   {
     desc: 'declaration <?xml>',
@@ -9815,6 +9831,8 @@ var cases = [
     js1: {"a":{"b":{"c":{}}}},
     js2: {"elements":[{"type":"element","name":"a","elements":[{"type":"element","name":"b","elements":[{"type":"element","name":"c"}]}]}]}
   }
+
+  // todo alwaysArray array case
 ];
 
 module.exports = function (direction, options) {
@@ -9833,7 +9851,14 @@ module.exports = function (direction, options) {
     } else if (typeof obj === 'object') {
       for (key in obj) {
         fullKey = (pathKey ? pathKey + '.' : '') + key;
-        if (options.compact && options.alwaysArray && !(obj[key] instanceof Array) && key !== '_declaration' && (key === '_instruction' || fullKey.indexOf('_instruction') < 0) && fullKey.indexOf('_attributes') < 0) {
+        if (
+          options.compact &&
+          (isArray(options.alwaysArray) ? options.alwaysArray.indexOf(key) !== -1 : options.alwaysArray) &&
+          !(obj[key] instanceof Array) &&
+          key !== '_declaration' &&
+          (key === '_instruction' || fullKey.indexOf('_instruction') < 0) &&
+          fullKey.indexOf('_attributes') < 0
+        ) {
           obj[key] = [obj[key]];
         }
         key = applyNameCallbacks(obj, key, pathKey.split('.').pop());
@@ -9971,7 +9996,7 @@ module.exports = function (direction, options) {
   return tests;
 };
 
-},{}],51:[function(require,module,exports){
+},{"../lib/array-helper":2}],51:[function(require,module,exports){
 var convert = require('../lib');
 var testItems = require('./test-items');
 
@@ -11196,6 +11221,17 @@ describe('Testing xml2js.js:', function () {
     describe('options = {alwaysArray: true}', function () {
 
       var options = {compact: true, alwaysArray: true};
+      testItems('xml2js', options).forEach(function (test) {
+        it(test.desc, function () {
+          expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+        });
+      });
+
+    });
+
+    describe('options = {alwaysArray: ["a", "c"]}', function () {
+
+      var options = {compact: true, alwaysArray: ['a', 'c']};
       testItems('xml2js', options).forEach(function (test) {
         it(test.desc, function () {
           expect(convert.xml2js(test.xml, options)).toEqual(test.js);

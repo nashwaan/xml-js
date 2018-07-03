@@ -1,3 +1,5 @@
+var isArray = require('../lib/array-helper').isArray;
+
 var cases = [
   {
     desc: 'declaration <?xml>',
@@ -100,6 +102,8 @@ var cases = [
     js1: {"a":{"b":{"c":{}}}},
     js2: {"elements":[{"type":"element","name":"a","elements":[{"type":"element","name":"b","elements":[{"type":"element","name":"c"}]}]}]}
   }
+
+  // todo alwaysArray array case
 ];
 
 module.exports = function (direction, options) {
@@ -118,7 +122,14 @@ module.exports = function (direction, options) {
     } else if (typeof obj === 'object') {
       for (key in obj) {
         fullKey = (pathKey ? pathKey + '.' : '') + key;
-        if (options.compact && options.alwaysArray && !(obj[key] instanceof Array) && key !== '_declaration' && (key === '_instruction' || fullKey.indexOf('_instruction') < 0) && fullKey.indexOf('_attributes') < 0) {
+        if (
+          options.compact &&
+          (isArray(options.alwaysArray) ? options.alwaysArray.indexOf(key) !== -1 : options.alwaysArray) &&
+          !(obj[key] instanceof Array) &&
+          key !== '_declaration' &&
+          (key === '_instruction' || fullKey.indexOf('_instruction') < 0) &&
+          fullKey.indexOf('_attributes') < 0
+        ) {
           obj[key] = [obj[key]];
         }
         key = applyNameCallbacks(obj, key, pathKey.split('.').pop());
