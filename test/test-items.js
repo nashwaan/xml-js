@@ -202,6 +202,12 @@ module.exports = function (direction, options) {
     return key;
   }
   function applyAttributesCallback(obj, key, parentKey) {
+    if (options.nativeTypeAttributes) {
+      var parsedNumber = Number(obj[key]);
+      if (!Number.isNaN(parsedNumber)) {
+        obj[key] = parsedNumber;
+      }
+    }
     if (('attributeNameFn' in options || 'attributeValueFn' in options) && (parentKey === '_attributes' || parentKey === 'attributes')) {
       if ('attributeNameFn' in options) {
         var temp = obj[key];

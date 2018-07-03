@@ -198,6 +198,7 @@ The below options are applicable for both `xml2js()` and `xml2json()` functions.
 | `trim`              | `false` | Whether to trim whitespace characters that may exist before and after the text. |
 | `sanitize` ([Deprecated](https://github.com/nashwaan/xml-js/issues/26)) | `false` | Whether to replace `&` `<` `>` with `&amp;` `&lt;` `&gt;` respectively, in the resultant text. |
 | `nativeType`        | `false` | Whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
+| `nativeTypeAttributes` | `false` | Whether to attempt converting attributes of numerals or of boolean values to native type. See also `nativeType` above. |
 | `addParent`         | `false` | Whether to add `parent` property in each element object that points to parent object. |
 | `alwaysArray`       | `false` | Whether to always put sub element, even if it is one only, as an item inside an array. `<a><b/></a>` will be `a:[{b:[{}]}]` rather than `a:{b:{}}` (applicable for compact output only). |
 | `alwaysChildren`    | `false` | Whether to always generate `elements` property even when there are no actual sub elements. `<a></a>` will be `{"elements":[{"type":"element","name":"a","elements":[]}]}` rather than `{"elements":[{"type":"element","name":"a"}]}` (applicable for non-compact output). |
