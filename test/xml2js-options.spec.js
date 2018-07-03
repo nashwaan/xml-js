@@ -75,6 +75,17 @@ describe('Testing xml2js.js:', function () {
 
     });
 
+    describe('options = {nativeTypeAttributes: true}', function () {
+
+      var options = {compact: false, nativeTypeAttributes: true};
+      testItems('xml2js', options).forEach(function (test) {
+        it(test.desc, function () {
+          expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+        });
+      });
+
+    });
+
     describe('options = {alwaysChildren: true}', function () {
 
       var options = {compact: false, alwaysChildren: true};
@@ -412,6 +423,22 @@ describe('Testing xml2js.js:', function () {
       /*it('Parse improper XML', function () {
         expect(convert.xml2js('<a>x', {})).toEqual({"elements":[{"type":"element","name":"a","elements":[{"type":"text","text":"x"}]}]});
       });*/
+
+    });
+
+    describe('options = {nativeTypeAttributes: true}', function () {
+
+      var options = {nativeTypeAttributes: true};
+
+      it('Parse number', function () {
+        expect(convert.xml2js('<a data-value="123"></a>', options)).toEqual({"elements":[{"type":"element","name":"a","attributes":{"data-value":123}}]});
+      });
+      it('Parse true', function () {
+        expect(convert.xml2js('<a data-value="true"></a>', options)).toEqual({"elements":[{"type":"element","name":"a","attributes":{"data-value":true}}]});
+      });
+      it('Parse false', function () {
+        expect(convert.xml2js('<a data-value="false"></a>', options)).toEqual({"elements":[{"type":"element","name":"a","attributes":{"data-value":false}}]});
+      });
 
     });
 

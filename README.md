@@ -30,7 +30,7 @@ Convert XML text to Javascript object / JSON text (and vice versa).
 Most libraries will convert `<a/><b/><a/>` to `{a:[{},{}],b:{}}` which merges any node of same name into an array. This library can create the following to preserve the order of elements:
 `{"elements":[{"type":"element","name":"a"},{"type":"element","name":"b"},{"type":"element","name":"a"}]}`.
 
-This is very important and it is the main reason why this library was created.
+This is very important and it is the main reason why this library was created. Read also [Compact vs Non-Compact](#compact-vs-non-compact) for more info.
 
 * **Fully XML Compliant**:
 Can parse: elements, attributes, texts, comments, CData, DOCTYPE, XML declarations, and Processing Instructions.
@@ -150,7 +150,7 @@ To convert JavaScript object to XML text, use `js2xml()`. To convert JSON text t
 ```js
 var convert = require('xml-js');
 var json = require('fs').readFileSync('test.json', 'utf8');
-var options = {ignoreComment: true, spaces: 4};
+var options = {compact: true, ignoreComment: true, spaces: 4};
 var result = convert.json2xml(json, options);
 console.log(result);
 ```
@@ -159,10 +159,12 @@ console.log(result);
 
 The below options are applicable for both `js2xml()` and `json2xml()` functions.
 
+
 | Option                | Default | Description |
 |:----------------------|:--------|:------------|
 | `spaces`              | `0`     | Number of spaces to be used for indenting XML output. Passing characters like `' '` or `'\t'` are also accepted. |
-| `compact`             | `false` | Whether the *input* object is in compact form or not. |
+| `compact`             | `false` | Whether the *input* object is in compact form or not. By default, input is expected to be in non-compact form. |
+| | | IMPORTANT: Remeber to set this option `compact: true` if you are supplying normal json (which is likely equivalent to compact form). Otherwise, the function assumes your json input is non-compact form and you will not get a result if it is not in that form. See [Synopsis](#synopsis) to know the difference between the two json forms |
 | `fullTagEmptyElement` | `false` | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `<a/>`. |
 | `indentCdata`         | `false` | Whether to write CData in a new line and indent it. Will generate `<a>\n <![CDATA[foo]]></a>` instead of `<a><![CDATA[foo]]></a>`. See [discussion](https://github.com/nashwaan/xml-js/issues/14) |
 | `indentAttributes`    | `false` | Whether to print attributes across multiple lines and indent them (when `spaces` is not `0`). See [example](https://github.com/nashwaan/xml-js/issues/31). |
@@ -196,6 +198,7 @@ The below options are applicable for both `xml2js()` and `xml2json()` functions.
 | `trim`              | `false` | Whether to trim whitespace characters that may exist before and after the text. |
 | `sanitize` ([Deprecated](https://github.com/nashwaan/xml-js/issues/26)) | `false` | Whether to replace `&` `<` `>` with `&amp;` `&lt;` `&gt;` respectively, in the resultant text. |
 | `nativeType`        | `false` | Whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
+| `nativeTypeAttributes` | `false` | Whether to attempt converting attributes of numerals or of boolean values to native type. See also `nativeType` above. |
 | `addParent`         | `false` | Whether to add `parent` property in each element object that points to parent object. |
 | `alwaysArray`       | `false` | Whether to always put sub element, even if it is one only, as an item inside an array. `<a><b/></a>` will be `a:[{b:[{}]}]` rather than `a:{b:{}}` (applicable for compact output only). If the passed value is an array, only elements with names in the passed array are always made arrays. |
 | `alwaysChildren`    | `false` | Whether to always generate `elements` property even when there are no actual sub elements. `<a></a>` will be `{"elements":[{"type":"element","name":"a","elements":[]}]}` rather than `{"elements":[{"type":"element","name":"a"}]}` (applicable for non-compact output). |
@@ -299,7 +302,7 @@ In package.json, write a script:
     "xml-js": "latest"
   },
   "scripts": {
-     "convert": "xml-js test.json --spaces 4"
+    "convert": "xml-js test.json --spaces 4"
   }
 ```
 
