@@ -3,5 +3,4 @@ node_modules/
 test/coverage-jasmine/
 test/coverage-jest/
 test/fixtures/
-.coveralls.yml
 npm-debug.log
