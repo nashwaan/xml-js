@@ -381,7 +381,7 @@ describe('Testing js2xml.js:', function () {
         convert: convert,
         output: undefined,
       };
-      var scriptCode = 
+      var scriptCode =
       '(function() {\n' +
       '  const obj = {\n' +
       '    customers : {\n' +
@@ -407,10 +407,29 @@ describe('Testing js2xml.js:', function () {
       var executableScript = new Script(scriptCode, {
         displayErrors: true,
       });
-  
+
       it ('should convert Arrays in a different context', function() {
         executableScript.runInNewContext(context);
         expect(context.output).toEqual('<customers><customer status="silver">John Doe</customer><customer status="gold">Alice Allgood</customer></customers>');
+      });
+    });
+
+    describe('case by Cy-Tek', function() {
+      // see https://github.com/nashwaan/xml-js/issues/59
+      var js = {
+        textless: {
+          calling_offer_code: '',
+          mailing_code: '',
+          vcpi: '' },
+      };
+      var xml =
+      '<textless>\n' +
+      '  <calling_offer_code/>\n' +
+      '  <mailing_code/>\n' +
+      '  <vcpi/>\n' +
+      '</textless>';
+      it ('should not create full tag for empty elements', function() {
+        expect(convert.js2xml(js, {compact: true, spaces: 2, fullTagEmptyElement: false})).toEqual(xml);
       });
     });
 
