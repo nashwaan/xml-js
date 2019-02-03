@@ -433,6 +433,23 @@ describe('Testing js2xml.js:', function () {
       });
     });
 
+    describe('case by Nathan Perry', function() {
+      // see n/a
+      var js = {
+        container: {
+          cdata_section: {
+            _cdata: '<p><![CDATA[aaaa, one <bbbb>cccc</bbbb>]]></p>',
+          },
+        },
+      };
+      var xml =
+      '<container>\n' +
+      '  <cdata_section><![CDATA[<p><![CDATA[aaaa, one <bbbb>cccc</bbbb>]]]]><![CDATA[></p>]]></cdata_section>\n' +
+      '</container>';
+      it ('should handle nested CDATA sections', function() {
+        expect(convert.js2xml(js, {compact: true, spaces: 2, fullTagEmptyElement: false})).toEqual(xml);
+      });
+    });
 
   });
 
