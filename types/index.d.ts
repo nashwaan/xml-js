@@ -53,21 +53,21 @@ declare namespace Options {
     alwaysChildren?: boolean
     instructionHasAttributes?: boolean
     captureSpacesBetweenElements?: boolean
-    doctypeFn?: (value: string, parentElement: string) => void;
+    doctypeFn?: (value: string, parentElement: object) => void;
     instructionFn?: (
       instructionValue: string,
       instructionName: string,
       parentElement: string
     ) => void;
-    cdataFn?: (value: string, parentElement: string) => void;
-    commentFn?: (value: string, parentElement: string) => void;
-    textFn?: (value: string, parentElement: string) => void;
+    cdataFn?: (value: string, parentElement: object) => void;
+    commentFn?: (value: string, parentElement: object) => void;
+    textFn?: (value: string, parentElement: object) => void;
     instructionNameFn?: (
       instructionName: string,
       instructionValue: string,
       parentElement: string
     ) => void;
-    elementNameFn?: (value: string, parentElement: string) => void;
+    elementNameFn?: (value: string, parentElement: object) => void;
     attributeNameFn?: (
       attributeName: string,
       attributeValue: string,
