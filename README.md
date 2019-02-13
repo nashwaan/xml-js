@@ -7,7 +7,6 @@ Convert XML text to Javascript object / JSON text (and vice versa).
 [![Build Status](https://img.shields.io/circleci/project/nashwaan/xml-js.svg)](https://circleci.com/gh/nashwaan/xml-js)
 <!-- [![pipeline status](https://gitlab.com/nashwaan/xml-js/badges/master/pipeline.svg)](https://gitlab.com/nashwaan/xml-js/commits/master) -->
 
-[![bitHound Overall Score](https://www.bithound.io/github/nashwaan/xml-js/badges/score.svg)](https://www.bithound.io/github/nashwaan/xml-js)
 [![Coverage Status](https://coveralls.io/repos/github/nashwaan/xml-js/badge.svg?branch=master)](https://coveralls.io/github/nashwaan/xml-js?branch=master)
 [![codecov](https://codecov.io/gh/nashwaan/xml-js/branch/master/graph/badge.svg)](https://codecov.io/gh/nashwaan/xml-js)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f6ed5dd79a5b4041bfd2732963c4d09b)](https://www.codacy.com/app/ysf953/xml-js?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=nashwaan/xml-js&amp;utm_campaign=Badge_Grade)
