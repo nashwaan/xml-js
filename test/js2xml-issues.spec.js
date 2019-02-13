@@ -72,7 +72,7 @@ describe('Testing js2xml.js:', function () {
         expect(convert.js2xml(js1, {compact: true, spaces: 4})).toEqual(xml.replace(/\v/g, '    '));
       });
 
-      it('should output xml of non-compact js input', function () {
+      it('should output xml of extended js input', function () {
         expect(convert.js2xml(js2, {compact: false, spaces: 4})).toEqual(xml.replace(/\v/g, '    '));
       });
 

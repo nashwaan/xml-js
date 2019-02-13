@@ -60,7 +60,7 @@ Written purely in JavaScript which means it can be used in Node environment and 
 
 * **Typings Info Included**:
 Support type checking and code suggestion via intellisense.
-Thanks to the wonderful efforts by [DenisCarriere](https://github.com/DenisCarriere)
+Thanks to the wonderful efforts by [DenisCarriere](https://github.com/DenisCarriere).
 
 ## Compact vs Non-Compact
 
@@ -68,10 +68,12 @@ Most XML to JSON converters (including online converters) convert `<a/>` to some
 instead of non-compact output like `{"elements":[{"type":"element","name":"a"}]}`.
 
 While compact output might work in most situations, there are cases when elements of different names are mixed inside a parent element. Lets use `<a x="1"/><b x="2"/><a x="3"/>` as an example.
-Most converters will produce compact output like `{a:[{_:{x:"1"}},{_:{x:"3"}}], b:{_:{x:"2"}}}`,
-which has merged both `<a>` elements into an array! If you try to convert this back to xml, you will get `<a x="1"/><a x="3"/><b x="2"/>`
-which has not preserved the order of elements! There is an inherent limitation in the compact representation
-because output like `{a:{_:{x:"1"}}, b:{_:{x:"2"}}, a:{_:{x:"3"}}}` is illegal (same property name `a` should not appear twice in an object). This leaves no option but to use array `{a:[{_:{x:"1"}},{_:{x:"3"}}]`.
+Most converters will produce compact output like this `{a:[{_:{x:"1"}},{_:{x:"3"}}], b:{_:{x:"2"}}}`,
+which has merged both `<a>` elements into an array. If you try to convert this back to xml, you will get `<a x="1"/><a x="3"/><b x="2"/>`
+which has not preserved the order of elements!
+
+The reason behind this behavior is due to the inherent limitation in the compact representation. 
+Because output like `{a:{_:{x:"1"}}, b:{_:{x:"2"}}, a:{_:{x:"3"}}}` is illegal (same property name `a` should not appear twice in an object). This leaves no option but to use array `{a:[{_:{x:"1"}},{_:{x:"3"}}]`.
 
 The non-compact output, which is supported by this library, will produce more information and always guarantees the order of the elements as they appeared in the XML file.
 
@@ -79,7 +81,7 @@ Another drawback of compact output is the resultant element can be an object or 
 
 NOTE: Although non-compact output is more accurate representation of original XML than compact version, the non-compact version is verbose and consumes more space.
 This library provides both options. Use `{compact: false}` if you are not sure because it preserves everything;
-otherwise use `{compact: true}` if you want to save space and you don't care about mixing elements of same type and losing their order.
+otherwise use `{compact: true}` if you want to save space and you don't care about mixing elements of same name and losing their order.
 
 Tip: You can reduce the output size by using shorter [key names](#options-for-changing-key-names).
 
@@ -164,7 +166,7 @@ The below options are applicable for both `js2xml()` and `json2xml()` functions.
 |:----------------------|:--------|:------------|
 | `spaces`              | `0`     | Number of spaces to be used for indenting XML output. Passing characters like `' '` or `'\t'` are also accepted. |
 | `compact`             | `false` | Whether the *input* object is in compact form or not. By default, input is expected to be in non-compact form. |
-| | | IMPORTANT: Remeber to set this option `compact: true` if you are supplying normal json (which is likely equivalent to compact form). Otherwise, the function assumes your json input is non-compact form and you will not get a result if it is not in that form. See [Synopsis](#synopsis) to know the difference between the two json forms |
+|                       |         | IMPORTANT: Remeber to set this option `compact: true` if you are supplying normal json (which is likely equivalent to compact form). Otherwise, the function assumes your json input is non-compact form and you will not get a result if it is not in that form. See [Synopsis](#synopsis) to know the difference between the two json forms |
 | `fullTagEmptyElement` | `false` | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `<a/>`. |
 | `indentCdata`         | `false` | Whether to write CData in a new line and indent it. Will generate `<a>\n <![CDATA[foo]]></a>` instead of `<a><![CDATA[foo]]></a>`. See [discussion](https://github.com/nashwaan/xml-js/issues/14) |
 | `indentAttributes`    | `false` | Whether to print attributes across multiple lines and indent them (when `spaces` is not `0`). See [example](https://github.com/nashwaan/xml-js/issues/31). |
@@ -237,41 +239,59 @@ To change default key names in the output object or the default key names assume
 
 Two default values mean the first is used for *non-compact* output and the second is for *compact* output.
 
-> **TIP**: You probably want to set `{textKey: 'value', cdataKey: 'value', commentKey: 'value'}` for *non-compact* output
+> **TIP**: In compact mode, you can further reduce output result by using fewer characters for key names `{textKey: '_', attributesKey: '$', commentKey: 'value'}`. This is also applicable to non-compact mode.
+
+> **TIP**: In non-compact mode, you probably want to set `{textKey: 'value', cdataKey: 'value', commentKey: 'value'}` 
 > to make it more consistent and easier for your client code to go through the contents of text, cdata, and comment.
 
 ## Options for Custom Processing Functions
 
 For XML → JS object / JSON, following custom callback functions can be supplied:
 
+```js
+var convert = require('xml-js');
+var xml = '<foo:Name>Ali</Name> <bar:Age>30</bar:Age>';
+var options = {compact: true, elementNameFn: function(val) {return val.replace('foo:','').toUpperCase();}};
+var result = convert.xml2json(xml, options);
+console.log(result); // {"NAME":{"_text":"Ali"},"BAR:AGE":{"_text":"30"}}
+```
+
 | Option              | Signature | Description |
 |:--------------------|:----------|:------------|
-| `doctypeFn` | `(value, parentElement)` | To perform additional processing for DOCTYPE. For example, `{doctypeFn: function(val) {return val.toUpperCase();}` |
-| `instructionFn` | `(instructionValue, instructionName, parentElement)` | To perform additional processing for content of Processing Instruction value. For example, `{instructionFn: function(val) {return val.toUpperCase();}`. Note: `instructionValue` will be an object if `instructionHasAttributes` is enabled. |
-| `cdataFn` | `(value, parentElement)` | To perform additional processing for CData. For example, `{cdataFn: function(val) {return val.toUpperCase();}`. |
-| `commentFn` | `(value, parentElement)` | To perform additional processing for comments. For example, `{commentFn: function(val) {return val.toUpperCase();}`. |
-| `textFn` | `(value, parentElement)` | To perform additional processing for texts inside elements. For example, `{textFn: function(val) {return val.toUpperCase();}`. |
-| `instructionNameFn` | `(instructionName, instructionValue, parentElement)` | To perform additional processing for Processing Instruction name. For example, `{instructionNameFn: function(val) {return val.toUpperCase();}`. Note: `instructionValue` will be an object if `instructionHasAttributes` is enabled. |
-| `elementNameFn` | `(value, parentElement)` | To perform additional processing for element name. For example, `{elementNameFn: function(val) {return val.toUpperCase();}`. |
-| `attributeNameFn` | `(attributeName, attributeValue, parentElement)` | To perform additional processing for attribute name. For example, `{attributeNameFn: function(val) {return val.toUpperCase();}`. |
-| `attributeValueFn` | `(attributeValue, attributeName, parentElement)` | To perform additional processing for attributeValue. For example, `{attributeValueFn: function(val) {return val.toUpperCase();}`. |
-| `attributesFn` | `(value, parentElement)` | To perform additional processing for attributes object. For example, `{attributesFn: function(val) {return val.toUpperCase();}`. |
+| `doctypeFn` | `(value, parentElement)` | To perform additional processing for DOCTYPE. For example, `{doctypeFn: function(val) {return val.toUpperCase();}}` |
+| `instructionFn` | `(instructionValue, instructionName, parentElement)` | To perform additional processing for content of Processing Instruction value. For example, `{instructionFn: function(val) {return val.toUpperCase();}}`. Note: `instructionValue` will be an object if `instructionHasAttributes` is enabled. |
+| `cdataFn` | `(value, parentElement)` | To perform additional processing for CData. For example, `{cdataFn: function(val) {return val.toUpperCase();}}`. |
+| `commentFn` | `(value, parentElement)` | To perform additional processing for comments. For example, `{commentFn: function(val) {return val.toUpperCase();}}`. |
+| `textFn` | `(value, parentElement)` | To perform additional processing for texts inside elements. For example, `{textFn: function(val) {return val.toUpperCase();}}`. |
+| `instructionNameFn` | `(instructionName, instructionValue, parentElement)` | To perform additional processing for Processing Instruction name. For example, `{instructionNameFn: function(val) {return val.toUpperCase();}}`. Note: `instructionValue` will be an object if `instructionHasAttributes` is enabled. |
+| `elementNameFn` | `(value, parentElement)` | To perform additional processing for element name. For example, `{elementNameFn: function(val) {return val.toUpperCase();}}`. |
+| `attributeNameFn` | `(attributeName, attributeValue, parentElement)` | To perform additional processing for attribute name. For example, `{attributeNameFn: function(val) {return val.toUpperCase();}}`. |
+| `attributeValueFn` | `(attributeValue, attributeName, parentElement)` | To perform additional processing for attributeValue. For example, `{attributeValueFn: function(val) {return val.toUpperCase();}}`. |
+| `attributesFn` | `(value, parentElement)` | To perform additional processing for attributes object. For example, `{attributesFn: function(val) {return val.toUpperCase();}}`. |
 
 For JS object / JSON → XML, following custom callback functions can be supplied:
 
+```js
+var convert = require('xml-js');
+var json = '{"name":{"_text":"Ali"},"age":{"_text":"30"}}';
+var options = {compact: true, textFn: function(val, elementName) {return elementName === 'age'? val + '';}};
+var result = convert.json2xml(json, options);
+console.log(result); // <foo:Name>Ali</Name> <bar:Age>30</bar:Age>
+```
+
 | Option              | Signature | Description |
 |:--------------------|:----------|:------------|
-| `doctypeFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for DOCTYPE. For example, `{doctypeFn: function(val) {return val.toUpperCase();}` |
-| `instructionFn` | `(instructionValue, instructionName, currentElementName, currentElementObj)` | To perform additional processing for content of Processing Instruction value. For example, `{instructionFn: function(val) {return val.toUpperCase();}`. Note: `instructionValue` will be an object if `instructionHasAttributes` is enabled. |
-| `cdataFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for CData. For example, `{cdataFn: function(val) {return val.toUpperCase();}`. |
-| `commentFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for comments. For example, `{commentFn: function(val) {return val.toUpperCase();}`. |
-| `textFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for texts inside elements. For example, `{textFn: function(val) {return val.toUpperCase();}`. |
-| `instructionNameFn` | `(instructionName, instructionValue, currentElementName, currentElementObj)` | To perform additional processing for Processing Instruction name. For example, `{instructionNameFn: function(val) {return val.toUpperCase();}`. Note: `instructionValue` will be an object if `instructionHasAttributes` is enabled. |
-| `elementNameFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for element name. For example, `{elementNameFn: function(val) {return val.toUpperCase();}`. |
-| `attributeNameFn` | `(attributeName, attributeValue, currentElementName, currentElementObj)` | To perform additional processing for attribute name. For example, `{attributeNameFn: function(val) {return val.toUpperCase();}`. |
-| `attributeValueFn` | `(attributeValue, attributeName, currentElementName, currentElementObj)` | To perform additional processing for attributeValue. For example, `{attributeValueFn: function(val) {return val.toUpperCase();}`. |
-| `attributesFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for attributes object. For example, `{attributesFn: function(val) {return val.toUpperCase();}`. |
-| `fullTagEmptyElementFn` | `(currentElementName, currentElementObj)` | Whether to generate full tag or just self closing tag for elements that has no sub elements. For example, `{fullTagEmptyElementFn: function(val) {return val === 'foo'}`. |
+| `doctypeFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for DOCTYPE. For example, `{doctypeFn: function(val) {return val.toUpperCase();}`. |
+| `instructionFn` | `(instructionValue, instructionName, currentElementName, currentElementObj)` | To perform additional processing for content of Processing Instruction value. For example, `{instructionFn: function(val) {return val.toUpperCase();}}`. Note: `instructionValue` will be an object if `instructionHasAttributes` is enabled. |
+| `cdataFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for CData. For example, `{cdataFn: function(val) {return val.toUpperCase();}}`. |
+| `commentFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for comments. For example, `{commentFn: function(val) {return val.toUpperCase();}}`. |
+| `textFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for texts inside elements. For example, `{textFn: function(val) {return val.toUpperCase();}}`. |
+| `instructionNameFn` | `(instructionName, instructionValue, currentElementName, currentElementObj)` | To perform additional processing for Processing Instruction name. For example, `{instructionNameFn: function(val) {return val.toUpperCase();}}`. Note: `instructionValue` will be an object if `instructionHasAttributes` is enabled. |
+| `elementNameFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for element name. For example, `{elementNameFn: function(val) {return val.toUpperCase();}}`. |
+| `attributeNameFn` | `(attributeName, attributeValue, currentElementName, currentElementObj)` | To perform additional processing for attribute name. For example, `{attributeNameFn: function(val) {return val.toUpperCase();}}`. |
+| `attributeValueFn` | `(attributeValue, attributeName, currentElementName, currentElementObj)` | To perform additional processing for attributeValue. For example, `{attributeValueFn: function(val) {return val.toUpperCase();}}`. |
+| `attributesFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for attributes object. For example, `{attributesFn: function(val) {return val.toUpperCase();}}`. |
+| `fullTagEmptyElementFn` | `(currentElementName, currentElementObj)` | Whether to generate full tag or just self closing tag for elements that has no sub elements. For example, `{fullTagEmptyElementFn: function(val) {return val === 'foo'}}`. |
 
 # Command Line
 
