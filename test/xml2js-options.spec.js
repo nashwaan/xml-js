@@ -22,7 +22,7 @@ describe('Testing xml2js.js:', function () {
 
     describe('Options set to default values explicitly:', function () {
 
-      var options = {singleLine: false, compact: false, trim: false, sanitize: false, nativeType: false, alwaysChildren: false, addParent: false};
+      var options = {singleLine: false, compact: false, trim: false, sanitize: false, nativeType: false, alwaysAttributes: false, alwaysChildren: false, addParent: false};
       testItems('xml2js', options).forEach(function (test) {
         it(test.desc, function () {
           expect(convert.xml2js(test.xml, options)).toEqual(test.js);
@@ -81,6 +81,18 @@ describe('Testing xml2js.js:', function () {
       testItems('xml2js', options).forEach(function (test) {
         it(test.desc, function () {
           expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+        });
+      });
+
+    });
+
+    describe('options = {alwaysAttributes: true}', function () {
+
+      var options = {compact: false, alwaysAttributes: true};
+      testItems('xml2js', options).forEach(function (test) {
+        it(test.desc, function () {
+          var val = convert.xml2js(test.xml, options);
+          expect(val).toEqual(test.js);
         });
       });
 
@@ -180,7 +192,7 @@ describe('Testing xml2js.js:', function () {
 
     describe('Options set to default values explicitly:', function () {
 
-      var options = {compact: true, trim: false, sanitize: false, nativeType: false, alwaysChildren: false, addParent: false};
+      var options = {compact: true, trim: false, sanitize: false, nativeType: false, alwaysAttributes: false, alwaysChildren: false, addParent: false};
       testItems('xml2js', options).forEach(function (test) {
         it(test.desc, function () {
           expect(convert.xml2js(test.xml, options)).toEqual(test.js);
@@ -239,6 +251,18 @@ describe('Testing xml2js.js:', function () {
       testItems('xml2js', options).forEach(function (test) {
         it(test.desc, function () {
           expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+        });
+      });
+
+    });
+
+    describe('options = {alwaysAttributes: true}', function () {
+
+      var options = {compact: true, alwaysAttributes: true};
+      testItems('xml2js', options).forEach(function (test) {
+        it(test.desc, function () {
+          var val = convert.xml2js(test.xml, options);
+          expect(val).toEqual(test.js);
         });
       });
 

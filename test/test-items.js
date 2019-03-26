@@ -109,6 +109,9 @@ var cases = [
 module.exports = function (direction, options) {
   var i, tests = [];
   options = options || {};
+  // if (!('attributesKey' in options)) {
+  //   options.attributesKey = 'attributes';
+  // }
   function applyOptions (obj, pathKey) {
     var key, fullKey;
     pathKey = pathKey || '';
@@ -167,6 +170,9 @@ module.exports = function (direction, options) {
       }
       if (!options.compact && options.alwaysChildren && obj.type === 'element' && !obj.elements) {
         obj.elements = [];
+      }
+      if (options.alwaysAttributes && obj.type === 'element') {
+        obj[options.attributesKey] = {};
       }
       // if (!options.compact && options.trim && obj.type in obj) {
       //     obj[obj.type] = obj[obj.type].trim();
