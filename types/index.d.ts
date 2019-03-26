@@ -50,6 +50,7 @@ declare namespace Options {
     nativeType?: boolean
     addParent?: boolean
     alwaysArray?: boolean | Array<string>
+    alwaysAttributes?: boolean
     alwaysChildren?: boolean
     instructionHasAttributes?: boolean
     captureSpacesBetweenElements?: boolean
