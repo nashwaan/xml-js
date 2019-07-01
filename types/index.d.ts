@@ -48,6 +48,7 @@ declare namespace Options {
     trim?: boolean
     sanitize?: boolean
     nativeType?: boolean
+    nativeTypeAttributes?: boolean
     addParent?: boolean
     alwaysArray?: boolean | Array<string>
     alwaysChildren?: boolean
