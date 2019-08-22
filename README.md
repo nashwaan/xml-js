@@ -197,6 +197,8 @@ The below options are applicable for both `xml2js()` and `xml2json()` functions.
 |:--------------------|:--------|:------------|
 | `compact`           | `false` | Whether to produce detailed object or compact object. |
 | `trim`              | `false` | Whether to trim whitespace characters that may exist before and after the text. |
+| `lowercase`         | `false` | Whether to force lowercase tag name. If true, then lowercase tag names and attribute names in loose mode, rather than uppercasing them. |
+| `strict`            | `true`  | Whether to use strict parsing mode. Defaults to `true` which is highly recommended, since parsing HTML which is not well-formed XML might yield just about anything |
 | `sanitize` ([Deprecated](https://github.com/nashwaan/xml-js/issues/26)) | `false` | Whether to replace `&` `<` `>` with `&amp;` `&lt;` `&gt;` respectively, in the resultant text. |
 | `nativeType`        | `false` | Whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
 | `nativeTypeAttributes` | `false` | Whether to attempt converting attributes of numerals or of boolean values to native type. See also `nativeType` above. |
