@@ -53,6 +53,8 @@ declare namespace Options {
     alwaysChildren?: boolean
     instructionHasAttributes?: boolean
     captureSpacesBetweenElements?: boolean
+    lowercase?: boolean
+    strict?: boolean
     doctypeFn?: (value: string, parentElement: object) => void;
     instructionFn?: (
       instructionValue: string,
