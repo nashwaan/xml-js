@@ -174,6 +174,17 @@ describe('Testing xml2js.js:', function () {
 
     });
 
+    describe('options = {lowercase: true, strict: false}', function () {
+
+      var options = {compact: false, lowercase: true, strict: false};
+      testItems('xml2js', options).forEach(function (test) {
+        it(test.desc, function () {
+          expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+        });
+      });
+
+    });
+
   });
 
   describe('options = {compact: true}', function () {
@@ -313,6 +324,17 @@ describe('Testing xml2js.js:', function () {
     describe('options = {ignoreInstruction: true}', function () {
 
       var options = {compact: true, ignoreInstruction: true};
+      testItems('xml2js', options).forEach(function (test) {
+        it(test.desc, function () {
+          expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+        });
+      });
+
+    });
+
+    describe('options = {lowercase: true, strict: false}', function () {
+
+      var options = {compact: true, lowercase: true, strict: false};
       testItems('xml2js', options).forEach(function (test) {
         it(test.desc, function () {
           expect(convert.xml2js(test.xml, options)).toEqual(test.js);
