@@ -101,16 +101,16 @@ npm install --global xml-js
 ## Quick start
 
 ```js
-var convert = require('xml-js');
-var xml =
+const convert = require('xml-js');
+const xml =
 '<?xml version="1.0" encoding="utf-8"?>' +
 '<note importance="high" logged="true">' +
 '    <title>Happy</title>' +
 '    <todo>Work</todo>' +
 '    <todo>Play</todo>' +
 '</note>';
-var result1 = convert.xml2json(xml, {compact: true, spaces: 4});
-var result2 = convert.xml2json(xml, {compact: false, spaces: 4});
+const result1 = convert.xml2json(xml, {compact: true, spaces: 4});
+const result2 = convert.xml2json(xml, {compact: false, spaces: 4});
 console.log(result1, '\n', result2);
 ```
 
@@ -137,7 +137,7 @@ Or [run and edit](https://runkit.com/587874e079a2f60013c1f5ac/587874e079a2f60013
 
 This library provides 4 functions: `js2xml()`, `json2xml()`, `xml2js()`, and `xml2json()`. Here are the usages for each one (see more details in the following sections):
 ```js
-var convert = require('xml-js');
+const convert = require('xml-js');
 result = convert.js2xml(js, options);     // to convert javascript object to xml text
 result = convert.json2xml(json, options); // to convert json text to xml text
 result = convert.xml2js(xml, options);    // to convert xml text to javascript object
@@ -149,10 +149,10 @@ result = convert.xml2json(xml, options);  // to convert xml text to json text
 To convert JavaScript object to XML text, use `js2xml()`. To convert JSON text to XML text, use `json2xml()`.
 
 ```js
-var convert = require('xml-js');
-var json = require('fs').readFileSync('test.json', 'utf8');
-var options = {compact: true, ignoreComment: true, spaces: 4};
-var result = convert.json2xml(json, options);
+const convert = require('xml-js');
+const json = require('fs').readFileSync('test.json', 'utf8');
+const options = {compact: true, ignoreComment: true, spaces: 4};
+const result = convert.json2xml(json, options);
 console.log(result);
 ```
 
@@ -182,10 +182,10 @@ The below options are applicable for both `js2xml()` and `json2xml()` functions.
 To convert XML text to JavaScript object, use `xml2js()`. To convert XML text to JSON text, use `xml2json()`.
 
 ```js
-var convert = require('xml-js');
-var xml = require('fs').readFileSync('test.xml', 'utf8');
-var options = {ignoreComment: true, alwaysChildren: true};
-var result = convert.xml2js(xml, options); // or convert.xml2json(xml, options)
+const convert = require('xml-js');
+const xml = require('fs').readFileSync('test.xml', 'utf8');
+const options = {ignoreComment: true, alwaysChildren: true};
+const result = convert.xml2js(xml, options); // or convert.xml2json(xml, options)
 console.log(result);
 ```
 
@@ -248,10 +248,10 @@ Two default values mean the first is used for *non-compact* output and the secon
 For XML → JS object / JSON, following custom callback functions can be supplied:
 
 ```js
-var convert = require('xml-js');
-var xml = '<foo:Name>Ali</Name> <bar:Age>30</bar:Age>';
-var options = {compact: true, elementNameFn: function(val) {return val.replace('foo:','').toUpperCase();}};
-var result = convert.xml2json(xml, options);
+const convert = require('xml-js');
+const xml = '<foo:Name>Ali</Name> <bar:Age>30</bar:Age>';
+const options = {compact: true, elementNameFn: function(val) {return val.replace('foo:','').toUpperCase();}};
+const result = convert.xml2json(xml, options);
 console.log(result); // {"NAME":{"_text":"Ali"},"BAR:AGE":{"_text":"30"}}
 ```
 
@@ -271,10 +271,10 @@ console.log(result); // {"NAME":{"_text":"Ali"},"BAR:AGE":{"_text":"30"}}
 For JS object / JSON → XML, following custom callback functions can be supplied:
 
 ```js
-var convert = require('xml-js');
-var json = '{"name":{"_text":"Ali"},"age":{"_text":"30"}}';
-var options = {compact: true, textFn: function(val, elementName) {return elementName === 'age'? val + '';}};
-var result = convert.json2xml(json, options);
+const convert = require('xml-js');
+const json = '{"name":{"_text":"Ali"},"age":{"_text":"30"}}';
+const options = {compact: true, textFn: function(val, elementName) {return elementName === 'age'? val + '';}};
+const result = convert.json2xml(json, options);
 console.log(result); // <foo:Name>Ali</Name> <bar:Age>30</bar:Age>
 ```
 
