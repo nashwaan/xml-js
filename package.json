@@ -79,7 +79,7 @@
     "test:types": "tsc -p ./types"
   },
   "dependencies": {
-    "sax": "^1.2.4"
+    "saxes": "^1.2.4"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
