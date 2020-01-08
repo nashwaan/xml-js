@@ -66,10 +66,14 @@ if (options.version) {
   process.exit(process.argv.length <= 2 ? 1 : 0);
 } else if ('src' in options) {
   if (fs.statSync(options.src).isFile()) {
-    if (options.src.split('.').pop() === 'xml') {
+    if (options.src.split('.').pop().toLowerCase() === 'xml') {
       output = xml2json(fs.readFileSync(options.src, 'utf8'), options);
-    } else if (options.src.split('.').pop() === 'json') {
+    } else if (options.src.split('.').pop().toLowerCase() === 'json') {
       output = json2xml(fs.readFileSync(options.src, 'utf8'), options);
+    }
+    else {
+      console.error('File type not identified');
+      process.exit(1);
     }
     if (options.out) {
       fs.writeFileSync(options.out, output, 'utf8');
