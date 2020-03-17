@@ -151,4 +151,8 @@ declare namespace Options {
 export function js2xml(obj: Element | ElementCompact, options?: Options.JS2XML): string;
 export function json2xml(json: string, options?: Options.JS2XML): string;
 export function xml2json(xml: string, options?: Options.XML2JSON): string;
+
+export function xml2js(xml: string, options?: Options.XML2JS&{compact?:false}): Element;
+export function xml2js(xml: string): Element;
+export function xml2js(xml: string, options?: Options.XML2JS&{compact:true}): ElementCompact;
 export function xml2js(xml: string, options?: Options.XML2JS): Element | ElementCompact;
