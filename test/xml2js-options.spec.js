@@ -86,6 +86,22 @@ describe('Testing xml2js.js:', function () {
 
     });
 
+    describe('options = {allowUnknownEntities: true}', function () {
+
+      var options = {compact: false, nativeTypeAttributes: true};
+      testItems('xml2js', options).forEach(function (test) {
+        it(test.desc, function () {
+          expect(convert.xml2js(test.xml, options)).toEqual(test.js);
+        });
+      });
+      // This test not included with other tests, because crash is expected
+      // if allowUnknownEntities: false
+      if('should not fail if ampersands are present (not associated with entities)', function() {
+        const test = '<a>1&2: <hr v-if="config && config.var === \'val\'" /></a>';
+        expect(() => convert.xml2js(test)).to.not.throw();
+      });
+    });
+
     describe('options = {alwaysChildren: true}', function () {
 
       var options = {compact: false, alwaysChildren: true};
