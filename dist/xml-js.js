@@ -4462,19 +4462,18 @@ function onError(error) {
 }
 
 module.exports = function (xml, userOptions) {
+
   options = validateOptions(userOptions);
   var parser;
   if (pureJsParser) {
-    if (!options.allowUnknownEntities) {
-      parser = sax.parser(true, {});
-    } else {
+    if (options.allowUnknownEntities) {
       parser = sax.parser(false, {
-        trim: false,
-        normalize: true,
         lowercase: true,
-        xmlns: true,
-        position: true,
       });
+    } else {
+      parser = sax.parser(true, {});
+      // workaround for sax bug that fails with multiple roots if strict = false
+      xml = '<root>' + xml + '</root>';
     }
   } else {
     parser = new expat.Parser('UTF-8');
@@ -4506,6 +4505,10 @@ module.exports = function (xml, userOptions) {
 
   if (pureJsParser) {
     parser.write(xml).close();
+    // workaround for sax bug that fails with multiple roots if strict = false
+    if (options.allowUnknownEntities) {
+      result = result.elements[0];
+    }
   } else {
     if (!parser.parse(xml)) {
       throw new Error('XML parsing error: ' + parser.getError());
@@ -4520,7 +4523,6 @@ module.exports = function (xml, userOptions) {
   }
 
   return result;
-
 };
 
 
