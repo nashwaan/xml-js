@@ -4470,10 +4470,10 @@ module.exports = function (xml, userOptions) {
       parser = sax.parser(false, {
         lowercase: true,
       });
+      // workaround for sax issue resulting in failure with multiple roots if strict = false
+      xml = '<root>' + xml + '</root>';
     } else {
       parser = sax.parser(true, {});
-      // workaround for sax bug that fails with multiple roots if strict = false
-      xml = '<root>' + xml + '</root>';
     }
   } else {
     parser = new expat.Parser('UTF-8');
@@ -4505,9 +4505,11 @@ module.exports = function (xml, userOptions) {
 
   if (pureJsParser) {
     parser.write(xml).close();
-    // workaround for sax bug that fails with multiple roots if strict = false
+    // workaround for sax issue resulting in failure with multiple roots if strict = false
     if (options.allowUnknownEntities) {
       result = result.elements[0];
+      delete result.name; // 'root'
+      delete result.type; // 'element'
     }
   } else {
     if (!parser.parse(xml)) {
