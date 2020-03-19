@@ -4469,7 +4469,7 @@ module.exports = function (xml, userOptions) {
       parser = sax.parser(true, {});
     } else {
       parser = sax.parser(false, {
-        trim: true,
+        trim: false,
         normalize: true,
         lowercase: true,
         xmlns: true,
