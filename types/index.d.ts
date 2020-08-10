@@ -8,6 +8,8 @@ export interface DeclarationAttributes {
   standalone?: 'yes' | 'no'
 }
 
+export type ElementType = "instruction" | "text" | "comment" | "cdata" | "doctype" | "element";
+
 export interface ElementCompact {
   [key: string]: any
   _declaration?: {
@@ -33,7 +35,7 @@ export interface Element {
   doctype?: string
   comment?: string
   text?: string | number | boolean
-  type?: string
+  type?: ElementType
   name?: string
   elements?: Array<Element>
 }
