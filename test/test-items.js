@@ -77,6 +77,11 @@ var cases = [
     js1: {"a":{_attributes:{"x":"hello"}}},
     js2: {"elements":[{"type":"element","name":"a","attributes":{"x":"hello"}}]}
   }, {
+    desc: 'should convert attribute with special chars as character entities',
+    xml: '<a x="'&amp;&gt;&lt;&quot;"/>',
+    js1: {"a":{_attributes:{"x":"'&><\""}}},
+    js2: {"elements":[{"type":"element","name":"a","attributes":{"x":"'&><\""}}]}
+  }, {
     desc: 'should convert 2 attributes',
     xml: '<a x="1.234" y="It\'s"/>',
     js1: {"a":{_attributes:{"x":"1.234","y":"It\'s"}}},
