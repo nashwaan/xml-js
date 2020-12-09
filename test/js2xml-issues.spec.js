@@ -451,6 +451,37 @@ describe('Testing js2xml.js:', function () {
       });
     });
 
+    describe('case by Eugene Lubarsky', function() {
+      // see https://github.com/nashwaan/xml-js/issues/69
+      var js = {
+        elements: [{
+          type: 'element',
+          name: 'a',
+          attributes: {
+            b: '&'
+          }
+        }]
+      };
+      var xml = '<a b="&amp;"/>';
+      it ('should escape ampersands (&) in attributes', function() {
+        expect(convert.js2xml(js)).toEqual(xml);
+      });
+
+      var js2 = {
+        elements: [{
+          type: 'element',
+          name: 'a',
+          attributes: {
+            b: '<'
+          }
+        }]
+      };
+      var xml2 = '<a b="&lt;"/>';
+      it('should escape less-than signs in attributes', function() {
+        expect(convert.js2xml(js2)).toEqual(xml2);
+      });
+    })
+
   });
 
 });
