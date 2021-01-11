@@ -71,7 +71,7 @@ Most converters will produce compact output like this `{a:[{_:{x:"1"}},{_:{x:"3"
 which has merged both `<a>` elements into an array. If you try to convert this back to xml, you will get `<a x="1"/><a x="3"/><b x="2"/>`
 which has not preserved the order of elements!
 
-The reason behind this behavior is due to the inherent limitation in the compact representation. 
+The reason behind this behavior is due to the inherent limitation in the compact representation.
 Because output like `{a:{_:{x:"1"}}, b:{_:{x:"2"}}, a:{_:{x:"3"}}}` is illegal (same property name `a` should not appear twice in an object). This leaves no option but to use array `{a:[{_:{x:"1"}},{_:{x:"3"}}]`.
 
 The non-compact output, which is supported by this library, will produce more information and always guarantees the order of the elements as they appeared in the XML file.
@@ -240,7 +240,7 @@ Two default values mean the first is used for *non-compact* output and the secon
 
 > **TIP**: In compact mode, you can further reduce output result by using fewer characters for key names `{textKey: '_', attributesKey: '$', commentKey: 'value'}`. This is also applicable to non-compact mode.
 
-> **TIP**: In non-compact mode, you probably want to set `{textKey: 'value', cdataKey: 'value', commentKey: 'value'}` 
+> **TIP**: In non-compact mode, you probably want to set `{textKey: 'value', cdataKey: 'value', commentKey: 'value'}`
 > to make it more consistent and easier for your client code to go through the contents of text, cdata, and comment.
 
 ## Options for Custom Processing Functions
@@ -263,7 +263,7 @@ console.log(result); // {"NAME":{"_text":"Ali"},"BAR:AGE":{"_text":"30"}}
 | `commentFn` | `(value, parentElement)` | To perform additional processing for comments. For example, `{commentFn: function(val) {return val.toUpperCase();}}`. |
 | `textFn` | `(value, parentElement)` | To perform additional processing for texts inside elements. For example, `{textFn: function(val) {return val.toUpperCase();}}`. |
 | `instructionNameFn` | `(instructionName, instructionValue, parentElement)` | To perform additional processing for Processing Instruction name. For example, `{instructionNameFn: function(val) {return val.toUpperCase();}}`. Note: `instructionValue` will be an object if `instructionHasAttributes` is enabled. |
-| `elementNameFn` | `(value, parentElement)` | To perform additional processing for element name. For example, `{elementNameFn: function(val) {return val.toUpperCase();}}`. |
+| `elementNameFn` | `(value, parentElement, currentElement)` | To perform additional processing for element name. For example, `{elementNameFn: function(val) {return val.toUpperCase();}}`. |
 | `attributeNameFn` | `(attributeName, attributeValue, parentElement)` | To perform additional processing for attribute name. For example, `{attributeNameFn: function(val) {return val.toUpperCase();}}`. |
 | `attributeValueFn` | `(attributeValue, attributeName, parentElement)` | To perform additional processing for attributeValue. For example, `{attributeValueFn: function(val) {return val.toUpperCase();}}`. |
 | `attributesFn` | `(value, parentElement)` | To perform additional processing for attributes object. For example, `{attributesFn: function(val) {return val.toUpperCase();}}`. |

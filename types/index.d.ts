@@ -67,7 +67,7 @@ declare namespace Options {
       instructionValue: string,
       parentElement: string
     ) => void;
-    elementNameFn?: (value: string, parentElement: object) => void;
+    elementNameFn?: (value: string, parentElement: object, currentElement: object) => void;
     attributeNameFn?: (
       attributeName: string,
       attributeValue: string,
