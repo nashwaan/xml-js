@@ -267,6 +267,7 @@ console.log(result); // {"NAME":{"_text":"Ali"},"BAR:AGE":{"_text":"30"}}
 | `attributeNameFn` | `(attributeName, attributeValue, parentElement)` | To perform additional processing for attribute name. For example, `{attributeNameFn: function(val) {return val.toUpperCase();}}`. |
 | `attributeValueFn` | `(attributeValue, attributeName, parentElement)` | To perform additional processing for attributeValue. For example, `{attributeValueFn: function(val) {return val.toUpperCase();}}`. |
 | `attributesFn` | `(value, parentElement)` | To perform additional processing for attributes object. For example, `{attributesFn: function(val) {return val.toUpperCase();}}`. |
+| `endElementFn` | `(name, parentElement, currentElement)` | To perform additional processing for current object when it's ends. For example, `{endElementFn: function(name, parentElement) { parentElement.name.toUpperCase(); }}`. |
 
 For JS object / JSON → XML, following custom callback functions can be supplied:
 

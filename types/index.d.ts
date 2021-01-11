@@ -79,6 +79,7 @@ declare namespace Options {
       parentElement: string
     ) => void;
     attributesFn?: (value: string, parentElement: string) => void;
+    endElementFn?: (value: string, parentElement: object, currentElement: object) => void;
   }
 
   interface JS2XML extends ChangingKeyNames, IgnoreOptions {
