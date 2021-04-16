@@ -345,6 +345,7 @@ Options:
   --out                Output file where result should be written.
   --spaces             Specifies amount of space indentation in the output.
   --full-tag           XML elements will always be in <a></a> form.
+  --tag-space          Whether space included before elements' self closing tag (<a /> instead of <a/>).
   --no-decl            Declaration directive <?xml?> will be ignored.
   --no-inst            Processing instruction <?...?> will be ignored.
   --no-attr            Attributes of elements will be ignored.
