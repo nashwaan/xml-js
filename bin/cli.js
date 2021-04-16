@@ -26,6 +26,7 @@ var optionalArgs = [
   { arg: 'always-children', type: 'flag', option:'alwaysChildren', desc: 'Every element will always contain sub-elements (applicable if --compact is not set).' },
   { arg: 'instruction-attr', type: 'flag', option:'instructionHasAttributes', desc: 'Whether to parse contents of processing instruction as attributes.' },
   { arg: 'full-tag', type: 'flag', option:'fullTagEmptyElement', desc: 'XML elements will always be in <a></a> form.' },
+  { arg: 'tag-space', type: 'flag', option: 'spaceBeforeSelfClosingTag', desc: 'Whether space included before elements\' self closing tag.' },
   { arg: 'no-decl', type: 'flag', option:'ignoreDeclaration', desc: 'Declaration instruction <?xml?> will be ignored.' },
   { arg: 'no-decl', type: 'flag', option:'ignoreInstruction', desc: 'Processing instruction <?...?> will be ignored.' },
   { arg: 'no-attr', type: 'flag', option:'ignoreAttributes', desc: 'Attributes of elements will be ignored.' },

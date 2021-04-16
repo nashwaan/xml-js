@@ -265,6 +265,7 @@ module.exports = function (direction, options) {
       if (options.ignoreDeclaration) { tests[i].xml = tests[i].xml.replace(/<\?xml[\s\S]*\?>/gm, ''); }
       if (options.ignoreInstruction) { tests[i].xml = tests[i].xml.replace(/<\?(?!xml)[\s\S]*\?>/gm, ''); }
       if (options.fullTagEmptyElement) { tests[i].xml = tests[i].xml.replace('<a/>', '<a></a>').replace('<b/>', '<b></b>').replace('<c/>', '<c></c>').replace('/>', '></a>'); }
+      if (options.spaceBeforeSelfClosingTag) { tests[i].xml = tests[i].xml.replace(/\/>/gm, new Array(Number(options.spaceBeforeSelfClosingTag) + 1).join(' ') + '/>'); }
     }
   }
   if ('onlyItem' in options) {

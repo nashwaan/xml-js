@@ -71,7 +71,7 @@ Most converters will produce compact output like this `{a:[{_:{x:"1"}},{_:{x:"3"
 which has merged both `<a>` elements into an array. If you try to convert this back to xml, you will get `<a x="1"/><a x="3"/><b x="2"/>`
 which has not preserved the order of elements!
 
-The reason behind this behavior is due to the inherent limitation in the compact representation. 
+The reason behind this behavior is due to the inherent limitation in the compact representation.
 Because output like `{a:{_:{x:"1"}}, b:{_:{x:"2"}}, a:{_:{x:"3"}}}` is illegal (same property name `a` should not appear twice in an object). This leaves no option but to use array `{a:[{_:{x:"1"}},{_:{x:"3"}}]`.
 
 The non-compact output, which is supported by this library, will produce more information and always guarantees the order of the elements as they appeared in the XML file.
@@ -161,21 +161,22 @@ console.log(result);
 The below options are applicable for both `js2xml()` and `json2xml()` functions.
 
 
-| Option                | Default | Description |
-|:----------------------|:--------|:------------|
-| `spaces`              | `0`     | Number of spaces to be used for indenting XML output. Passing characters like `' '` or `'\t'` are also accepted. |
-| `compact`             | `false` | Whether the *input* object is in compact form or not. By default, input is expected to be in non-compact form. |
-|                       |         | IMPORTANT: Remeber to set this option `compact: true` if you are supplying normal json (which is likely equivalent to compact form). Otherwise, the function assumes your json input is non-compact form and you will not get a result if it is not in that form. See [Synopsis](#synopsis) to know the difference between the two json forms |
-| `fullTagEmptyElement` | `false` | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `<a/>`. |
-| `indentCdata`         | `false` | Whether to write CData in a new line and indent it. Will generate `<a>\n <![CDATA[foo]]></a>` instead of `<a><![CDATA[foo]]></a>`. See [discussion](https://github.com/nashwaan/xml-js/issues/14) |
-| `indentAttributes`    | `false` | Whether to print attributes across multiple lines and indent them (when `spaces` is not `0`). See [example](https://github.com/nashwaan/xml-js/issues/31). |
-| `ignoreDeclaration`   | `false` | Whether to ignore writing declaration directives of xml. For example, `<?xml?>` will be ignored. |
-| `ignoreInstruction`   | `false` | Whether to ignore writing processing instruction of xml. For example, `<?go there?>` will be ignored. |
-| `ignoreAttributes`    | `false` | Whether to ignore writing attributes of the elements. For example, `x="1"` in `<a x="1"></a>` will be ignored |
-| `ignoreComment`       | `false` | Whether to ignore writing comments of the elements. That is, no `<!--  -->` will be generated. |
-| `ignoreCdata`         | `false` | Whether to ignore writing CData of the elements. That is, no `<![CDATA[ ]]>` will be generated. |
-| `ignoreDoctype`       | `false` | Whether to ignore writing Doctype of the elements. That is, no `<!DOCTYPE >` will be generated. |
-| `ignoreText`          | `false` | Whether to ignore writing texts of the elements. For example, `hi` text in `<a>hi</a>` will be ignored. |
+| Option                      | Default | Description |
+|:----------------------------|:--------|:------------|
+| `spaces`                    | `0`     | Number of spaces to be used for indenting XML output. Passing characters like `' '` or `'\t'` are also accepted. |
+| `compact`                   | `false` | Whether the *input* object is in compact form or not. By default, input is expected to be in non-compact form. |
+|                             |         | IMPORTANT: Remeber to set this option `compact: true` if you are supplying normal json (which is likely equivalent to compact form). Otherwise, the function assumes your json input is non-compact form and you will not get a result if it is not in that form. See [Synopsis](#synopsis) to know the difference between the two json forms |
+| `fullTagEmptyElement`       | `false` | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `<a/>`. |
+| `spaceBeforeSelfClosingTag` | `false` | Whether to include spaces before the slash when produce element without sub-elements as self closing tag `<a/>`. Passing positive number means the number of spaces included, while passing true means include one space (i.e. `<a />`) and false means no space included (i.e. `<a/>`). Only valid when `fullTagEmptyElement` set to `false`. |
+| `indentCdata`               | `false` | Whether to write CData in a new line and indent it. Will generate `<a>\n <![CDATA[foo]]></a>` instead of `<a><![CDATA[foo]]></a>`. See [discussion](https://github.com/nashwaan/xml-js/issues/14) |
+| `indentAttributes`          | `false` | Whether to print attributes across multiple lines and indent them (when `spaces` is not `0`). See [example](https://github.com/nashwaan/xml-js/issues/31). |
+| `ignoreDeclaration`         | `false` | Whether to ignore writing declaration directives of xml. For example, `<?xml?>` will be ignored. |
+| `ignoreInstruction`         | `false` | Whether to ignore writing processing instruction of xml. For example, `<?go there?>` will be ignored. |
+| `ignoreAttributes`          | `false` | Whether to ignore writing attributes of the elements. For example, `x="1"` in `<a x="1"></a>` will be ignored |
+| `ignoreComment`             | `false` | Whether to ignore writing comments of the elements. That is, no `<!--  -->` will be generated. |
+| `ignoreCdata`               | `false` | Whether to ignore writing CData of the elements. That is, no `<![CDATA[ ]]>` will be generated. |
+| `ignoreDoctype`             | `false` | Whether to ignore writing Doctype of the elements. That is, no `<!DOCTYPE >` will be generated. |
+| `ignoreText`                | `false` | Whether to ignore writing texts of the elements. For example, `hi` text in `<a>hi</a>` will be ignored. |
 
 ## Convert XML → JS object / JSON
 
@@ -240,7 +241,7 @@ Two default values mean the first is used for *non-compact* output and the secon
 
 > **TIP**: In compact mode, you can further reduce output result by using fewer characters for key names `{textKey: '_', attributesKey: '$', commentKey: 'value'}`. This is also applicable to non-compact mode.
 
-> **TIP**: In non-compact mode, you probably want to set `{textKey: 'value', cdataKey: 'value', commentKey: 'value'}` 
+> **TIP**: In non-compact mode, you probably want to set `{textKey: 'value', cdataKey: 'value', commentKey: 'value'}`
 > to make it more consistent and easier for your client code to go through the contents of text, cdata, and comment.
 
 ## Options for Custom Processing Functions
@@ -344,6 +345,7 @@ Options:
   --out                Output file where result should be written.
   --spaces             Specifies amount of space indentation in the output.
   --full-tag           XML elements will always be in <a></a> form.
+  --tag-space          Whether space included before elements' self closing tag (<a /> instead of <a/>).
   --no-decl            Declaration directive <?xml?> will be ignored.
   --no-inst            Processing instruction <?...?> will be ignored.
   --no-attr            Attributes of elements will be ignored.

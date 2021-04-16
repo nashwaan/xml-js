@@ -90,6 +90,7 @@ declare namespace Options {
     indentInstruction?: boolean
     fullTagEmptyElement?: boolean
     noQuotesForNativeAttributes?: boolean
+    spaceBeforeSelfClosingTag?: number | boolean
     doctypeFn?: (value: string, currentElementName: string, currentElementObj: object) => void;
     instructionFn?: (
       instructionValue: string,
