@@ -73,6 +73,7 @@ declare namespace Options {
       attributeValue: string,
       parentElement: string
     ) => void;
+    simpleAttributes?: boolean;
     attributeValueFn?: (
       attributeValue: string,
       attributeName: string,
