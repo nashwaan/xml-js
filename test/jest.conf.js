@@ -1,34 +1,29 @@
 const path = require('path');
 
 module.exports = {
-
   rootDir: path.dirname(__dirname),
 
-  modulePaths: [
-    '<rootDir>/lib',
-    '<rootDir>/node_modules'
-  ],
+  modulePaths: ["<rootDir>/lib", "<rootDir>/node_modules"],
 
-  moduleFileExtensions: ['js'],
+  moduleFileExtensions: ["js"],
 
   // setupFiles: ['<rootDir>/test/pretest-jest.js'], // don't use this, expect.extend() will fail
-  setupTestFrameworkScriptFile: '<rootDir>/test/pretest-jest.js',
+  setupTestFrameworkScriptFile: "<rootDir>/test/pretest-jest.js",
 
-  testEnvironment: 'node',
+  testEnvironment: "node",
 
-  testMatch: ['**/*.spec.(ts|js)?(x)'],
+  testMatch: ["**/*.spec.(ts|js)?(x)"],
 
   collectCoverage: true,
 
   collectCoverageFrom: [
-    'src-js/**/*.{js,ts}',
-    '!**/*.spec.{js,ts}',
-    '!**/node_modules/**',
-    '!**/test/**'
+    "src-js/**/*.{js,ts}",
+    "!**/*.spec.{js,ts}",
+    "!**/node_modules/**",
+    "!**/test/**",
   ],
 
-  coverageDirectory: '<rootDir>/test/coverage-jest',
+  // coverageDirectory: '<rootDir>/test/coverage-jest',
 
-  coverageReporters: ['json', 'lcov', 'text', 'html']
-
+  coverageReporters: ["json", "lcov", "text", "html"],
 };

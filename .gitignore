@@ -4,3 +4,4 @@ test/coverage-jasmine/
 test/coverage-jest/
 test/fixtures/
 npm-debug.log
+coverage/

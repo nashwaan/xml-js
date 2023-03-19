@@ -37,7 +37,7 @@ describe('Testing js2xml.js:', function () {
         expect(convert.js2xml(js, {compact: false, doctypeFn: manipulate})).toEqual(xml);
       });
       it('should provide correct arguments', function () {
-        expect(args).toContain('note [\n<!ENTITY foo "baa">]', '_root_', js);
+        expect(args).toContain('note [\n<!ENTITY foo "baa">]', "_root_", js);
       });
 
     });
