@@ -44,7 +44,8 @@
   "scripts": {
     "jest": "jest --config=test/jest.conf.js",
     "prepublish": "npm run test",
-    "test": "npm run jest && npm run test:types",
+    "test": "jest --config=test/jest.conf.js",
+    "xposttest": "npm run test:types",
     "test:types": "tsc -p ./types"
   },
   "dependencies": {
