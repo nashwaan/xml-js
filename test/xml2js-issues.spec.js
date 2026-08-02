@@ -394,6 +394,26 @@ describe('Testing xml2js.js:', function () {
 
     });
 
+    describe('unclosed tags leaving a circular parent reference', function () {
+
+      it('should not leak the internal parent key when addParent is false', function () {
+        var js = convert.xml2js('<a><b>');
+        expect(js.elements[0].hasOwnProperty('parent')).toBe(false);
+        expect(js.elements[0].elements[0].hasOwnProperty('parent')).toBe(false);
+      });
+
+      it('should be serialisable after an unclosed tag', function () {
+        expect(function () { convert.xml2json('<a>'); }).not.toThrow();
+        expect(function () { convert.xml2json('<a><b>truncated'); }).not.toThrow();
+      });
+
+      it('should still attach parent when addParent is true', function () {
+        var js = convert.xml2js('<a><b></b></a>', {addParent: true});
+        expect(js.elements[0].hasOwnProperty('parent')).toBe(true);
+      });
+
+    });
+
   });
 
 });
