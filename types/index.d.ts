@@ -34,7 +34,7 @@ export interface Positions {
   end?: Position;
 }
 
-export interface Element {
+export type Element<K extends string = 'elements'> = {
   declaration?: {
     attributes?: DeclarationAttributes;
   };
@@ -46,16 +46,16 @@ export interface Element {
   text?: string | number | boolean;
   type?: string;
   name?: string;
-  elements?: Array<Element>;
   position?: Positions;
-}
+} & Partial<Record<K, Array<Element<K>>>>;
 
 declare namespace Options {
-  interface XML2JSON extends XML2JS {
+  interface XML2JSON<K extends string> extends XML2JS<K> {
     spaces?: number | string;
   }
 
-  interface XML2JS extends ChangingKeyNames, IgnoreOptions {
+  interface XML2JS<K extends string>
+    extends ChangingKeyNames<K>, IgnoreOptions {
     compact?: boolean;
     trim?: boolean;
     sanitize?: boolean;
@@ -172,7 +172,7 @@ declare namespace Options {
     ignoreText?: boolean;
   }
 
-  interface ChangingKeyNames {
+  interface ChangingKeyNames<K extends string = 'elements'> {
     declarationKey?: string;
     instructionKey?: string;
     attributesKey?: string;
@@ -183,7 +183,7 @@ declare namespace Options {
     parentKey?: string;
     typeKey?: string;
     nameKey?: string;
-    elementsKey?: string;
+    elementsKey?: K;
   }
 }
 
@@ -192,8 +192,14 @@ export function js2xml(
   options?: Options.JS2XML
 ): string;
 export function json2xml(json: string, options?: Options.JS2XML): string;
-export function xml2json(xml: string, options?: Options.XML2JSON): string;
-export function xml2js(
+export function xml2json<K extends string = 'elements'>(
   xml: string,
-  options?: Options.XML2JS
-): Element | ElementCompact;
+  options?: Options.XML2JSON<K>
+): string;
+export function xml2js<
+  K extends string = 'elements',
+  O extends Options.XML2JS<K> = Options.XML2JS<K>,
+>(
+  xml: string,
+  options?: O
+): O extends { compact: true } ? ElementCompact : Element<K>;

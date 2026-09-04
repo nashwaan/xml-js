@@ -96,6 +96,9 @@ const xml = `
 // xml2js
 let jsResult1: any = convert.xml2js(xml, { compact: true });
 let jsResult2: any = convert.xml2js(xml, { compact: false });
+let jsResult3 = convert.xml2js(xml, {compact: false})
+let jsResult4 = convert.xml2js(xml, {compact: true})
+let jsResult5 = convert.xml2js<"children">(xml, {elementsKey: "children"})
 
 // xml2json
 let jsonResult1: string = convert.xml2json(xml, { compact: true, spaces: 4 });
