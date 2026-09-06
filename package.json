@@ -49,40 +49,30 @@
   },
   "types": "./types/index.d.ts",
   "scripts": {
-    "build": "webpack --mode=production",
-    "jest": "jest --config=test/jest.conf.js --runInBand --detectOpenHandles",
-    "open-help": "biased-opener --help",
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview",
     "prepublish": "npm run test",
-    "test": "npm run jest && npm run test:types",
+    "test": "vitest --run && npm run test:types",
     "test:types": "tsc -p ./types",
     "audit": "npm audit --omit=dev",
     "audit:all": "npm audit"
   },
   "dependencies": {
-    "@babel/core": "^7.27.4",
     "sax": "^1.6.1"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.27.2",
-    "babel-loader": "^10.0.0",
-    "cross-env": "^10.1.0",
-    "eslint": "^10.9.1",
-    "jest": "^30.5.1",
-    "jest-cli": "^30.5.1",
-    "jest-html-reporter": "^4.4.0",
-    "jest-mock-process": "^2.0.0",
-    "nodemon": "^3.1.14",
-    "prettier": "^3.9.6",
-    "prismjs": "^1.30.0",
-    "typescript": "^5.9.3",
-    "unminified-webpack-plugin": "^3.0.0",
-    "webpack": "^5.110.3",
-    "webpack-cli": "^7.2.3"
+    "cli-testing-library": "^4.0.0",
+    "eslint": "^10.8.1",
+    "jsdom": "^29.1.1",
+    "prettier": "3.9.6",
+    "typescript": "^6.0.3",
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11"
   },
   "prettier": {
     "singleQuote": true,
     "tabWidth": 2,
-    "trailingComma": "es5",
     "semi": true
   },
   "allowScripts": {

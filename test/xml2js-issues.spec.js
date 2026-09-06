@@ -3,9 +3,9 @@ import { xml2json, json2xml, xml2js, js2xml } from '../lib';
 /*eslint quotes: 0*/ // --> turn off error of strings surrounded by double quotes
 /*global describe,xdescribe,it,expect*/
 
-describe('Testing xml2js.js:', function () {
-  describe('User reported issues on github:', function () {
-    describe('case by Mark Pareja', function () {
+describe('Testing xml2js.js:', () => {
+  describe('User reported issues on github:', () => {
+    test('case by Mark Pareja should output as expected json', () => {
       // see https://github.com/nashwaan/xml-js/issues/3
       var xml =
         '<?xml version="1.0" encoding="utf-8"?>\n' +
@@ -59,13 +59,10 @@ describe('Testing xml2js.js:', function () {
           },
         },
       };
-
-      it('should output as expected json', function () {
-        expect(xml2json(xml, { compact: true })).toEqual(JSON.stringify(json));
-      });
+      expect(xml2json(xml, { compact: true })).toEqual(JSON.stringify(json));
     });
 
-    describe('case by Félix Dion Robidoux', function () {
+    test('case by Félix Dion Robidoux should output json and reverse it back to xml', () => {
       // see https://github.com/nashwaan/xml-js/issues/6
       var xml =
         '<ZohoCreator>\n' +
@@ -96,18 +93,16 @@ describe('Testing xml2js.js:', function () {
 
       var json = xml2json(xml, { compact: true, spaces: 4 });
 
-      it('should output json and reverse it back to xml', function () {
-        expect(
-          json2xml(json, {
-            compact: true,
-            spaces: 4,
-            fullTagEmptyElement: true,
-          })
-        ).toEqual(xml);
-      });
+      expect(
+        json2xml(json, {
+          compact: true,
+          spaces: 4,
+          fullTagEmptyElement: true,
+        }),
+      ).toEqual(xml);
     });
 
-    describe('case by misitoth', function () {
+    test('case by misitoth should output as expected json', () => {
       // see https://github.com/nashwaan/xml-js/issues/13
       var xml =
         '<!DOCTYPE svc_init SYSTEM "MLP_SVC_INIT_300.DTD" [<!ENTITY % extension SYSTEM "PIF_EXTENSION_100.DTD">%extension;]>';
@@ -116,12 +111,10 @@ describe('Testing xml2js.js:', function () {
           'svc_init SYSTEM "MLP_SVC_INIT_300.DTD" [<!ENTITY % extension SYSTEM "PIF_EXTENSION_100.DTD">%extension;]',
       };
 
-      it('should output as expected json', function () {
-        expect(xml2js(xml, { compact: true })).toEqual(json);
-      });
+      expect(xml2js(xml, { compact: true })).toEqual(json);
     });
 
-    describe('case by adamgcraig', function () {
+    test('case by adamgcraig should convert xml object to js and back to xml correctly', () => {
       // see https://github.com/nashwaan/xml-js/issues/26
       var xml =
         '<?xml version="1.0" encoding="UTF-8"?>\n' +
@@ -154,15 +147,13 @@ describe('Testing xml2js.js:', function () {
         },
       };
 
-      it('should convert xml object to js and back to xml correctly', function () {
-        xml = xml.replace(/\v/g, '  ');
-        var js_ = xml2js(xml, { compact: true });
-        expect(js_).toEqual(js);
-        expect(js2xml(js_, { spaces: 2, compact: true })).toEqual(xml);
-      });
+      xml = xml.replace(/\v/g, '  ');
+      var js_ = xml2js(xml, { compact: true });
+      expect(js_).toEqual(js);
+      expect(js2xml(js_, { spaces: 2, compact: true })).toEqual(xml);
     });
 
-    describe('case by bidiu', function () {
+    test('case by bidiu should convert xml object to js and back to xml correctly', () => {
       // see https://github.com/nashwaan/xml-js/issues/26
       var xml = '<title>Support &amp; resistance</title>';
       var js = {
@@ -179,15 +170,12 @@ describe('Testing xml2js.js:', function () {
           },
         ],
       };
-
-      it('should convert xml object to js and back to xml correctly', function () {
-        var js_ = xml2js(xml);
-        expect(js_).toEqual(js);
-        expect(js2xml(js_)).toEqual(xml);
-      });
+      var js_ = xml2js(xml);
+      expect(js_).toEqual(js);
+      expect(js2xml(js_)).toEqual(xml);
     });
 
-    describe("case by Daniel 'yngwi'", function () {
+    test("case by Daniel 'yngwi' 'should convert xml object to js and back to xml correctly'", () => {
       // see https://github.com/nashwaan/xml-js/issues/29
       var xml =
         '<outer> This is <inner> some</inner> <inner>Text </inner> </outer>';
@@ -234,14 +222,12 @@ describe('Testing xml2js.js:', function () {
         ],
       };
 
-      it('should convert xml object to js and back to xml correctly', function () {
-        var js_ = xml2js(xml, { captureSpacesBetweenElements: true });
-        expect(js_).toEqual(js);
-        expect(js2xml(js_)).toEqual(xml);
-      });
+      var js_ = xml2js(xml, { captureSpacesBetweenElements: true });
+      expect(js_).toEqual(js);
+      expect(js2xml(js_)).toEqual(xml);
     });
 
-    describe('case by Nuno Martins', function () {
+    test('case by Nuno Martins should accept XML declarations that use single quotes', () => {
       // see https://github.com/nashwaan/xml-js/issues/34
       var xml = "<?xml version='1.0' encoding='UTF-8'?>";
       var js = {
@@ -253,12 +239,10 @@ describe('Testing xml2js.js:', function () {
         },
       };
 
-      it('should accept XML declarations that use single quotes', function () {
-        expect(xml2js(xml)).toEqual(js);
-      });
+      expect(xml2js(xml)).toEqual(js);
     });
 
-    xdescribe("case by 'ultimate-tester'", function () {
+    describe.skip("case by 'ultimate-tester'", () => {
       // see https://github.com/nashwaan/xml-js/issues/41
       var xml1 =
         '<d:multistatus xmlns="DAV:">\n' +
@@ -361,23 +345,23 @@ describe('Testing xml2js.js:', function () {
         },
       };
 
-      it('should convert without resolving namespace', function () {
+      it('should convert without resolving namespace', () => {
         expect(
-          xml2js(xml1, { compact: true, resolveNamespace: false })
+          xml2js(xml1, { compact: true, resolveNamespace: false }),
         ).toEqual(js1);
         expect(
-          xml2js(xml2, { compact: true, resolveNamespace: false })
+          xml2js(xml2, { compact: true, resolveNamespace: false }),
         ).toEqual(js2);
       });
 
-      it('should convert and resolve namespace', function () {
+      it('should convert and resolve namespace', () => {
         expect(xml2js(xml1, { compact: true, resolveNamespace: true })).toEqual(
-          js
+          js,
         );
       });
     });
 
-    describe('case by austin-laney', function () {
+    test('case by austin-laney should xml to json and back to xml', () => {
       // see https://github.com/nashwaan/xml-js/issues/26
       var xml = '<parser start="^\\s*?&lt;name&gt;regex&lt;/name&gt;$"/>';
       var js = {
@@ -388,20 +372,18 @@ describe('Testing xml2js.js:', function () {
         },
       };
 
-      it('should xml to json and back to xml', function () {
-        expect(xml2js(xml, { compact: true })).toEqual(js);
-        expect(
-          js2xml(js, {
-            compact: true,
-            attributeValueFn: function (value) {
-              return value.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            },
-          })
-        ).toEqual(xml);
-      });
+      expect(xml2js(xml, { compact: true })).toEqual(js);
+      expect(
+        js2xml(js, {
+          compact: true,
+          attributeValueFn: function (value) {
+            return value.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          },
+        }),
+      ).toEqual(xml);
     });
 
-    describe('case by SergeyAlexsandrovich', function () {
+    test('case by SergeyAlexsandrovich should json to xml and back to json', () => {
       // see https://github.com/nashwaan/xml-js/issues/44
       var xml =
         '<material><font size="14"/></material><material><font size="14"/></material>';
@@ -419,11 +401,7 @@ describe('Testing xml2js.js:', function () {
           },
         ],
       };
-      it('should json to xml and back to json', function () {
-        // console.log(convert.xml2json(xml, {compact: true}));
-        // expect(convert.js2xml(js, {compact: true})).toEqual(xml);
-        expect(xml2json(xml, { compact: true })).toEqual(JSON.stringify(js));
-      });
+      expect(xml2json(xml, { compact: true })).toEqual(JSON.stringify(js));
     });
   });
 });
