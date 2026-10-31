@@ -366,3 +366,39 @@ describe('Testing xml2js.js:', function () {
   });
 
 });
+
+
+describe('attributeNameFn value argument', function () {
+  [false, true].forEach(function (compact) {
+    it('receives original values and preserves renamed attributes (compact=' + compact + ')', function () {
+      var values = [];
+      var result = convert.xml2js('<root empty="" zero="0" bool="false" text="value"/>', {
+        compact: compact,
+        attributeNameFn: function (name, value) {
+          values.push(value);
+          return 'renamed_' + name;
+        }
+      });
+      expect(values).toEqual(['', '0', 'false', 'value']);
+      var attributes = compact ? result.root._attributes : result.elements[0].attributes;
+      expect(attributes).toEqual({renamed_empty: '', renamed_zero: '0', renamed_bool: 'false', renamed_text: 'value'});
+    });
+
+    it('receives values after trim, native conversion and attributeValueFn (compact=' + compact + ')', function () {
+      var received;
+      var result = convert.xml2js('<root attr=" 12 "/>', {
+        compact: compact,
+        trim: true,
+        nativeTypeAttributes: true,
+        attributeValueFn: function (value) { return value * 2; },
+        attributeNameFn: function (name, value) {
+          received = value;
+          return name + '_' + value;
+        }
+      });
+      expect(received).toBe(24);
+      var attributes = compact ? result.root._attributes : result.elements[0].attributes;
+      expect(attributes).toEqual({attr_24: 24});
+    });
+  });
+});
