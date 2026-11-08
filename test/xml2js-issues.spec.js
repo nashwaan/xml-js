@@ -7,6 +7,57 @@ describe('Testing xml2js.js:', function () {
 
   describe('User reported issues on github:', function () {
 
+    describe('empty native attributes (#198)', function () {
+      [false, true].forEach(function (compact) {
+        function attributes(result) {
+          return compact ? result.test._attributes : result.elements[0].attributes;
+        }
+
+        it('should distinguish empty attributes from zero, compact=' + compact, function () {
+          var xml = '<test empty="" zero="0" number="12.5" boolean="false"/>';
+          var options = {compact: compact, nativeTypeAttributes: true};
+          var expected = {empty: '', zero: 0, number: 12.5, boolean: false};
+          var result = convert.xml2js(xml, options);
+          expect(attributes(result)).toEqual(expected);
+          expect(attributes(JSON.parse(convert.xml2json(xml, options)))).toEqual(expected);
+          expect(convert.js2xml(result, {compact: compact})).toEqual(xml);
+        });
+
+        it('should preserve attributes made empty by trimming, compact=' + compact, function () {
+          var xml = '<test empty="" space="   " zero=" 0 " boolean=" false "/>';
+          var result = convert.xml2js(xml, {compact: compact, nativeTypeAttributes: true, trim: true});
+          expect(attributes(result)).toEqual({empty: '', space: '', zero: 0, boolean: false});
+        });
+
+        it('should pass empty strings and numeric zero separately to callbacks, compact=' + compact, function () {
+          var seen = {};
+          var result = convert.xml2js('<test empty="" zero="0"/>', {
+            compact: compact,
+            nativeTypeAttributes: true,
+            attributeValueFn: function (value, name) {
+              seen[name] = value;
+              return typeof value + ':' + value;
+            }
+          });
+          expect(seen).toEqual({empty: '', zero: 0});
+          expect(attributes(result)).toEqual({empty: 'string:', zero: 'number:0'});
+        });
+
+        it('should retain whitespace coercion when trim is disabled, compact=' + compact, function () {
+          var result = convert.xml2js('<test space="   " zero=" 0 "/>', {
+            compact: compact,
+            nativeTypeAttributes: true
+          });
+          expect(attributes(result)).toEqual({space: 0, zero: 0});
+        });
+
+        it('should keep attributes as strings when native typing is disabled, compact=' + compact, function () {
+          var result = convert.xml2js('<test empty="" zero="0"/>', {compact: compact});
+          expect(attributes(result)).toEqual({empty: '', zero: '0'});
+        });
+      });
+    });
+
     describe('case by Mark Pareja', function () {
       // see https://github.com/nashwaan/xml-js/issues/3
       var xml =
