@@ -19,7 +19,7 @@ export interface ElementCompact {
   _attributes?: Attributes
   _cdata?: string
   _doctype?: string
-  _comment?: string
+  _comment?: string | string[]
   _text?: string | number
 }
 
