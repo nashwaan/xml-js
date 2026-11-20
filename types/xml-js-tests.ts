@@ -13,6 +13,8 @@ const instruction: Element = { elements:[{ type: 'instruction', name: 'go', inst
 
 // Comment
 const commentCompact: ElementCompact = { _comment : 'Hello, World!' };
+const commentsCompact: ElementCompact = { _comment: ['Hello', 'World'] };
+const emptyCommentsCompact: ElementCompact = { _comment: [] };
 const comment: Element = { elements: [{ type: 'comment', comment: 'Hello, World!' }]};
 
 // CDATA
@@ -54,6 +56,8 @@ let jsonResult2: string = convert.xml2json(xml, {compact:false});
 // js2xml
 let xmlResult1: string = convert.js2xml({a:{}}, { compact:true, spaces:4});
 let xmlResult2: string = convert.js2xml({elements:[{type:'element', name:'a'}]}, {compact:false});
+let xmlComments: string = convert.js2xml(commentsCompact, {compact: true});
+let xmlEmptyComments: string = convert.js2xml(emptyCommentsCompact, {compact: true});
 
 // json2xml
 let xmlResult3: string = convert.json2xml('{"a":{}}', { compact:true, spaces:4});
