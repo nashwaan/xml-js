@@ -197,6 +197,7 @@ The below options are applicable for both `xml2js()` and `xml2json()` functions.
 |:--------------------|:--------|:------------|
 | `compact`           | `false` | Whether to produce detailed object or compact object. |
 | `trim`              | `false` | Whether to trim whitespace characters that may exist before and after the text. |
+| `captureSpacesBetweenElements` | `false` | Whether to keep whitespace-only text nodes, including indentation between elements. Leave `trim` set to `false` to preserve their whitespace. |
 | `sanitize` ([Deprecated](https://github.com/nashwaan/xml-js/issues/26)) | `false` | Whether to replace `&` `<` `>` with `&amp;` `&lt;` `&gt;` respectively, in the resultant text. |
 | `nativeType`        | `false` | Whether to attempt converting text of numerals or of boolean values to native type. For example, `"123"` will be `123` and `"true"` will be `true` |
 | `nativeTypeAttributes` | `false` | Whether to attempt converting attributes of numerals or of boolean values to native type. See also `nativeType` above. |
@@ -211,6 +212,22 @@ The below options are applicable for both `xml2js()` and `xml2json()` functions.
 | `ignoreCdata`       | `false` | Whether to ignore parsing CData of the elements. That is, no `cdata` will be generated. |
 | `ignoreDoctype`     | `false` | Whether to ignore parsing Doctype of the elements. That is, no `doctype` will be generated. |
 | `ignoreText`        | `false` | Whether to ignore parsing texts of the elements. That is, no `text` will be generated. |
+
+Whitespace-only text is skipped by default, even when `trim` is `false`.
+To preserve it, enable `captureSpacesBetweenElements`:
+
+```js
+var convert = require('xml-js');
+var result = convert.xml2js('<some>     </some>', {
+  compact: true,
+  captureSpacesBetweenElements: true
+});
+console.log(result); // { some: { _text: '     ' } }
+```
+
+This also works in non-compact output, where the whitespace is stored in a
+`{type: 'text', text: '     '}` node. Text containing non-whitespace characters
+already keeps its surrounding spaces when `trim` is `false`.
 
 The below option is applicable only for `xml2json()` function.
 
