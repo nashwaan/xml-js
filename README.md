@@ -292,6 +292,41 @@ console.log(result); // <foo:Name>Ali</Name> <bar:Age>30</bar:Age>
 | `attributesFn` | `(value, currentElementName, currentElementObj)` | To perform additional processing for attributes object. For example, `{attributesFn: function(val) {return val.toUpperCase();}}`. |
 | `fullTagEmptyElementFn` | `(currentElementName, currentElementObj)` | Whether to generate full tag or just self closing tag for elements that has no sub elements. For example, `{fullTagEmptyElementFn: function(val) {return val === 'foo'}}`. |
 
+### XML declarations and processing instructions
+
+An XML declaration (`<?xml version="1.0"?>`) is stored in `_declaration`
+in compact output, or `declaration` in non-compact output. It does not call
+`instructionFn`. That callback handles other processing instructions, such as
+`<?display compact?>`. There is no `declarationFn` option.
+
+Read the declaration from the converted object. To process its attributes
+during parsing, use `attributesFn` or the attribute callbacks; these also run
+for attributes elsewhere in the document.
+
+```js
+var convert = require('xml-js');
+var seenInstructions = [];
+var result = convert.xml2js(
+  '<?xml version="1.0" encoding="UTF-8"?><?display compact?><root/>',
+  {
+    compact: true,
+    instructionFn: function (value, name) {
+      seenInstructions.push(name);
+      return value.toUpperCase();
+    }
+  }
+);
+
+console.log(result._declaration._attributes.encoding); // UTF-8
+console.log(result._instruction.display); // COMPACT
+console.log(seenInstructions); // ['display']
+```
+
+`ignoreDeclaration: true` omits the declaration from the result.
+`ignoreInstruction: true` skips other processing instructions and their
+`instructionFn` calls. With a custom `declarationKey` or `attributesKey`, use
+those keys to read the declaration instead.
+
 # Command Line
 
 Because any good library should support command line usage, this library is no different.
