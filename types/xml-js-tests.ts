@@ -47,6 +47,13 @@ const xml = `
 let jsResult1: any = convert.xml2js(xml, {compact:true});
 let jsResult2: any = convert.xml2js(xml, {compact:false});
 
+// Select arrays using the output property name and its parent object.
+convert.xml2js(xml, {
+  compact: true,
+  alwaysArray: (name, parentElement) => name === 'todo' && parentElement._attributes !== undefined
+});
+convert.xml2json(xml, {compact: true, alwaysArray: name => name.slice(-5) === 'Array'});
+
 // xml2json
 let jsonResult1: string = convert.xml2json(xml, {compact:true, spaces:4});
 let jsonResult2: string = convert.xml2json(xml, {compact:false});
