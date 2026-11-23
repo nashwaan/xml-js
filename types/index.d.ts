@@ -83,6 +83,7 @@ declare namespace Options {
 
   interface JS2XML extends ChangingKeyNames, IgnoreOptions {
     spaces?: number | string
+    newline?: string
     compact?: boolean
     indentText?: boolean
     indentCdata?: boolean
