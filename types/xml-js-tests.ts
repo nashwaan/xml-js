@@ -58,3 +58,7 @@ let xmlResult2: string = convert.js2xml({elements:[{type:'element', name:'a'}]},
 // json2xml
 let xmlResult3: string = convert.json2xml('{"a":{}}', { compact:true, spaces:4});
 let xmlResult4: string = convert.json2xml('{"elements":[{"type":"element","name":"a"}]}', {compact:false});
+
+// Formatting line endings
+convert.js2xml(elementCompact5, {compact: true, spaces: 2, newline: '\r\n'});
+convert.json2xml(JSON.stringify(element5), {spaces: 2, newline: '\r\n'});

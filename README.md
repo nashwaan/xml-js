@@ -169,6 +169,7 @@ The below options are applicable for both `js2xml()` and `json2xml()` functions.
 | `fullTagEmptyElement` | `false` | Whether to produce element without sub-elements as full tag pairs `<a></a>` rather than self closing tag `<a/>`. |
 | `indentCdata`         | `false` | Whether to write CData in a new line and indent it. Will generate `<a>\n <![CDATA[foo]]></a>` instead of `<a><![CDATA[foo]]></a>`. See [discussion](https://github.com/nashwaan/xml-js/issues/14) |
 | `indentAttributes`    | `false` | Whether to print attributes across multiple lines and indent them (when `spaces` is not `0`). See [example](https://github.com/nashwaan/xml-js/issues/31). |
+| `newline`             | `"\n"` | Line separator used for generated formatting when `spaces` is enabled, for example `"\r\n"` for CRLF or another string. Existing line breaks in text, attributes, CDATA, comments and processing instructions are preserved. |
 | `ignoreDeclaration`   | `false` | Whether to ignore writing declaration directives of xml. For example, `<?xml?>` will be ignored. |
 | `ignoreInstruction`   | `false` | Whether to ignore writing processing instruction of xml. For example, `<?go there?>` will be ignored. |
 | `ignoreAttributes`    | `false` | Whether to ignore writing attributes of the elements. For example, `x="1"` in `<a x="1"></a>` will be ignored |
