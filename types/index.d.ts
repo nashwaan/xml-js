@@ -49,7 +49,7 @@ declare namespace Options {
     sanitize?: boolean
     nativeType?: boolean
     addParent?: boolean
-    alwaysArray?: boolean | Array<string>
+    alwaysArray?: boolean | Array<string> | ((name: string, parentElement: ElementCompact) => boolean)
     alwaysChildren?: boolean
     instructionHasAttributes?: boolean
     captureSpacesBetweenElements?: boolean
